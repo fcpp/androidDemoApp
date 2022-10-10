@@ -60,7 +60,7 @@ public class AP extends Application {
     static class OkHttpWrapper {
         static OkHttpClient okHttpClient = new OkHttpClient();
         // TODO: configurable
-        static String url = "http://new.foldr.org:3000/entry";
+        static String url = "https://www.foldr.org/fcpp/entry";
 
         private static void httpLog(byte[] data) {
             // TODO: customize, obviously.
