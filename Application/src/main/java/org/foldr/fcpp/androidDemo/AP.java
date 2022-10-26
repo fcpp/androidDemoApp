@@ -36,6 +36,7 @@ public class AP extends Application {
     public static native boolean get_im_weak();
     public static native boolean get_some_weak();
     public static native int get_degree();
+    public static native String get_storage();
 
     /* Deque for received transmissions. Read from first, append to end. */
     static Deque<ScanResult> pending = new ConcurrentLinkedDeque<>();

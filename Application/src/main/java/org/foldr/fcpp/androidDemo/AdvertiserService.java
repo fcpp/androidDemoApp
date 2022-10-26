@@ -54,6 +54,10 @@ public class AdvertiserService extends Service {
 
     public static final String ADVERTISING_FAILED_EXTRA_CODE = "failureCode";
 
+    public static final String ADVERTISING_STORAGE =
+            "org.foldr.fcpp.androidDemo.advertising_storage";
+    public static final String ADVERTISING_STORAGE_EXTRA_CODE = "storageCode";
+
     public static final int ADVERTISING_TIMED_OUT = 6;
 
     private BluetoothLeAdvertiser mBluetoothLeAdvertiser;
@@ -84,6 +88,9 @@ public class AdvertiserService extends Service {
             public void run() {
                 while (running) {
                     startAdvertising();
+                    /* TODO: stupid here since only running when advertising.
+                     * OTOH, it should be running continuously anyways. */
+                    sendStorageIntent();
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
@@ -340,4 +347,10 @@ public class AdvertiserService extends Service {
         sendBroadcast(failureIntent);
     }
 
+    private void sendStorageIntent(){
+        Intent failureIntent = new Intent();
+        failureIntent.setAction(ADVERTISING_STORAGE);
+        failureIntent.putExtra(ADVERTISING_STORAGE_EXTRA_CODE, AP.get_storage());
+        sendBroadcast(failureIntent);
+    }
 }

@@ -50,3 +50,8 @@ JNIEXPORT jint JNICALL
 Java_org_foldr_fcpp_androidDemo_AP_get_1degree(JNIEnv *env, jclass clazz) {
     return fcpp::get_degree();
 }
+
+extern "C" JNIEXPORT jstring JNICALL
+Java_org_foldr_fcpp_androidDemo_AP_get_1storage(JNIEnv *env, jclass clazz) {
+    return env->NewStringUTF(fcpp::get_storage());
+}

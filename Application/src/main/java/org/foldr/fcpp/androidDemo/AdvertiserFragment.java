@@ -22,10 +22,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
@@ -60,35 +62,44 @@ public class AdvertiserFragment extends Fragment implements View.OnClickListener
             @Override
             public void onReceive(Context context, Intent intent) {
 
-                int errorCode = intent.getIntExtra(AdvertiserService.ADVERTISING_FAILED_EXTRA_CODE, -1);
+                /* TODO: Should probably subclass... */
+                if (AdvertiserService.ADVERTISING_FAILED.equals(intent.getAction())) {
+                    int errorCode = intent.getIntExtra(AdvertiserService.ADVERTISING_FAILED_EXTRA_CODE, -1);
 
-                mSwitch.setChecked(false);
+                    mSwitch.setChecked(false);
 
-                String errorMessage = getString(R.string.start_error_prefix);
-                switch (errorCode) {
-                    case AdvertiseCallback.ADVERTISE_FAILED_ALREADY_STARTED:
-                        errorMessage += " " + getString(R.string.start_error_already_started);
-                        break;
-                    case AdvertiseCallback.ADVERTISE_FAILED_DATA_TOO_LARGE:
-                        errorMessage += " " + getString(R.string.start_error_too_large);
-                        break;
-                    case AdvertiseCallback.ADVERTISE_FAILED_FEATURE_UNSUPPORTED:
-                        errorMessage += " " + getString(R.string.start_error_unsupported);
-                        break;
-                    case AdvertiseCallback.ADVERTISE_FAILED_INTERNAL_ERROR:
-                        errorMessage += " " + getString(R.string.start_error_internal);
-                        break;
-                    case AdvertiseCallback.ADVERTISE_FAILED_TOO_MANY_ADVERTISERS:
-                        errorMessage += " " + getString(R.string.start_error_too_many);
-                        break;
-                    case AdvertiserService.ADVERTISING_TIMED_OUT:
-                        errorMessage = " " + getString(R.string.advertising_timedout);
-                        break;
-                    default:
-                        errorMessage += " " + getString(R.string.start_error_unknown);
+                    String errorMessage = getString(R.string.start_error_prefix);
+                    switch (errorCode) {
+                        case AdvertiseCallback.ADVERTISE_FAILED_ALREADY_STARTED:
+                            errorMessage += " " + getString(R.string.start_error_already_started);
+                            break;
+                        case AdvertiseCallback.ADVERTISE_FAILED_DATA_TOO_LARGE:
+                            errorMessage += " " + getString(R.string.start_error_too_large);
+                            break;
+                        case AdvertiseCallback.ADVERTISE_FAILED_FEATURE_UNSUPPORTED:
+                            errorMessage += " " + getString(R.string.start_error_unsupported);
+                            break;
+                        case AdvertiseCallback.ADVERTISE_FAILED_INTERNAL_ERROR:
+                            errorMessage += " " + getString(R.string.start_error_internal);
+                            break;
+                        case AdvertiseCallback.ADVERTISE_FAILED_TOO_MANY_ADVERTISERS:
+                            errorMessage += " " + getString(R.string.start_error_too_many);
+                            break;
+                        case AdvertiserService.ADVERTISING_TIMED_OUT:
+                            errorMessage = " " + getString(R.string.advertising_timedout);
+                            break;
+                        default:
+                            errorMessage += " " + getString(R.string.start_error_unknown);
+                    }
+
+                    Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_LONG).show();
+                } else if (AdvertiserService.ADVERTISING_STORAGE.equals(intent.getAction())) {
+                    String storage_text = intent.getStringExtra(AdvertiserService.ADVERTISING_STORAGE_EXTRA_CODE);
+                    TextView v = getActivity().findViewById(R.id.storage_view);
+                    v.setText(storage_text);
+                } else {
+                    Log.d("vs", intent.getAction());
                 }
-
-                Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_LONG).show();
             }
         };
     }
@@ -121,7 +132,8 @@ public class AdvertiserFragment extends Fragment implements View.OnClickListener
 
         IntentFilter failureFilter = new IntentFilter(AdvertiserService.ADVERTISING_FAILED);
         getActivity().registerReceiver(advertisingFailureReceiver, failureFilter);
-
+        IntentFilter storageFilter = new IntentFilter(AdvertiserService.ADVERTISING_STORAGE);
+        getActivity().registerReceiver(advertisingFailureReceiver, storageFilter);
     }
 
     /**
