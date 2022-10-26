@@ -29,7 +29,7 @@ public class AP extends Application {
     static private String uid;
 
     /* These native definitions are from ap-getters.cpp: */
-    static native void fcpp_start(int uid, int diam, int per);
+    static native void fcpp_start(int uid, int diam, int per, int end);
     public static native void fcpp_stop();
     public static native long getMaxMsgSize();
     public static native long getRound();
@@ -149,7 +149,7 @@ public class AP extends Application {
         String prefs_diameter = prefs.getString(getString(R.string.prefs_fcpp_diameter), "1");
         String prefs_per = prefs.getString(getString(R.string.prefs_fcpp_per), "1");
         Log.i(LOG_TAG, "fccp_start: " + prefs_diameter + "," + prefs_per);
-        fcpp_start(setUID(), Integer.valueOf(prefs_diameter), Integer.valueOf(prefs_per));
+        fcpp_start(setUID(), Integer.valueOf(prefs_diameter), Integer.valueOf(prefs_per), 65000 /* XXX */);
     }
 
     static {

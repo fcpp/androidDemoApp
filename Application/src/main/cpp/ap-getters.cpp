@@ -12,10 +12,10 @@
 /* Definitions below are declared as `native` in AP.java. */
 
 extern "C" JNIEXPORT void JNICALL
-Java_org_foldr_fcpp_androidDemo_AP_fcpp_1start(JNIEnv *env, jclass thiz, jint uid, jint diam, jint per) {
+Java_org_foldr_fcpp_androidDemo_AP_fcpp_1start(JNIEnv *env, jclass thiz, jint uid, jint diam, jint per, jint end) {
     // https://stackoverflow.com/a/19657117/60462:
     auto c = static_cast<jclass>( env->NewGlobalRef( thiz) );
-    fcpp::start(env, c, uid, diam, per, 65000 /* XXX */);
+    fcpp::start(env, c, uid, diam, per, end);
     return;
 }
 
