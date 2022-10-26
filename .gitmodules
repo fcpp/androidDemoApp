@@ -1,0 +1,3 @@
+[submodule "fcpp-distribution/fcpp-android"]
+	path = fcpp-distribution/fcpp-android
+	url = git@github.com:fcpp/fcpp-android.git
