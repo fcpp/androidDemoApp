@@ -18,11 +18,11 @@
 cmake_minimum_required(VERSION 3.4.1)
 
 # configure import libs
-set(distribution_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../fcpp-distribution)
+set(distribution_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../../fcpp-android)
 
 add_library(lib_ap STATIC IMPORTED)
 set_target_properties(lib_ap PROPERTIES IMPORTED_LOCATION
-    ${distribution_DIR}/lib/${ANDROID_ABI}/main.a)
+    ${distribution_DIR}/${ANDROID_ABI}/run/main.a)
 
 set(CMAKE_BUILD_TYPE DEBUG)
 
@@ -33,7 +33,7 @@ add_library(ap-libs SHARED
             ap-getters.cpp)
 
 target_include_directories(ap-libs PRIVATE
-                           ${distribution_DIR}/include
+                           ${distribution_DIR}/src
                            )
 
 target_link_libraries(ap-libs
