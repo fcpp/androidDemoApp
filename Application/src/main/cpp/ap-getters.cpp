@@ -4,7 +4,6 @@
 #include <jni.h>
 #include <android/log.h>
 #include <main.hpp>
-#include <assert.h>
 
 #define LOGI(...) \
   ((void)__android_log_print(ANDROID_LOG_INFO, "fcpp", __VA_ARGS__))
