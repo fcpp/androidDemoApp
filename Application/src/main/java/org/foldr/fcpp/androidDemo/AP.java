@@ -144,7 +144,7 @@ public class AP extends Application {
                     .putBoolean(getString(R.string.prefs_legacy), prefs_bt_legacy)
                     .apply();
         } else {
-            Log.i(LOG_TAG, "Have UID: "+uid);
+            Log.i(LOG_TAG, "Have UID: "+uid+"/"+uid.hashCode());
         };
         // Review: HACK to get an int.
         this.uid = uid;
