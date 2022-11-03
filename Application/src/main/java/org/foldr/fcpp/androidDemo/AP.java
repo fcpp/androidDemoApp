@@ -29,14 +29,23 @@ public class AP extends Application {
     static private String uid;
 
     /* These native definitions are from ap-getters.cpp: */
-    static native void fcpp_start(int uid, int diam, int per, int end);
+    static native void fcpp_start(int uid);
     public static native void fcpp_stop();
-    public static native long getMaxMsgSize();
-    public static native long getRound();
+
+    public static native String get_storage();
+
+    public static native long get_round_count();
+    public static native long get_max_msg_size();
     public static native boolean get_im_weak();
     public static native boolean get_some_weak();
     public static native int get_degree();
-    public static native String get_storage();
+
+    public static native int get_diameter();
+    public static native void set_diameter(int diam);
+    public static native float get_retain_time();
+    public static native void set_retain_time(float time);
+    public static native float get_round_period();
+    public static native void set_round_period(float time);
 
     /* Deque for received transmissions. Read from first, append to end. */
     static Deque<ScanResult> pending = new ConcurrentLinkedDeque<>();
@@ -150,7 +159,7 @@ public class AP extends Application {
         String prefs_diameter = prefs.getString(getString(R.string.prefs_fcpp_diameter), "1");
         String prefs_per = prefs.getString(getString(R.string.prefs_fcpp_per), "1");
         Log.i(LOG_TAG, "fccp_start: " + prefs_diameter + "," + prefs_per);
-        fcpp_start(setUID(), Integer.valueOf(prefs_diameter), Integer.valueOf(prefs_per), 65000 /* XXX */);
+        fcpp_start(setUID());
     }
 
     static {

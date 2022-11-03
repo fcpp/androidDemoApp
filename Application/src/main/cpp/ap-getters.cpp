@@ -11,10 +11,10 @@
 /* Definitions below are declared as `native` in AP.java. */
 
 extern "C" JNIEXPORT void JNICALL
-Java_org_foldr_fcpp_androidDemo_AP_fcpp_1start(JNIEnv *env, jclass thiz, jint uid, jint diam, jint per, jint end) {
+Java_org_foldr_fcpp_androidDemo_AP_fcpp_1start(JNIEnv *env, jclass thiz, jint uid) {
     // https://stackoverflow.com/a/19657117/60462:
     auto c = static_cast<jclass>( env->NewGlobalRef( thiz) );
-    fcpp::start(env, c, uid, diam, per, end);
+    fcpp::start(env, c, uid);
     return;
 }
 
@@ -23,15 +23,20 @@ Java_org_foldr_fcpp_androidDemo_AP_fcpp_1stop(JNIEnv *env, jclass thiz) {
     fcpp::stop();
 }
 
-extern "C" JNIEXPORT jlong JNICALL
-Java_org_foldr_fcpp_androidDemo_AP_getMaxMsgSize(JNIEnv *env, jclass thiz) {
-    return (jlong)(unsigned long long)fcpp::get_max_msg_size();
+extern "C" JNIEXPORT jstring JNICALL
+Java_org_foldr_fcpp_androidDemo_AP_get_1storage(JNIEnv *env, jclass clazz) {
+    return env->NewStringUTF(fcpp::get_storage());
 }
 
 extern "C" JNIEXPORT jlong JNICALL
-Java_org_foldr_fcpp_androidDemo_AP_getRound(JNIEnv *env, jclass thiz) {
+Java_org_foldr_fcpp_androidDemo_AP_get_1round_1count(JNIEnv *env, jclass thiz) {
     uint16_t c = fcpp::get_round_count();
     return (jlong)(unsigned long long)c;
+}
+
+extern "C" JNIEXPORT jlong JNICALL
+Java_org_foldr_fcpp_androidDemo_AP_get_1max_1msg_1size(JNIEnv *env, jclass thiz) {
+    return (jlong)(unsigned long long)fcpp::get_max_msg_size();
 }
 
 /* Note the escaped `_` below. */
@@ -51,7 +56,38 @@ Java_org_foldr_fcpp_androidDemo_AP_get_1degree(JNIEnv *env, jclass clazz) {
     return fcpp::get_degree();
 }
 
-extern "C" JNIEXPORT jstring JNICALL
-Java_org_foldr_fcpp_androidDemo_AP_get_1storage(JNIEnv *env, jclass clazz) {
-    return env->NewStringUTF(fcpp::get_storage());
+extern "C"
+JNIEXPORT jint JNICALL
+Java_org_foldr_fcpp_androidDemo_AP_get_1diameter(JNIEnv *env, jclass clazz) {
+    return fcpp::get_diameter();
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_org_foldr_fcpp_androidDemo_AP_set_1diameter(JNIEnv *env, jclass clazz, jint diam) {
+    fcpp::set_diameter(diam);
+}
+
+extern "C"
+JNIEXPORT jfloat JNICALL
+Java_org_foldr_fcpp_androidDemo_AP_get_1retain_1time(JNIEnv *env, jclass clazz) {
+    return fcpp::get_retain_time();
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_org_foldr_fcpp_androidDemo_AP_set_1retain_1time(JNIEnv *env, jclass clazz, jfloat time) {
+    fcpp::set_retain_time(time);
+}
+
+extern "C"
+JNIEXPORT jfloat JNICALL
+Java_org_foldr_fcpp_androidDemo_AP_get_1round_1period(JNIEnv *env, jclass clazz) {
+    return fcpp::get_round_period();
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_org_foldr_fcpp_androidDemo_AP_set_1round_1period(JNIEnv *env, jclass clazz, jfloat time) {
+    fcpp::set_round_period(time);
 }

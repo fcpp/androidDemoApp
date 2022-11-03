@@ -161,8 +161,8 @@ public class ScannerFragment extends ListFragment {
                     public void run() {
                         // Call getter:
                         AP ap = (AP) getActivity().getApplicationContext();
-                        long round = ap.getRound();
-                        Toast.makeText(getActivity(), "Current round: "+round+"/"+ap.getMaxMsgSize()
+                        long round = ap.get_round_count();
+                        Toast.makeText(getActivity(), "Current round: "+round+"/"+ap.get_max_msg_size()
                                 +":"+ap.get_degree()
                                 , Toast.LENGTH_SHORT).show();
                         mHandler.postDelayed(this, SCAN_PERIOD);
