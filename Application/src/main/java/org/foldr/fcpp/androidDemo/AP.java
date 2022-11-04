@@ -17,6 +17,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.prefs.PreferencesFactory;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -26,7 +27,7 @@ import okhttp3.Response;
 
 public class AP extends Application {
 
-    static private String uid;
+    static int uid;
 
     /* These native definitions are from ap-getters.cpp: */
     static native void fcpp_start(int uid);
@@ -63,7 +64,7 @@ public class AP extends Application {
 
         private static void httpLog(byte[] data) {
             // TODO: customize, obviously.
-            String json = "{ \"uid\": "+ Integer.toString(uid.hashCode())+", \"entry\": \""+ Base64.encodeToString(data, Base64.NO_WRAP)+"\"}";
+            String json = "{ \"uid\": "+ Integer.toString(uid)+", \"entry\": \""+ Base64.encodeToString(data, Base64.NO_WRAP)+"\"}";
             RequestBody body = RequestBody.create(json, JSON);
             Request request = new Request.Builder()
                     .url(url)
@@ -147,8 +148,9 @@ public class AP extends Application {
             Log.i(LOG_TAG, "Have UID: "+uid+"/"+uid.hashCode());
         };
         // Review: HACK to get an int.
-        this.uid = uid;
-        return uid.hashCode();
+        // Reconstruct FCPP's treatment here.
+        this.uid = Short.toUnsignedInt((short) (uid.hashCode()));
+        return this.uid;
     }
 
     @Override
@@ -157,9 +159,37 @@ public class AP extends Application {
         // TODO: proper initial values for fcpp?
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String prefs_diameter = prefs.getString(getString(R.string.prefs_fcpp_diameter), "1");
-        String prefs_per = prefs.getString(getString(R.string.prefs_fcpp_per), "1");
-        Log.i(LOG_TAG, "fccp_start: " + prefs_diameter + "," + prefs_per);
-        fcpp_start(setUID());
+        String prefs_period = prefs.getString(getString(R.string.prefs_fcpp_period), "1.0");
+        String prefs_retain = prefs.getString(getString(R.string.prefs_fcpp_retain), "1.0");
+        int uid = setUID();
+        Log.i(LOG_TAG, "fccp_start: " + uid);
+        fcpp_start(uid);
+        int the_diameter;
+        try {
+             the_diameter = Integer.parseInt(prefs_diameter);
+        } catch (NumberFormatException e) {
+            the_diameter = 1;
+            Log.d(LOG_TAG, "FCPP data error", e);
+        }
+        float the_period;
+        try {
+            the_period = Float.parseFloat(prefs_period);
+        } catch (NumberFormatException e) {
+            the_period = 1;
+            Log.d(LOG_TAG, "FCPP data error", e);
+        }
+        float the_retain;
+        try {
+            the_retain = Float.parseFloat(prefs_retain);
+        } catch (NumberFormatException e) {
+            the_retain = 1;
+            Log.d(LOG_TAG, "FCPP data error", e);
+        }
+        Log.i(LOG_TAG, "FCPP params (orig): "+prefs_diameter + "," + prefs_period+","+ prefs_retain);
+        Log.i(LOG_TAG, "FCPP params (derived): "+the_diameter + "," + the_period+","+ the_retain);
+        set_diameter(the_diameter);
+        set_round_period(the_period);
+        set_retain_time(the_retain);
     }
 
     static {

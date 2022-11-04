@@ -1,27 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <SwitchPreferenceCompat
-        app:key="legacy"
-        app:defaultValue="false"
-        app:persistent="true"
-        app:title="Enable BLE Legacy mode"/>
+    <PreferenceCategory
+        app:key="fcpp_category"
+        app:title="FCPP application">
 
     <EditTextPreference
         app:key="uid"
         app:persistent="true"
+        app:useSimpleSummaryProvider="true"
         app:title="Device id"/>
 
     <EditTextPreference
         app:key="fcpp_diameter"
         app:persistent="true"
-        app:title="FCPP Diameter"
+        app:title="Diameter"
+        app:useSimpleSummaryProvider="true"
         app:defaultValue="1"/>
 
     <EditTextPreference
-        app:key="fcpp_per"
+        app:key="fcpp_period"
         app:persistent="true"
-        app:title="FCPP Per"
+        app:title="Period"
+        app:useSimpleSummaryProvider="true"
         app:defaultValue="1"/>
 
+    <EditTextPreference
+        app:key="fcpp_retain"
+        app:persistent="true"
+        app:title="Retain time"
+        app:useSimpleSummaryProvider="true"
+        app:defaultValue="1"/>
+
+    </PreferenceCategory>
 </PreferenceScreen>

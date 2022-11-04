@@ -38,5 +38,6 @@
     <string name="prefs_uid">uid</string>
     <string name="prefs_legacy">legacy</string>
     <string name="prefs_fcpp_diameter">fcpp_diameter</string>
-    <string name="prefs_fcpp_per">fcpp_per</string>
+    <string name="prefs_fcpp_period">fcpp_period</string>
+    <string name="prefs_fcpp_retain">fcpp_retain</string>
 </resources>

@@ -19,6 +19,7 @@ package org.foldr.fcpp.androidDemo;
 import static org.foldr.fcpp.androidDemo.Constants.LOG_TAG;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
@@ -31,10 +32,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Toolbar;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 /**
@@ -45,6 +48,7 @@ public class MainActivity extends FragmentActivity {
     private BluetoothAdapter mBluetoothAdapter;
     private Toolbar mToolbar;
 
+    @SuppressLint("MissingPermission")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -183,6 +187,50 @@ public class MainActivity extends FragmentActivity {
         @Override
         public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
             setPreferencesFromResource(R.xml.preferences, rootKey);
+            {
+                Preference p;
+                p = findPreference(getString(R.string.prefs_fcpp_diameter));
+                p.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                    @Override
+                    public boolean onPreferenceChange(@NonNull Preference preference, Object newValue) {
+                        // TODO: error handling
+                        int v = Integer.valueOf((String)newValue);
+                        AP.set_diameter(v);
+                        return true;
+                    }
+                });
+                p = findPreference(getString(R.string.prefs_fcpp_period));
+                p.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                    @Override
+                    public boolean onPreferenceChange(@NonNull Preference preference, Object newValue) {
+                        // TODO: error handling
+                        float v = Float.parseFloat(((String)newValue));
+                        AP.set_round_period(v);
+                        return true;
+                    }
+                });
+                p = findPreference(getString(R.string.prefs_fcpp_retain));
+                p.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                    @Override
+                    public boolean onPreferenceChange(@NonNull Preference preference, Object newValue) {
+                        // TODO: error handling
+                        float v = Float.parseFloat(((String)newValue));
+                        AP.set_retain_time(v);
+                        return true;
+                    }
+                });
+            }
+            { // Patch uid into preferences dialog:
+                Preference uid_prefs = findPreference(getString(R.string.prefs_uid));
+                uid_prefs.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                    @Override
+                    public boolean onPreferenceChange(@NonNull Preference preference, Object newValue) {
+                        Toast.makeText(getContext(), "Please restart the app now!", Toast.LENGTH_LONG);
+                        return true;
+                    }
+                });
+                uid_prefs.setTitle(uid_prefs.getTitle() + ": "+ AP.uid);
+            }
         }
     }
 

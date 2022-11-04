@@ -37,6 +37,6 @@ public class Constants {
 
     public static final int REQUEST_AFL = 2;
 
-    public static final String LOG_TAG = "VS-BLE";
+    public static final String LOG_TAG = "FCPP";
 
 }
