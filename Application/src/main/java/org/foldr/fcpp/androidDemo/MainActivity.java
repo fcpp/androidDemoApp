@@ -47,6 +47,8 @@ public class MainActivity extends FragmentActivity {
 
     private BluetoothAdapter mBluetoothAdapter;
     private Toolbar mToolbar;
+    private Thread httpHandler;
+    private boolean httpHandlerShouldQuit;
 
     @SuppressLint("MissingPermission")
     @Override
@@ -91,6 +93,26 @@ public class MainActivity extends FragmentActivity {
                         }
                         setupFragments();
 
+                        { // Log state to DB every second.
+                            // TODO: use Handler.postDelayed?
+                            // TODO: configurable interval?
+                            httpHandlerShouldQuit = false;
+                            httpHandler = new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    while (!httpHandlerShouldQuit) {
+                                        try {
+                                            Thread.sleep(1000);
+                                            AP.OkHttpWrapper.httpLog();
+                                        } catch (InterruptedException e) {
+                                            Log.d(LOG_TAG, "Http-logger exiting.");
+                                            return;
+                                        }
+                                    }
+                                }
+                            });
+                            httpHandler.start();
+                        }
                     } else {
 
                         // Bluetooth Advertisements are not supported.
@@ -140,6 +162,15 @@ public class MainActivity extends FragmentActivity {
 
     @Override
     public void onDestroy() {
+        Log.d(LOG_TAG, "Shutting down.");
+        try {
+            httpHandlerShouldQuit = true;
+            httpHandler.join();
+        } catch (InterruptedException e) {
+            Log.d(LOG_TAG, "Unexpected.", e);
+        }
+        // Stop the advertiser. Note that there's also the AdvertiserService.running static flag.
+        stopService(new Intent(this, AdvertiserService.class));
         AP.fcpp_stop();
         super.onDestroy();
     }

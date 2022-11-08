@@ -62,7 +62,6 @@ public class ScannerFragment extends ListFragment {
 
     private ScanResultAdapter mAdapter;
 
-    private Handler mHandler;
     private Toolbar mToolbar;
     private AP mAp;
 
@@ -89,7 +88,6 @@ public class ScannerFragment extends ListFragment {
         // default theme, so generate it from getActivity() and pass it in separately.
         mAdapter = new ScanResultAdapter(getActivity().getApplicationContext(),
                 LayoutInflater.from(getActivity()));
-        mHandler = new Handler();
 
         mAp = (AP) getActivity().getApplication();
     }
@@ -144,31 +142,6 @@ public class ScannerFragment extends ListFragment {
     public void startScanning() {
         if (mScanCallback == null) {
             Log.d(TAG, "Starting Scanning");
-
-            // Will stop the scanning after a set time.
-            if (false) {
-                mHandler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        stopScanning();
-                    }
-                }, SCAN_PERIOD);
-            }
-            // Instead, we're gonna poll some stats:
-            {
-                mHandler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        // Call getter:
-                        AP ap = (AP) getActivity().getApplicationContext();
-                        long round = ap.get_round_count();
-                        Toast.makeText(getActivity(), "Current round: "+round+"/"+ap.get_max_msg_size()
-                                +":"+ap.get_degree()
-                                , Toast.LENGTH_SHORT).show();
-                        mHandler.postDelayed(this, SCAN_PERIOD);
-                    }
-                }, SCAN_PERIOD);
-            }
 
             // Kick off a new scan.
             mScanCallback = new SampleScanCallback();
