@@ -28,6 +28,8 @@ import android.widget.Toast;
 import androidx.core.app.NotificationCompat;
 import androidx.preference.PreferenceManager;
 
+import com.google.common.io.BaseEncoding;
+
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -62,7 +64,7 @@ public class AdvertiserService extends Service {
 
     private BluetoothLeAdvertiser mBluetoothLeAdvertiser;
 
-    private Object mAdvertiseCallback;
+    private AdvertisingSetCallback mAdvertiseCallback;
 
     private Handler mHandler;
 
@@ -78,7 +80,7 @@ public class AdvertiserService extends Service {
 
     @Override
     public void onCreate() {
-        Log.d(TAG, "Service: Starting Advertising");
+        Log.d(TAG, "Service: Starting Advertising Service");
         running = true;
         mAp = (AP) getApplication();
         initialize();
@@ -176,16 +178,6 @@ public class AdvertiserService extends Service {
             stopAdvertising();
         }
         if (mAdvertiseCallback == null) {
-            if (false) {
-                AdvertiseSettings settings = buildAdvertiseSettings();
-
-                mAdvertiseCallback = new SampleAdvertiseCallback();
-
-                if (mBluetoothLeAdvertiser != null) {
-                    mBluetoothLeAdvertiser.startAdvertising(settings, data,
-                            (AdvertiseCallback) mAdvertiseCallback);
-                }
-            } else {
                 // Double-check that we get the same data as set in AP. Uncomment for safety-belt.
                 // assert PreferenceManager.getDefaultSharedPreferences(this).contains(getString(R.string.prefs_legacy));
 
@@ -201,22 +193,21 @@ public class AdvertiserService extends Service {
 
                     @Override
                     public void onAdvertisingSetStopped(AdvertisingSet advertisingSet) {
-                        Log.i(LOG_TAG, "onAdvertisingSetStopped():");
+//                        Log.i(LOG_TAG, "onAdvertisingSetStopped():");
                     }
                 };
                 if (mBluetoothLeAdvertiser != null) {
                     mBluetoothLeAdvertiser.startAdvertisingSet(parameters,data,null,null,null, (AdvertisingSetCallback) mAdvertiseCallback);
                 }
-            }
         }
     }
 
     private AdvertisingSetParameters getAdvertisingSetParameters() {
-        // TODO: there's no need to always create a fresh one.
         AdvertisingSetParameters parameters = (new AdvertisingSetParameters.Builder())
                 .setLegacyMode(PreferenceManager.getDefaultSharedPreferences(this)
                         .getBoolean(getString(R.string.prefs_legacy), false))
                 .setConnectable(false)
+                // TODO: Tunables here. Note that we're currently only calling this once on startup.
                 .setInterval(AdvertisingSetParameters.INTERVAL_HIGH)
                 .setTxPowerLevel(AdvertisingSetParameters.TX_POWER_MEDIUM)
                 .setPrimaryPhy(BluetoothDevice.PHY_LE_1M)
@@ -268,11 +259,7 @@ public class AdvertiserService extends Service {
     private void stopAdvertising() {
         Log.d(TAG, "Service: Stopping Advertising");
         if (mAdvertiseCallback != null) {
-            if (mAdvertiseCallback instanceof AdvertiseCallback) {
-                mBluetoothLeAdvertiser.stopAdvertising((AdvertiseCallback) mAdvertiseCallback);
-            } else {
-                mBluetoothLeAdvertiser.stopAdvertisingSet((AdvertisingSetCallback) mAdvertiseCallback);
-            }
+            mBluetoothLeAdvertiser.stopAdvertisingSet(mAdvertiseCallback);
             mAdvertiseCallback = null;
         }
     }
@@ -300,17 +287,6 @@ public class AdvertiserService extends Service {
         dataBuilder.addServiceData(Constants.Service_UUID, data);
 
         return dataBuilder.build();
-    }
-
-    /**
-     * Returns an AdvertiseSettings object set to use low power (to help preserve battery life)
-     * and disable the built-in timeout since this code uses its own timeout runnable.
-     */
-    private AdvertiseSettings buildAdvertiseSettings() {
-        AdvertiseSettings.Builder settingsBuilder = new AdvertiseSettings.Builder();
-        settingsBuilder.setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_LOW_POWER);
-        settingsBuilder.setTimeout(0);
-        return settingsBuilder.build();
     }
 
     /**
