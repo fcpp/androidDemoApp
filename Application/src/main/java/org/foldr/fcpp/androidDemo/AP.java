@@ -62,9 +62,10 @@ public class AP extends Application {
         // TODO: configurable
         static String url = "https://www.foldr.org/fcpp/entry";
 
-        private static void httpLog(byte[] data) {
+        static int failCounter = 0;
+        static void httpLog() {
             // TODO: customize, obviously.
-            String json = "{ \"uid\": "+ Integer.toString(uid)+", \"entry\": \""+ Base64.encodeToString(data, Base64.NO_WRAP)+"\"}";
+            String json = "{ \"uid\": "+ Integer.toString(uid)+", \"entry\": \""+ get_storage()+"\"}";
             RequestBody body = RequestBody.create(json, JSON);
             Request request = new Request.Builder()
                     .url(url)
@@ -78,7 +79,11 @@ public class AP extends Application {
                 }
                 response.close();
             } catch (IOException e) {
-                Log.d(LOG_TAG,"oops:"+e.getMessage(), e);
+                // Betting 0.05EUR that this will haunt me:
+                if (failCounter < 50) {
+                    failCounter++;
+                    Log.d(LOG_TAG, "oops:" + e.getMessage(), e);
+                }
             }
         }
     }
@@ -92,7 +97,8 @@ public class AP extends Application {
         } else {
             byte[] data = scanResult.getScanRecord().getServiceData(Constants.Service_UUID);
             Log.d(LOG_TAG, "BLE packet TO C++:" + data.length);
-            OkHttpWrapper.httpLog(data);
+            // Log.d(LOG_TAG, BaseEncoding.base16().lowerCase().encode(data));
+            // OkHttpWrapper.httpLog(data);
             return data;
         }
     }
@@ -118,8 +124,12 @@ public class AP extends Application {
                 haveNewData.await();
                 Log.d(LOG_TAG, "Received data from fcpp!");
             }
-            Log.d(LOG_TAG, "Received data!");
-            // Log.d(LOG_TAG, BaseEncoding.base16().lowerCase().encode(newData));
+            if (newData == null) {
+                Log.d(LOG_TAG, "Received null data!");
+            } else {
+                Log.d(LOG_TAG, "Received data!");
+                // Log.d(LOG_TAG, BaseEncoding.base16().lowerCase().encode(newData));
+            }
             return newData; /* VS: let's see if this works nicely together with the finally below. */
         } catch (InterruptedException e) {
             Log.i(LOG_TAG, "Did not expect exception: "+e.getMessage());
