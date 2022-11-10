@@ -34,12 +34,15 @@ public class AP extends Application {
     public static native void fcpp_stop();
 
     public static native String get_storage();
-
+    public static native String get_nbr_lags();
     public static native long get_round_count();
     public static native long get_max_msg_size();
     public static native boolean get_im_weak();
     public static native boolean get_some_weak();
+    public static native int get_min_uid();
     public static native int get_degree();
+    public static native float get_global_clock();
+    public static native int get_hop_dist();
 
     public static native int get_diameter();
     public static native void set_diameter(int diam);
@@ -65,7 +68,13 @@ public class AP extends Application {
         static int failCounter = 0;
         static void httpLog() {
             // TODO: customize, obviously.
-            String json = "{ \"uid\": "+ Integer.toString(uid)+", \"entry\": \""+ get_storage()+"\"}";
+            String json = String.format("{ \"uid\":%d, \"degree\":%d, \"round_count\":%d,"
+                            +"\"nbr_lags\":\"%s\",\"hop_dist\":%d,\"global_clock\":%f,"
+                            +"\"im_weak\":%b,\"some_weak\":%b, \"min_uid\":%d"
+                            +"}"
+                    ,uid,get_degree(),get_round_count(),get_nbr_lags(),get_hop_dist(),get_global_clock()
+                    ,get_im_weak(), get_some_weak(), get_min_uid());
+            //String json = "{ \"uid\": "+ Integer.toString(uid)+", \"entry\": \""+ get_storage()+"\"}";
             RequestBody body = RequestBody.create(json, JSON);
             Request request = new Request.Builder()
                     .url(url)
@@ -108,11 +117,12 @@ public class AP extends Application {
 //        byte[] fresh = new byte[size];
 //        System.arraycopy(data, 0, fresh, 0, size);
 //        Log.d(LOG_TAG, "Data size "+size+" from C :"+BaseEncoding.base16().lowerCase().encode(fresh));
-        Log.d(LOG_TAG, "Packet size "+size+" from C.");
+        Log.d(LOG_TAG, "Packet size "+size+" from C++.");
         outgoing.lock();
         newData = data;
         haveNewData.signalAll();
         outgoing.unlock();
+        AP.OkHttpWrapper.httpLog();
     }
 
     /* For advertising: */

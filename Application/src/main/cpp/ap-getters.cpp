@@ -91,3 +91,23 @@ JNIEXPORT void JNICALL
 Java_org_foldr_fcpp_androidDemo_AP_set_1round_1period(JNIEnv *env, jclass clazz, jfloat time) {
     fcpp::set_round_period(time);
 }
+
+extern "C" JNIEXPORT jstring JNICALL
+Java_org_foldr_fcpp_androidDemo_AP_get_1nbr_1lags(JNIEnv *env, jclass clazz) {
+    return env->NewStringUTF(fcpp::get_nbr_lags());
+}
+
+extern "C" JNIEXPORT jfloat JNICALL
+Java_org_foldr_fcpp_androidDemo_AP_get_1global_1clock(JNIEnv *env, jclass clazz) {
+    return fcpp::get_global_clock();
+}
+
+extern "C" JNIEXPORT jint JNICALL
+Java_org_foldr_fcpp_androidDemo_AP_get_1hop_1dist(JNIEnv *env, jclass clazz) {
+    return fcpp::get_hop_dist();
+}
+
+extern "C" JNIEXPORT jint JNICALL
+Java_org_foldr_fcpp_androidDemo_AP_get_1min_1uid(JNIEnv *env, jclass clazz) {
+    return fcpp::get_min_uid();
+}
