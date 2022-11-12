@@ -2,6 +2,7 @@ package org.foldr.fcpp.androidDemo;
 
 import static org.foldr.fcpp.androidDemo.Constants.LOG_TAG;
 
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -12,7 +13,6 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.AdvertiseCallback;
 import android.bluetooth.le.AdvertiseData;
-import android.bluetooth.le.AdvertiseSettings;
 import android.bluetooth.le.AdvertisingSet;
 import android.bluetooth.le.AdvertisingSetCallback;
 import android.bluetooth.le.AdvertisingSetParameters;
@@ -77,6 +77,7 @@ public class AdvertiserService extends Service {
 
     private AP mAp;
     private AdvertisingSetParameters parameters;
+    private boolean ble_toast_only_once = true;
 
     @Override
     public void onCreate() {
@@ -155,13 +156,10 @@ public class AdvertiserService extends Service {
      */
     private void setTimeout(){
         mHandler = new Handler();
-        timeoutRunnable = new Runnable() {
-            @Override
-            public void run() {
-                Log.d(TAG, "AdvertiserService has reached timeout of "+TIMEOUT+" milliseconds, stopping advertising.");
-                sendFailureIntent(ADVERTISING_TIMED_OUT);
-                stopSelf();
-            }
+        timeoutRunnable = () -> {
+            Log.d(TAG, "AdvertiserService has reached timeout of "+TIMEOUT+" milliseconds, stopping advertising.");
+            sendFailureIntent(ADVERTISING_TIMED_OUT);
+            stopSelf();
         };
         mHandler.postDelayed(timeoutRunnable, TIMEOUT);
     }
@@ -169,6 +167,7 @@ public class AdvertiserService extends Service {
     /**
      * Starts BLE Advertising.
      */
+    @SuppressLint("MissingPermission")
     private void startAdvertising() {
         // goForeground();
 
@@ -197,7 +196,20 @@ public class AdvertiserService extends Service {
                     }
                 };
                 if (mBluetoothLeAdvertiser != null) {
-                    mBluetoothLeAdvertiser.startAdvertisingSet(parameters,data,null,null,null, (AdvertisingSetCallback) mAdvertiseCallback);
+                    try {
+                        /* If we're running e.g. in the emulator, this will trip.
+                         * Handle this a bit more gracefully. I'm still sceptical of interspersing
+                         * the code with special paths just for emulation...
+                         */
+                        mBluetoothLeAdvertiser.startAdvertisingSet(parameters, data, null, null, null, mAdvertiseCallback);
+                    } catch (IllegalArgumentException e) {
+                        if (ble_toast_only_once) {
+                            ble_toast_only_once = false;
+                            Log.e(LOG_TAG, "Advertising failed.", e);
+                            // not the greatest error code but it'll do:
+                            sendFailureIntent(AdvertiseCallback.ADVERTISE_FAILED_INTERNAL_ERROR);
+                        }
+                    }
                 }
         }
     }
@@ -256,6 +268,7 @@ public class AdvertiserService extends Service {
     /**
      * Stops BLE Advertising.
      */
+    @SuppressLint("MissingPermission")
     private void stopAdvertising() {
         Log.d(TAG, "Service: Stopping Advertising");
         if (mAdvertiseCallback != null) {
@@ -287,29 +300,6 @@ public class AdvertiserService extends Service {
         dataBuilder.addServiceData(Constants.Service_UUID, data);
 
         return dataBuilder.build();
-    }
-
-    /**
-     * Custom callback after dAdvertising succeeds or fails to start. Broadcasts the error code
-     * in an Intent to be picked up by AdvertiserFragment and stops this Service.
-     */
-    private class SampleAdvertiseCallback extends AdvertiseCallback {
-
-        @Override
-        public void onStartFailure(int errorCode) {
-            super.onStartFailure(errorCode);
-
-            Log.d(TAG, "Advertising failed");
-            sendFailureIntent(errorCode);
-            stopSelf();
-
-        }
-
-        @Override
-        public void onStartSuccess(AdvertiseSettings settingsInEffect) {
-            super.onStartSuccess(settingsInEffect);
-            Log.d(TAG, "Advertising successfully started");
-        }
     }
 
     /**

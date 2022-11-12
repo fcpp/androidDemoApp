@@ -47,7 +47,6 @@ public class MainActivity extends FragmentActivity {
 
     private BluetoothAdapter mBluetoothAdapter;
     private Toolbar mToolbar;
-    private Thread httpHandler;
 
     @SuppressLint("MissingPermission")
     @Override
@@ -96,6 +95,7 @@ public class MainActivity extends FragmentActivity {
 
                         // Bluetooth Advertisements are not supported.
                         showErrorText(R.string.bt_ads_not_supported);
+                        setupFragments();
                     }
                 } else {
 
@@ -152,6 +152,8 @@ public class MainActivity extends FragmentActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
+            // TODO: Review -- it looks like there's a path where we don't call
+            // `setupFragments()` after the user (only) enable Fine Locations?
             case Constants.REQUEST_ENABLE_BT:
 
                 if (resultCode == RESULT_OK) {
@@ -167,6 +169,7 @@ public class MainActivity extends FragmentActivity {
 
                         // Bluetooth Advertisements are not supported.
                         showErrorText(R.string.bt_ads_not_supported);
+                        setupFragments();
                     }
                 } else {
 
@@ -229,7 +232,7 @@ public class MainActivity extends FragmentActivity {
                 uid_prefs.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                     @Override
                     public boolean onPreferenceChange(@NonNull Preference preference, Object newValue) {
-                        Toast.makeText(getContext(), "Please restart the app now!", Toast.LENGTH_LONG);
+                        Toast.makeText(getContext(), "Please restart the app now!", Toast.LENGTH_LONG).show();
                         return true;
                     }
                 });
@@ -238,6 +241,10 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
+    /**
+     * Note that we have two entry-points. Currently we're using an extra one when the user
+     * has to enable BT through the permissions dialog.
+     */
     private void setupFragments() {
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -259,7 +266,7 @@ public class MainActivity extends FragmentActivity {
 
     private void showErrorText(int messageId) {
         Log.e(LOG_TAG, getString(messageId));
-        TextView view = (TextView) findViewById(R.id.error_textview);
+        TextView view = findViewById(R.id.error_textview);
         view.setText(getString(messageId));
     }
 }

@@ -110,7 +110,7 @@ public class AdvertiserFragment extends Fragment implements View.OnClickListener
 
         View view = inflater.inflate(R.layout.fragment_advertiser, container, false);
 
-        mSwitch = (Switch) view.findViewById(R.id.advertise_switch);
+        mSwitch = view.findViewById(R.id.advertise_switch);
         mSwitch.setOnClickListener(this);
 
         return view;
@@ -124,11 +124,7 @@ public class AdvertiserFragment extends Fragment implements View.OnClickListener
     public void onResume() {
         super.onResume();
 
-        if (AdvertiserService.running) {
-            mSwitch.setChecked(true);
-        } else {
-            mSwitch.setChecked(false);
-        }
+        mSwitch.setChecked(AdvertiserService.running);
 
         IntentFilter failureFilter = new IntentFilter(AdvertiserService.ADVERTISING_FAILED);
         getActivity().registerReceiver(advertisingFailureReceiver, failureFilter);

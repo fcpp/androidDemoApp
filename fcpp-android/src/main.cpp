@@ -154,7 +154,6 @@ std::thread t;
 void start(JNIEnv *env, jclass apclazz, int uid) {
     env->GetJavaVM(&jvm);
     /* Cache some frequently used, expensive values: */
-    //clazz = env->FindClass("com/example/android/bluetoothadvertisements/AP");
     clazz = apclazz;
     messageMe = env->GetStaticMethodID(clazz, "getNextMsg", "()[B");
     assert (messageMe != NULL);

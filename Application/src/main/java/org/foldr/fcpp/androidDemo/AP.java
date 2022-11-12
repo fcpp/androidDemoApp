@@ -146,7 +146,7 @@ public class AP extends Application {
         } finally {
             newData = null;
             outgoing.unlock();
-        };
+        }
         return null;
     }
 
@@ -166,7 +166,7 @@ public class AP extends Application {
                     .apply();
         } else {
             Log.i(LOG_TAG, "Have UID: "+uid+"/"+uid.hashCode());
-        };
+        }
         // Review: HACK to get an int.
         // Reconstruct FCPP's treatment here.
         this.uid = Short.toUnsignedInt((short) (uid.hashCode()));
