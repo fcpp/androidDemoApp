@@ -33,11 +33,6 @@ Pre-requisites
 - Android Build Tools v28.0.3
 - Android Support Repository
 
-Screenshots
--------------
-
-<img src="screenshots/1-main.png" height="400" alt="Screenshot"/> 
-
 Getting Started
 ---------------
 
