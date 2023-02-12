@@ -32,10 +32,11 @@ Pre-requisites
 - Android SDK 28
 - Android Build Tools v28.0.3
 - Android Support Repository
+- CMake 3.22.1 (via Android)
 
 Getting Started
 ---------------
 
-This sample uses the Gradle build system. To build this project, use the
+First, use the terminal to go into `fcpp-android` and invoke `make`, then use the
 "gradlew build" command or use "Import Project" in Android Studio.
 
