@@ -66,6 +66,7 @@ namespace tags {
     // TODO: Should be a pair?
     struct position_latitude {};
     struct position_longitude {};
+    struct position_accuracy {};
 }
 
 
@@ -134,6 +135,7 @@ using store_type = tuple_store<
     round_period,   times_t
     , position_latitude,    double
     , position_longitude,    double
+    , position_accuracy,    float
 >;
 
 //! @brief Main FCPP option setup.
@@ -258,9 +260,14 @@ void set_round_period(float v) {
     network->node_at(os::uid(), l).storage(option::round_period{}) = v;
 }
 
-void set_latlong(double latitude, double longitude) {
+void set_position_latlong(double latitude, double longitude) {
     typename net_t::lock_type l;
     network->node_at(os::uid(), l).storage(option::position_latitude{}) = latitude;
     network->node_at(os::uid(), l).storage(option::position_longitude{}) = longitude;
 }
+void set_position_accuracy(float accuracy) {
+    typename net_t::lock_type l;
+    network->node_at(os::uid(), l).storage(option::position_accuracy{}) = accuracy;
+}
+
 } // namespace fcpp

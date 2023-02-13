@@ -54,24 +54,22 @@ public class MainActivity extends FragmentActivity {
     AP application;
     private LocationListener locationListener;
 
-    protected void onStart() {
-        super.onStart();
+    @SuppressLint("MissingPermission")
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         application = (AP) getApplication();
         if (!application.locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             Intent settingsIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
             startActivity(settingsIntent);
         }
-    }
 
-    @SuppressLint("MissingPermission")
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(@NonNull Location location) {
                 // Call into FCPP:
                 application.set_latlong(location.getLatitude(), location.getLongitude());
+                application.set_accuracy(location.getAccuracy());
             }
         };
         application.locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10,

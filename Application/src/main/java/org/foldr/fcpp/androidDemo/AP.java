@@ -55,6 +55,7 @@ public class AP extends Application {
     public static native void set_round_period(float time);
 
     public static native void set_latlong(double latitude, double longitude);
+    public static native void set_accuracy(float accuracy);
 
     /* Deque for received transmissions. Read from first, append to end. */
     static Deque<ScanResult> pending = new ConcurrentLinkedDeque<>();
@@ -88,8 +89,8 @@ public class AP extends Application {
             try {
                 Response response = okHttpClient.newCall(request).execute();
                 if (!response.isSuccessful()) {
-                    Log.d(LOG_TAG, json);
-                    Log.d(LOG_TAG, response.body().string());
+                    Log.d(LOG_TAG+"_http", json);
+                    Log.d(LOG_TAG+"_http", response.message());
                 }
                 response.close();
             } catch (IOException e) {
@@ -218,6 +219,9 @@ public class AP extends Application {
 
         // Set up location provider
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        if (locationManager == null) {
+            Log.e(LOG_TAG, "No location service :-(");
+        }
     }
 
     static {
