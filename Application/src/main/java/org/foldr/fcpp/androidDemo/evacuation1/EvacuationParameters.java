@@ -13,12 +13,18 @@ import android.widget.TextView;
 
 import org.foldr.fcpp.androidDemo.R;
 
+import java.util.Random;
+
 public class EvacuationParameters extends AppCompatActivity implements View.OnClickListener {
+
+    private boolean group_left;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_evacuation_1_parameters);
+        group_left = new Random().nextBoolean();
+        ((TextView) findViewById(R.id.param_group)).setText(group_left ? "← Left" : "Right →");
     }
 
     @Override
@@ -32,6 +38,7 @@ public class EvacuationParameters extends AppCompatActivity implements View.OnCl
         i.putExtra("diameter", Integer.valueOf(diameter));
         i.putExtra("retain", Integer.valueOf(retain));
         i.putExtra("delay", Integer.valueOf(delay));
+        i.putExtra("group", Boolean.valueOf(group_left));
         i.putExtra(getString(R.string.param_traitor), "Yes".equals(traitor));
         startActivity(i);
         finish(); // terminate prefs dialog.

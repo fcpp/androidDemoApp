@@ -30,6 +30,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.Fragment;
 
 /**
@@ -40,7 +41,7 @@ public class AdvertiserFragment extends Fragment implements View.OnClickListener
     /**
      * Lets user toggle BLE Advertising.
      */
-    private Switch mSwitch;
+    private SwitchCompat mSwitch;
 
     /**
      * Listens for notifications that the {@code AdvertiserService} has failed to start advertising.
@@ -113,6 +114,13 @@ public class AdvertiserFragment extends Fragment implements View.OnClickListener
         mSwitch = view.findViewById(R.id.advertise_switch);
         mSwitch.setOnClickListener(this);
 
+        View mQuit = view.findViewById(R.id.button_quit);
+        mQuit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AdvertiserFragment.this.getActivity().finish();
+            }
+        });
         return view;
     }
 
@@ -155,7 +163,7 @@ public class AdvertiserFragment extends Fragment implements View.OnClickListener
     @Override
     public void onClick(View v) {
         // Is the toggle on?
-        boolean on = ((Switch) v).isChecked();
+        boolean on = ((SwitchCompat) v).isChecked();
 
         if (on) {
             startAdvertising();

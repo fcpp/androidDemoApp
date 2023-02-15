@@ -24,6 +24,7 @@ public class EvacuationFragment extends Fragment {
     private static final String ARG_PARAM_TRAITOR = "traitor";
 
     private boolean isTraitor;
+    private boolean is_group_left;
 
     public EvacuationFragment() {
         // Required empty public constructor
@@ -62,15 +63,40 @@ public class EvacuationFragment extends Fragment {
         TextView b2 = me.findViewById(R.id.result_2);
         TextView b3 = me.findViewById(R.id.result_3);
         TextView b4 = me.findViewById(R.id.result_4);
-
-        TextView uid = me.findViewById(R.id.text_uid);
-        uid.setText(Integer.toString(AP.uid));
-
         b1.setBackgroundColor(Color.GRAY);
         b2.setBackgroundColor(Color.GRAY);
         b3.setBackgroundColor(Color.GRAY);
         b4.setBackgroundColor(Color.GRAY);
 
+        TextView uid = me.findViewById(R.id.text_uid);
+        uid.setText(Integer.toString(AP.uid));
+
+        TextView state_rg = me.findViewById(R.id.text_state_rg);
+        state_rg.setText("?"); // The XML was allergic to `?`.
+        state_rg.setBackgroundColor(Color.GRAY);
+        // Set up refresh every 5 secs.
+        state_rg.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // TODO -- first approximation, should at least contain self.
+                // But VS thinks this is from the old example, so it might need changing.
+                state_rg.setBackgroundColor("{*:inf}".equals(AP.get_nbr_lags()) ? Color.RED : Color.GREEN);
+                // Log.d(LOG_TAG, AP.get_nbr_lags());
+                state_rg.postDelayed(this, 5000); // while(true)...
+            }
+        }, 5000);
+
+        TextView traitorView = me.findViewById(R.id.text_traitor);
+        traitorView.setText(isTraitor ? "You're the traitor!" : "You behave normally.");
+        traitorView.setBackgroundColor(isTraitor ? Color.RED : Color.GREEN);
+
+        TextView group_rg = me.findViewById(R.id.text_group_lr);
+        group_rg.setText("Group:"+(this.is_group_left ? GROUP.Left : GROUP.Right));
+        if (isTraitor) { group_rg.setBackgroundColor(Color.YELLOW); }
         return me;
+    }
+
+    public enum GROUP {
+        Left, Right
     }
 }

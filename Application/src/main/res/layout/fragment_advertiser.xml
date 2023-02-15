@@ -48,12 +48,18 @@
             android:minWidth="100dp"
             android:padding="5dp"/>
 
-        <Switch
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/advertise_switch"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:switchMinWidth="80dp" />
 
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/button_quit"
+            android:paddingLeft="20dp"
+            android:text="Quit app"/>
     </LinearLayout>
 
 </RelativeLayout>

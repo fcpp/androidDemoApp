@@ -38,5 +38,7 @@ public class Constants {
     public static final int REQUEST_AFL = 2;
 
     public static final String LOG_TAG = "FCPP";
+    public static final String LOG_HTTP_TAG = "FCPP-HTTP";
+    public static final String LOG_BT_TAG = "FCPP-BT";
 
 }

@@ -7,67 +7,97 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingTop="20dp"
-        android:paddingBottom="20dp"
-        >
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="48sp"
-        android:text="(uid)"
-        android:id="@+id/text_uid"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="48sp"
-        android:text="?"
-        android:id="@+id/text_state_rg"/>
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingTop="20dp"
-        >
-        <GridLayout
-            android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:columnCount="3"
-            android:rowCount="2">
+            android:orientation="horizontal"
+            android:paddingTop="20dp"
+            android:paddingBottom="20dp">
+
             <TextView
+                android:id="@+id/text_uid"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/result_1"
-                android:textSize="48sp"
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp"
-                android:text="B1"/>
+                android:text="(uid)"
+                android:textSize="48sp" />
+
             <TextView
+                android:id="@+id/text_state_rg"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/result_2"
-                android:textSize="48sp"
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp"
-                android:text="B2"/>
-            <TextView
+                android:textSize="48sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="20dp">
+
+            <GridLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/result_3"
-                android:textSize="48sp"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp"
-                android:text="B3"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/result_4"
-                android:textSize="48sp"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp"
-                android:text="B4"/>
-        </GridLayout>
+                android:columnCount="3"
+                android:rowCount="2">
+
+                <TextView
+                    android:id="@+id/result_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    android:text="B1"
+                    android:textSize="48sp" />
+
+                <TextView
+                    android:id="@+id/result_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    android:text="B2"
+                    android:textSize="48sp" />
+
+                <TextView
+                    android:id="@+id/text_traitor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    android:textSize="24sp" />
+
+                <TextView
+                    android:id="@+id/result_3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    android:text="B3"
+                    android:textSize="48sp" />
+
+                <TextView
+                    android:id="@+id/result_4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    android:text="B4"
+                    android:textSize="48sp" />
+                <TextView
+                    android:id="@+id/text_group_lr"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    android:textSize="24sp" />
+            </GridLayout>
+        </LinearLayout>
     </LinearLayout>
 </FrameLayout>

@@ -1,5 +1,7 @@
 package org.foldr.fcpp.androidDemo;
 
+import static org.foldr.fcpp.androidDemo.Constants.LOG_BT_TAG;
+import static org.foldr.fcpp.androidDemo.Constants.LOG_HTTP_TAG;
 import static org.foldr.fcpp.androidDemo.Constants.LOG_TAG;
 
 import android.app.Application;
@@ -10,6 +12,7 @@ import android.location.LocationManager;
 import android.util.Base64;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
@@ -65,6 +68,7 @@ public class AP extends Application {
     private static byte[] newData = null;
 
     static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
+    public static String jsonhttpFormatter = null;
 
     static class OkHttpWrapper {
         static OkHttpClient okHttpClient = new OkHttpClient();
@@ -72,16 +76,14 @@ public class AP extends Application {
         static String url = "https://www.foldr.org/fcpp/entry";
 
         static int failCounter = 0;
+
         static void httpLog() {
-            // TODO: customize, obviously.
-            String json = String.format("{ \"uid\":%d, \"degree\":%d, \"round_count\":%d,"
-                            +"\"nbr_lags\":\"%s\",\"hop_dist\":%d,\"global_clock\":%f,"
-                            +"\"im_weak\":%b,\"some_weak\":%b, \"min_uid\":%d"
-                            +"}"
-                    ,uid,get_degree(),get_round_count(),get_nbr_lags(),get_hop_dist(),get_global_clock()
-                    ,get_im_weak(), get_some_weak(), get_min_uid());
+            /* Needs to be initialised from the actual activity. */
+            if (jsonhttpFormatter == null) {
+                return;
+            }
             //String json = "{ \"uid\": "+ Integer.toString(uid)+", \"entry\": \""+ get_storage()+"\"}";
-            RequestBody body = RequestBody.create(json, JSON);
+            RequestBody body = RequestBody.create(jsonhttpFormatter, JSON);
             Request request = new Request.Builder()
                     .url(url)
                     .post(body)
@@ -89,15 +91,15 @@ public class AP extends Application {
             try {
                 Response response = okHttpClient.newCall(request).execute();
                 if (!response.isSuccessful()) {
-                    Log.d(LOG_TAG+"_http", json);
-                    Log.d(LOG_TAG+"_http", response.message());
+                    Log.d(LOG_HTTP_TAG, jsonhttpFormatter);
+                    Log.d(LOG_HTTP_TAG, response.message());
                 }
                 response.close();
             } catch (IOException e) {
                 // Betting 0.05EUR that this will haunt me:
                 if (failCounter < 50) {
                     failCounter++;
-                    Log.d(LOG_TAG, "oops:" + e.getMessage(), e);
+                    Log.d(LOG_HTTP_TAG, "oops:" + e.getMessage(), e);
                 }
             }
         }
@@ -111,7 +113,7 @@ public class AP extends Application {
             return null;
         } else {
             byte[] data = scanResult.getScanRecord().getServiceData(Constants.Service_UUID);
-            Log.d(LOG_TAG, "BLE packet TO C++:" + data.length);
+            Log.d(LOG_BT_TAG, "BLE packet TO C++:" + data.length);
             // Log.d(LOG_TAG, BaseEncoding.base16().lowerCase().encode(data));
             // OkHttpWrapper.httpLog(data);
             return data;
@@ -128,6 +130,7 @@ public class AP extends Application {
         newData = data;
         haveNewData.signalAll();
         outgoing.unlock();
+        // Good time to log our state this round:
         AP.OkHttpWrapper.httpLog();
     }
 
@@ -183,7 +186,7 @@ public class AP extends Application {
     public void onCreate() {
         super.onCreate();
         int uid = setUID();
-        Log.i(LOG_TAG, "fccp_start: " + uid);
+        Log.i(LOG_TAG, "fcpp_start: " + uid);
         fcpp_start(uid);
 
         // TODO: proper initial values for fcpp?

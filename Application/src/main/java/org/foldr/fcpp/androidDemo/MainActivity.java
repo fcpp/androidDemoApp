@@ -59,10 +59,8 @@ public class MainActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         application = (AP) getApplication();
-        if (!application.locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            Intent settingsIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-            startActivity(settingsIntent);
-        }
+        /* Note that FCPP is already running by the time we install the logger. */
+        application.jsonhttpFormatter = getJSONHTTPFormatter();
 
         locationListener = new LocationListener() {
             @Override
@@ -72,6 +70,13 @@ public class MainActivity extends FragmentActivity {
                 AP.set_accuracy(location.getAccuracy());
             }
         };
+
+        // TODO: Should be dead code?
+        if (!application.locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            Log.d(LOG_TAG, "Should not have happened?");
+            Intent settingsIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+            startActivity(settingsIntent);
+        }
         application.locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10,
                 locationListener);
         setContentView(R.layout.activity_main);
@@ -296,5 +301,16 @@ public class MainActivity extends FragmentActivity {
         Log.e(LOG_TAG, me.getString(messageId));
         TextView view = me.findViewById(R.id.error_textview);
         view.setText(me.getString(messageId));
+    }
+
+    @NonNull
+    private static String getJSONHTTPFormatter() {
+        String json = String.format("{ \"uid\":%d, \"degree\":%d, \"round_count\":%d,"
+                        +"\"nbr_lags\":\"%s\",\"hop_dist\":%d,\"global_clock\":%f,"
+                        +"\"im_weak\":%b,\"some_weak\":%b, \"min_uid\":%d"
+                        +"}"
+                ,AP.uid,AP.get_degree(),AP.get_round_count(),AP.get_nbr_lags(),AP.get_hop_dist(),AP.get_global_clock()
+                ,AP.get_im_weak(), AP.get_some_weak(), AP.get_min_uid());
+        return json;
     }
 }
