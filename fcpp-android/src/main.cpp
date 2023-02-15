@@ -63,6 +63,10 @@ namespace tags {
     struct retain_time {};
     //! @brief Time in seconds between transmission rounds.
     struct round_period {};
+    // TODO: Should be a pair?
+    struct position_latitude {};
+    struct position_longitude {};
+    struct position_accuracy {};
 }
 
 
@@ -129,6 +133,9 @@ using store_type = tuple_store<
     diameter,       hops_t,
     retain_time,    times_t,
     round_period,   times_t
+    , position_latitude,    double
+    , position_longitude,    double
+    , position_accuracy,    float
 >;
 
 //! @brief Main FCPP option setup.
@@ -251,6 +258,16 @@ float get_round_period() {
 void set_round_period(float v) {
     typename net_t::lock_type l;
     network->node_at(os::uid(), l).storage(option::round_period{}) = v;
+}
+
+void set_position_latlong(double latitude, double longitude) {
+    typename net_t::lock_type l;
+    network->node_at(os::uid(), l).storage(option::position_latitude{}) = latitude;
+    network->node_at(os::uid(), l).storage(option::position_longitude{}) = longitude;
+}
+void set_position_accuracy(float accuracy) {
+    typename net_t::lock_type l;
+    network->node_at(os::uid(), l).storage(option::position_accuracy{}) = accuracy;
 }
 
 } // namespace fcpp

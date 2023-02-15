@@ -4,7 +4,9 @@ import static org.foldr.fcpp.androidDemo.Constants.LOG_TAG;
 
 import android.app.Application;
 import android.bluetooth.le.ScanResult;
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.location.LocationManager;
 import android.util.Base64;
 import android.util.Log;
 
@@ -28,6 +30,7 @@ import okhttp3.Response;
 public class AP extends Application {
 
     static int uid;
+    LocationManager locationManager;
 
     /* These native definitions are from ap-getters.cpp: */
     static native void fcpp_start(int uid);
@@ -50,6 +53,9 @@ public class AP extends Application {
     public static native void set_retain_time(float time);
     public static native float get_round_period();
     public static native void set_round_period(float time);
+
+    public static native void set_latlong(double latitude, double longitude);
+    public static native void set_accuracy(float accuracy);
 
     /* Deque for received transmissions. Read from first, append to end. */
     static Deque<ScanResult> pending = new ConcurrentLinkedDeque<>();
@@ -83,8 +89,8 @@ public class AP extends Application {
             try {
                 Response response = okHttpClient.newCall(request).execute();
                 if (!response.isSuccessful()) {
-                    Log.d(LOG_TAG, json);
-                    Log.d(LOG_TAG, response.body().string());
+                    Log.d(LOG_TAG+"_http", json);
+                    Log.d(LOG_TAG+"_http", response.message());
                 }
                 response.close();
             } catch (IOException e) {
@@ -210,6 +216,12 @@ public class AP extends Application {
         set_diameter(the_diameter);
         set_round_period(the_period);
         set_retain_time(the_retain);
+
+        // Set up location provider
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        if (locationManager == null) {
+            Log.e(LOG_TAG, "No location service :-(");
+        }
     }
 
     static {

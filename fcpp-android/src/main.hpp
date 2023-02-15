@@ -63,4 +63,6 @@ extern void set_retain_time(float);
 extern float get_round_period();
 extern void set_round_period(float);
 
+extern void set_position_latlong(double, double);
+extern void set_position_accuracy(float);
 } // namespace fcpp

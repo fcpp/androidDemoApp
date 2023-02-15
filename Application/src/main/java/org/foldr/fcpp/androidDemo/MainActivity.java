@@ -26,7 +26,11 @@ import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,11 +51,29 @@ public class MainActivity extends FragmentActivity {
 
     private BluetoothAdapter mBluetoothAdapter;
     private Toolbar mToolbar;
+    AP application;
+    private LocationListener locationListener;
 
     @SuppressLint("MissingPermission")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        application = (AP) getApplication();
+        if (!application.locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            Intent settingsIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+            startActivity(settingsIntent);
+        }
+
+        locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(@NonNull Location location) {
+                // Call into FCPP:
+                application.set_latlong(location.getLatitude(), location.getLongitude());
+                application.set_accuracy(location.getAccuracy());
+            }
+        };
+        application.locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10,
+                locationListener);
         setContentView(R.layout.activity_main);
         setTitle(R.string.activity_main_title);
 //        mToolbar = findViewById(R.id.AdvertiserToolbar);
@@ -142,6 +164,8 @@ public class MainActivity extends FragmentActivity {
     @Override
     public void onDestroy() {
         Log.d(LOG_TAG, "Shutting down.");
+        if (locationListener != null)
+            application.locationManager.removeUpdates(locationListener);
         // Stop the advertiser. Note that there's also the AdvertiserService.running static flag.
         stopService(new Intent(this, AdvertiserService.class));
         AP.fcpp_stop();
