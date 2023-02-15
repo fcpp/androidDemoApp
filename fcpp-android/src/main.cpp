@@ -24,6 +24,9 @@
  */
 namespace fcpp {
 
+//! @brief Tag for the vulnerability detection experiment.
+struct vulnerability_detection {};
+
 //! @brief Namespace containing OS-dependent functionalities.
 namespace os {
     device_t m_uid;
@@ -79,9 +82,16 @@ FUN void resource_tracking(ARGS) { CODE
 }
 FUN_EXPORT resource_tracking_t = export_list<counter_t<uint16_t>, shared_clock_t, gossip_max_t<uint16_t>>;
 
+
+//! @brief The export type for each experiment.
+template <typename> struct experiment_t;
+//! @brief The storage tuple type for each experiment.
+template <typename> struct storage_t;
+
 //! @brief Computes whether there is a node with only one connected neighbour at a given time.
-FUN void vulnerability_detection(ARGS, int diameter) { CODE
+FUN void experiment(ARGS, vulnerability_detection) { CODE
     using namespace tags;
+    int diameter = node.storage(tags::diameter{});
     node.storage(degree{}) = node.size() - 1;
     node.storage(im_weak{}) = node.size() <= 2;
     tie(node.storage(min_uid{}), node.storage(hop_dist{})) = diameter_election_distance(CALL, diameter);
@@ -90,19 +100,39 @@ FUN void vulnerability_detection(ARGS, int diameter) { CODE
     });
     node.storage(some_weak{}) = broadcast(CALL, node.storage(hop_dist{}), collect_weak);
 }
-FUN_EXPORT vulnerability_detection_t = export_list<diameter_election_distance_t<>, sp_collection_t<hops_t, bool>, broadcast_t<hops_t, bool>>;
+//! @brief The export type for the vulnerability detection experiment.
+template <>
+struct experiment_t<vulnerability_detection> : export_list<
+    diameter_election_distance_t<>, sp_collection_t<hops_t, bool>, broadcast_t<hops_t, bool>
+> {};
+//! @brief The storage tuple type for the vulnerability detection experiment.
+template <>
+struct storage_t<vulnerability_detection> : common::type_sequence<component::tags::tuple_store<
+    tags::degree,         int8_t,
+    tags::min_uid,        device_t,
+    tags::hop_dist,       hops_t,
+    tags::im_weak,        bool,
+    tags::some_weak,      bool,
+    tags::diameter,       hops_t
+>> {};
 
 
-//! @brief Main aggregate function.
-MAIN() {
-    using namespace tags;
-    node.next_time(node.current_time() + node.storage(round_period{}));
-    node.storage(nbr_lags{}) = node.nbr_lag();
-    node.storage(retain_time{}) = node.message_threshold();
-    vulnerability_detection(CALL, node.storage(diameter{}));
-    resource_tracking(CALL);
-}
-FUN_EXPORT main_t = export_list<vulnerability_detection_t, resource_tracking_t>;
+//! @brief Templated main aggregate function.
+template <typename tag>
+struct main {
+    template <typename node_t>
+    void operator()(node_t& node, times_t) {
+        using namespace tags;
+        node.next_time(node.current_time() + node.storage(round_period{}));
+        node.storage(nbr_lags{}) = node.nbr_lag();
+        node.storage(retain_time{}) = node.message_threshold();
+        experiment(CALL, tag{});
+        resource_tracking(CALL);
+    }
+};
+//! @brief The export type for the main aggregate function.
+template <typename tag>
+FUN_EXPORT main_t = export_list<experiment_t<tag>, resource_tracking_t>;
 
 } // namespace coordination
 
@@ -120,37 +150,33 @@ using retain_type = retain<metric::retain<RETAIN_TIME>>;
 
 //! @brief Tag-type pairs that can appear in node.storage(tag{}) = type{} expressions (are all printed in output).
 using store_type = tuple_store<
-    uid,            device_t,
-    degree,         int8_t,
-    nbr_lags,       field<times_t>,
-    round_count,    uint16_t,
-    global_clock,   times_t,
-    min_uid,        device_t,
-    hop_dist,       hops_t,
-    im_weak,        bool,
-    some_weak,      bool,
-    max_msg,        uint8_t,
-    diameter,       hops_t,
-    retain_time,    times_t,
-    round_period,   times_t
-    , position_latitude,    double
-    , position_longitude,    double
-    , position_accuracy,    float
+    uid,                device_t,
+    round_period,       times_t,
+    nbr_lags,           field<times_t>,
+    retain_time,        times_t,
+    round_count,        uint16_t,
+    global_clock,       times_t,
+    max_msg,            uint8_t,
+    position_latitude,  double,
+    position_longitude, double,
+    position_accuracy,  float
 >;
 
 //! @brief Main FCPP option setup.
+template <typename tag>
 DECLARE_OPTIONS(main,
-    program<coordination::main>,
-    exports<coordination::main_t>,
-    retain_type,
+    program<coordination::main<tag>>,
+    exports<coordination::main_t<tag>>,
     store_type,
+    coordination::storage_t<tag>,
+    retain_type,
     message_push<false>
 );
 
 } // namespace option
 
 //! @brief Type for the network object.
-using net_t = component::deployment<option::main>::net;
+using net_t = component::deployment<option::main<vulnerability_detection>>::net;
 
 //! @brief The network object.
 net_t* network;
