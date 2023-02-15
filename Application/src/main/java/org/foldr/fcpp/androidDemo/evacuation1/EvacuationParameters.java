@@ -40,7 +40,6 @@ public class EvacuationParameters extends AppCompatActivity implements View.OnCl
         i.putExtra("delay", Integer.valueOf(delay));
         i.putExtra("group_left", group_left);
         i.putExtra("traitor", traitor);
-//        Log.d(LOG_TAG, "T " + traitor);
         startActivity(i);
         finish(); // terminate prefs dialog.
     }

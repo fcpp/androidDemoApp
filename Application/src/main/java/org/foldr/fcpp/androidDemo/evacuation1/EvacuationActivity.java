@@ -95,13 +95,28 @@ public class EvacuationActivity extends FragmentActivity {
         setTitle(R.string.activity_main_title);
 
         if (savedInstanceState == null) {
-            MainActivity.checkPermissions(this, this);
+            boolean perms = MainActivity.checkPermissions(this, this);
+            if (perms) {
+                doAllTheThings();
+            } // else we're waiting for the callback.
+        }
+    }
 
+    @SuppressLint("MissingSuperCall")
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        // We fail HARD later if not granted; we don't care.
+        doAllTheThings();
+    }
+    @SuppressLint("MissingPermission")
+    private void doAllTheThings() {
             // TODO: Should be dead code?
             if (!application.locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                Log.d(LOG_TAG, "Should not have happened?");
                 Intent settingsIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                startActivity(settingsIntent);
+                startActivityForResult(settingsIntent, Constants.REQUEST_AFL);
+                Log.d(LOG_TAG, "there");
+                return;
             }
 
             application.locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10,
@@ -157,7 +172,6 @@ public class EvacuationActivity extends FragmentActivity {
                 showErrorText(R.string.bt_not_supported);
             }
         }
-    }
 
     @Override
     public void onDestroy() {

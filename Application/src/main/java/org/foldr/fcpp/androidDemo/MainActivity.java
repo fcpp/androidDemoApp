@@ -48,7 +48,7 @@ import androidx.preference.PreferenceFragmentCompat;
 /**
  * Setup display fragments and ensure the device supports Bluetooth.
  */
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends FragmentActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
 
     private BluetoothAdapter mBluetoothAdapter;
     private Toolbar mToolbar;
@@ -86,8 +86,14 @@ public class MainActivity extends FragmentActivity {
 //        assert mToolbar != null;
 
         if (savedInstanceState == null) {
-            checkPermissions(this, this);
+            if (checkPermissions(this, this)) {
+                doAllTheThings();
+            }
+        }
+    }
 
+    @SuppressLint("MissingPermission")
+    private void doAllTheThings() {
             mBluetoothAdapter = ((BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE))
                     .getAdapter();
 
@@ -136,10 +142,9 @@ public class MainActivity extends FragmentActivity {
                 // Bluetooth is not supported.
                 showErrorText(R.string.bt_not_supported);
             }
-        }
     }
 
-    public static void checkPermissions(Activity activity, Context context){
+    public static boolean checkPermissions(Activity activity, Context context){
         int PERMISSION_ALL = 1;
         String[] PERMISSIONS = {
                 Manifest.permission.ACCESS_FINE_LOCATION,
@@ -153,9 +158,20 @@ public class MainActivity extends FragmentActivity {
 
         if(!hasPermissions(context, PERMISSIONS)){
             ActivityCompat.requestPermissions( activity, PERMISSIONS, PERMISSION_ALL);
+            return false;
+        } else {
+            return true;
         }
     }
 
+    @SuppressLint("MissingSuperCall")
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        // We fail HARD later if not granted; we don't care.
+        doAllTheThings();
+    }
     public static boolean hasPermissions(Context context, String... permissions) {
         if (context != null && permissions != null) {
             for (String permission : permissions) {
