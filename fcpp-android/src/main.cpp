@@ -128,7 +128,7 @@ struct main {
         using namespace tags;
         node.next_time(node.current_time() + node.storage(round_period{}));
         node.storage(nbr_lags{}) = node.nbr_lag();
-        node.storage(retain_time{}) = node.message_threshold();
+        node.message_threshold(node.storage(retain_time{}));
         experiment(CALL, tag{});
         resource_tracking(CALL);
     }
@@ -217,6 +217,15 @@ namespace details {
     inline T&& maybe_convert(T&& x, common::type_sequence<R>) {
         return std::forward<T>(x);
     }
+
+    //! @brief Type predicates checking whether the type is convertible to R or R is string.
+    template <typename R>
+    struct convertible_or_string {
+        template <typename T>
+        struct predicate {
+            static constexpr bool value = std::is_convertible<T, R>::value or std::is_same<R, std::string>::value;
+        };
+    };
 }
 //! @endcond
 
@@ -224,8 +233,72 @@ namespace details {
 template <typename R>
 inline R storage_getter(std::string const& name) {
     return common::applier(running_experiment, network, [&name](auto* n){
-        return details::maybe_convert(common::getter<R>(name, n->node_at(os::uid()).storage_tuple()), common::type_sequence<R>{});
+        return common::applier<details::convertible_or_string<R>::template predicate>(name, n->node_at(os::uid()).storage_tuple(), [](auto const& x){
+            return details::maybe_convert(x, common::type_sequence<R>{});
+        });
     });
+}
+
+//! @brief Updates a field of the storage by the string name of a tag.
+template <typename R>
+inline void storage_setter(std::string const& name, R&& val) {
+    common::applier(running_experiment, network, [&name,&val](auto* n){
+        lock_type l;
+        return common::setter(name, n->node_at(os::uid(), l).storage_tuple(), std::forward<R>(val));
+    });
+}
+
+//! @brief Gets the whole storage as a string.
+char* get_storage() {
+    std::string s = common::applier(running_experiment, network, [](auto* n){
+        return to_string(n->node_at(os::uid()).storage_tuple());
+    });
+    char* c = new char[s.size()+1];
+    strcpy(c, s.c_str());
+    return c;
+}
+
+//! @brief Accesses a field of the storage as a string by the string name of a tag.
+char* get_string(char* name) {
+    std::string s = storage_getter<std::string>(name);
+    char* c = new char[s.size()+1];
+    strcpy(c, s.c_str());
+    return c;
+}
+
+//! @brief Accesses a floating-point field of the storage by the string name of a tag.
+double get_double(char* name) {
+    return storage_getter<double>(name);
+}
+
+//! @brief Accesses an integer field of the storage by the string name of a tag.
+int get_int(char* name) {
+    return storage_getter<int>(name);
+}
+
+//! @brief Accesses an integer field of the storage by the string name of a tag.
+int get_bool(char* name) {
+    return storage_getter<bool>(name);
+}
+
+//! @brief Updates a string field of the storage by the string name of a tag.
+void set_string(char* name, char* val) {
+    storage_setter(name, val);
+}
+
+//! @brief Updates a floating-point field of the storage by the string name of a tag.
+void set_double(char* name, double val) {
+    storage_setter(name, val);
+}
+
+//! @brief Updates an integer field of the storage by the string name of a tag.
+void set_int(char* name, int val) {
+    storage_setter(name, val);
+}
+
+//! @brief Updates an integer field of the storage by the string name of a tag.
+void set_bool(char* name, bool val) {
+    storage_setter(name, val);
 }
 
 //! @brief Starts FCPP, returning a pointer to the storage.
@@ -258,17 +331,8 @@ void stop() {
     delete get<vulnerability_detection>(network);
 }
 
-char* get_storage() {
-    std::string s = common::applier(running_experiment, network, [](auto* n){
-        return to_string(n->node_at(os::uid()).storage_tuple());
-    });
-    char* c = new char[s.size()+1];
-    strcpy(c, s.c_str());
-    return c;
-}
-
 char* get_nbr_lags() {
-    std::string s = to_string(get<vulnerability_detection>(network)->node_at(os::uid()).storage(option::nbr_lags{}));
+    std::string s = storage_getter<std::string>("nbr_lags");
     char* c = new char[s.size()+1];
     strcpy(c, s.c_str());
     return c;
@@ -311,36 +375,31 @@ uint8_t get_diameter() {
 }
 
 void set_diameter(uint8_t v) {
-    lock_type l;
-    get<vulnerability_detection>(network)->node_at(os::uid(), l).storage(option::diameter{}) = v;
+    storage_setter("diameter", v);
 }
 
 float get_retain_time() {
-    return get<vulnerability_detection>(network)->node_at(os::uid()).message_threshold();
+    return storage_getter<float>("retain_time");
 }
 
 void set_retain_time(float v) {
-    lock_type l;
-    get<vulnerability_detection>(network)->node_at(os::uid(), l).message_threshold(v);
+    storage_setter("retain_time", v);
 }
 
 float get_round_period() {
-    return get<vulnerability_detection>(network)->node_at(os::uid()).storage(option::round_period{});
+    return storage_getter<float>("round_period");
 }
 
 void set_round_period(float v) {
-    lock_type l;
-    get<vulnerability_detection>(network)->node_at(os::uid(), l).storage(option::round_period{}) = v;
+    storage_setter("round_period", v);
 }
 
 void set_position_latlong(double latitude, double longitude) {
-    lock_type l;
-    get<vulnerability_detection>(network)->node_at(os::uid(), l).storage(option::position_latitude{}) = latitude;
-    get<vulnerability_detection>(network)->node_at(os::uid(), l).storage(option::position_longitude{}) = longitude;
+    storage_setter("position_latitude", latitude);
+    storage_setter("position_longitude", longitude);
 }
 void set_position_accuracy(float accuracy) {
-    lock_type l;
-    get<vulnerability_detection>(network)->node_at(os::uid(), l).storage(option::position_accuracy{}) = accuracy;
+    storage_setter("position_accuracy", accuracy);
 }
 
 } // namespace fcpp

@@ -16,6 +16,17 @@ extern void stop();
 
 extern char* get_storage();
 
+extern char* get_string(char*);
+extern double get_double(char*);
+extern int get_int(char*);
+extern int get_bool(char*);
+
+extern void set_string(char*, char*);
+extern void set_double(char*, double);
+extern void set_int(char*, int);
+extern void set_bool(char*, bool);
+
+// DEPRECATED
 extern char* get_nbr_lags();
 extern uint16_t get_round_count();
 extern uint8_t get_max_msg_size();
