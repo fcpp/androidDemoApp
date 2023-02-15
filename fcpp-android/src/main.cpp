@@ -66,9 +66,11 @@ namespace tags {
     struct retain_time {};
     //! @brief Time in seconds between transmission rounds.
     struct round_period {};
-    // TODO: Should be a pair?
+    //! @brief GPS latitude.
     struct position_latitude {};
+    //! @brief GPS longitude.
     struct position_longitude {};
+    //! @brief GPS accuracy.
     struct position_accuracy {};
 }
 
@@ -175,12 +177,31 @@ DECLARE_OPTIONS(main,
 
 } // namespace option
 
-//! @brief Type for the network object.
-using net_t = component::deployment<option::main<vulnerability_detection>>::net;
+//! @brief The list of supported experiments.
+using experiments = common::type_sequence<vulnerability_detection>;
 
-//! @brief The network object.
-net_t* network;
+//! @brief Type of the network object for a given experiment.
+template <typename tag>
+using net_t = typename component::deployment<option::main<tag>>::net;
 
+//! @brief The type of locks for accessing node objects.
+using lock_type = typename net_t<experiments::front>::lock_type;
+
+//! @brief Type of the tuple of network pointers for all experiments (general form).
+template <typename E>
+struct exp_t;
+
+//! @brief Type of the tuple of network pointers for all experiments.
+template <typename... Es>
+struct exp_t<common::type_sequence<Es...>> : common::tagged_tuple<common::type_sequence<Es...>, common::type_sequence<net_t<Es>*...>> {};
+
+//! @brief Tuple of network pointers for all experiments.
+exp_t<experiments> network;
+
+//! @brief Which experiment is currently running.
+std::string running_experiment = "vulnerability_detection";
+
+//! @brief The thread running the experiment.
 std::thread t;
 
 //! @brief Starts FCPP, returning a pointer to the storage.
@@ -198,102 +219,102 @@ void start(JNIEnv *env, jclass apclazz, int uid) {
     // The initialisation values.
     auto init_v = common::make_tagged_tuple<option::nbr_lags, option::diameter, option::threshold, option::round_period>(0, DIAMETER, (times_t)RETAIN_TIME, ROUND_PERIOD);
     // Construct the network object.
-    network = new net_t(init_v);
+    get<vulnerability_detection>(network) = new net_t<vulnerability_detection>(init_v);
     // Run the program until exit.
     t = std::thread([]() {
-        network->run();
+        get<vulnerability_detection>(network)->run();
     });
 }
 
 //! @brief Stops FCPP.
 void stop() {
-    typename net_t::lock_type l;
-    network->node_at(os::uid(), l).terminate();
+    lock_type l;
+    get<vulnerability_detection>(network)->node_at(os::uid(), l).terminate();
     t.join();
-    delete network;
+    delete get<vulnerability_detection>(network);
 }
 
 char* get_storage() {
-    std::string s = to_string(network->node_at(os::uid()).storage_tuple());
+    std::string s = to_string(get<vulnerability_detection>(network)->node_at(os::uid()).storage_tuple());
     char* c = new char[s.size()+1];
     strcpy(c, s.c_str());
     return c;
 }
 
 char* get_nbr_lags() {
-    std::string s = to_string(network->node_at(os::uid()).storage(option::nbr_lags{}));
+    std::string s = to_string(get<vulnerability_detection>(network)->node_at(os::uid()).storage(option::nbr_lags{}));
     char* c = new char[s.size()+1];
     strcpy(c, s.c_str());
     return c;
 }
 
 uint16_t get_round_count() {
-    return network->node_at(os::uid()).storage(option::round_count{});
+    return get<vulnerability_detection>(network)->node_at(os::uid()).storage(option::round_count{});
 }
 
 uint8_t get_max_msg_size() {
-    return network->node_at(os::uid()).storage(option::max_msg{});
+    return get<vulnerability_detection>(network)->node_at(os::uid()).storage(option::max_msg{});
 }
 
 bool get_im_weak() {
-    return network->node_at(os::uid()).storage(option::im_weak{});
+    return get<vulnerability_detection>(network)->node_at(os::uid()).storage(option::im_weak{});
 }
 
 bool get_some_weak() {
-    return network->node_at(os::uid()).storage(option::some_weak{});
+    return get<vulnerability_detection>(network)->node_at(os::uid()).storage(option::some_weak{});
 }
 
 uint8_t get_min_uid() {
-    return network->node_at(os::uid()).storage(option::min_uid{});
+    return get<vulnerability_detection>(network)->node_at(os::uid()).storage(option::min_uid{});
 }
 
 float get_global_clock() {
-    return network->node_at(os::uid()).storage(option::global_clock{});
+    return get<vulnerability_detection>(network)->node_at(os::uid()).storage(option::global_clock{});
 }
 
 uint8_t get_hop_dist() {
-    return network->node_at(os::uid()).storage(option::hop_dist{});
+    return get<vulnerability_detection>(network)->node_at(os::uid()).storage(option::hop_dist{});
 }
 
 uint8_t get_degree() {
-    return network->node_at(os::uid()).storage(option::degree{});
+    return get<vulnerability_detection>(network)->node_at(os::uid()).storage(option::degree{});
 }
 
 uint8_t get_diameter() {
-    return network->node_at(os::uid()).storage(option::diameter{});
+    return get<vulnerability_detection>(network)->node_at(os::uid()).storage(option::diameter{});
 }
 
 void set_diameter(uint8_t v) {
-    typename net_t::lock_type l;
-    network->node_at(os::uid(), l).storage(option::diameter{}) = v;
+    lock_type l;
+    get<vulnerability_detection>(network)->node_at(os::uid(), l).storage(option::diameter{}) = v;
 }
 
 float get_retain_time() {
-    return network->node_at(os::uid()).message_threshold();
+    return get<vulnerability_detection>(network)->node_at(os::uid()).message_threshold();
 }
 
 void set_retain_time(float v) {
-    typename net_t::lock_type l;
-    network->node_at(os::uid(), l).message_threshold(v);
+    lock_type l;
+    get<vulnerability_detection>(network)->node_at(os::uid(), l).message_threshold(v);
 }
 
 float get_round_period() {
-    return network->node_at(os::uid()).storage(option::round_period{});
+    return get<vulnerability_detection>(network)->node_at(os::uid()).storage(option::round_period{});
 }
 
 void set_round_period(float v) {
-    typename net_t::lock_type l;
-    network->node_at(os::uid(), l).storage(option::round_period{}) = v;
+    lock_type l;
+    get<vulnerability_detection>(network)->node_at(os::uid(), l).storage(option::round_period{}) = v;
 }
 
 void set_position_latlong(double latitude, double longitude) {
-    typename net_t::lock_type l;
-    network->node_at(os::uid(), l).storage(option::position_latitude{}) = latitude;
-    network->node_at(os::uid(), l).storage(option::position_longitude{}) = longitude;
+    lock_type l;
+    get<vulnerability_detection>(network)->node_at(os::uid(), l).storage(option::position_latitude{}) = latitude;
+    get<vulnerability_detection>(network)->node_at(os::uid(), l).storage(option::position_longitude{}) = longitude;
 }
 void set_position_accuracy(float accuracy) {
-    typename net_t::lock_type l;
-    network->node_at(os::uid(), l).storage(option::position_accuracy{}) = accuracy;
+    lock_type l;
+    get<vulnerability_detection>(network)->node_at(os::uid(), l).storage(option::position_accuracy{}) = accuracy;
 }
 
 } // namespace fcpp
