@@ -33,13 +33,14 @@ public class EvacuationParameters extends AppCompatActivity implements View.OnCl
         String diameter = ((TextView) findViewById(R.id.param_diameter)).getText().toString();
         String retain = ((TextView) findViewById(R.id.param_retain)).getText().toString();
         String delay = ((TextView) findViewById(R.id.param_delay)).getText().toString();
-        String traitor = ((SwitchCompat) findViewById(R.id.param_traitor)).getText().toString();
+        boolean traitor = ((SwitchCompat) findViewById(R.id.param_traitor)).isChecked();
         Intent i = new Intent(this, EvacuationActivity.class);
         i.putExtra("diameter", Integer.valueOf(diameter));
         i.putExtra("retain", Integer.valueOf(retain));
         i.putExtra("delay", Integer.valueOf(delay));
-        i.putExtra("group", Boolean.valueOf(group_left));
-        i.putExtra(getString(R.string.param_traitor), "Yes".equals(traitor));
+        i.putExtra("group_left", group_left);
+        i.putExtra("traitor", traitor);
+//        Log.d(LOG_TAG, "T " + traitor);
         startActivity(i);
         finish(); // terminate prefs dialog.
     }

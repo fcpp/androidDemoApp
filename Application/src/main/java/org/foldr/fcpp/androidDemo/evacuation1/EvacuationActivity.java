@@ -66,18 +66,20 @@ public class EvacuationActivity extends FragmentActivity {
     private int retain;
     private int delay;
     private int diameter;
+    private boolean is_group_left;
 
     @SuppressLint("MissingPermission")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.isTraitor = getIntent().getBooleanExtra(getString(R.string.param_traitor), false);
+        this.isTraitor = getIntent().getBooleanExtra("traitor", false);
+        this.is_group_left = getIntent().getBooleanExtra("group_left", false);
         this.retain = getIntent().getIntExtra("retain", -1);
         this.delay = getIntent().getIntExtra("delay", -1);
         this.diameter = getIntent().getIntExtra("diameter", -1);
 
         // The options are for FCPP:
-        frag = EvacuationFragment.newInstance(isTraitor);
+        frag = EvacuationFragment.newInstance(isTraitor, is_group_left);
         application = (AP) getApplication();
         /* Note that FCPP is already running by the time we install the logger. */
         application.jsonhttpFormatter = getJSONHTTPFormatter();

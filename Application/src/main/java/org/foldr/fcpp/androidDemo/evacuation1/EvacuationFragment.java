@@ -22,6 +22,7 @@ import org.foldr.fcpp.androidDemo.R;
 public class EvacuationFragment extends Fragment {
 
     private static final String ARG_PARAM_TRAITOR = "traitor";
+    private static final String ARG_PARAM_IS_GROUP_LEFT = "is_group_left";
 
     private boolean isTraitor;
     private boolean is_group_left;
@@ -36,10 +37,11 @@ public class EvacuationFragment extends Fragment {
      *
      * @return A new instance of fragment EvacuationFragment.
      */
-    public static EvacuationFragment newInstance(boolean isTraitor) {
+    public static EvacuationFragment newInstance(boolean isTraitor, boolean is_group_left) {
         EvacuationFragment fragment = new EvacuationFragment();
         Bundle args = new Bundle();
         args.putBoolean(ARG_PARAM_TRAITOR, isTraitor);
+        args.putBoolean(ARG_PARAM_IS_GROUP_LEFT, is_group_left);
         fragment.setArguments(args);
         return fragment;
     }
@@ -47,11 +49,11 @@ public class EvacuationFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            isTraitor = getArguments().getBoolean(ARG_PARAM_TRAITOR);
-        } else {
+        if (getArguments() == null) {
             throw new RuntimeException();
         }
+        isTraitor = getArguments().getBoolean(ARG_PARAM_TRAITOR);
+        is_group_left = getArguments().getBoolean(ARG_PARAM_IS_GROUP_LEFT);
     }
 
     @Override
@@ -91,8 +93,11 @@ public class EvacuationFragment extends Fragment {
         traitorView.setBackgroundColor(isTraitor ? Color.RED : Color.GREEN);
 
         TextView group_rg = me.findViewById(R.id.text_group_lr);
-        group_rg.setText("Group:"+(this.is_group_left ? GROUP.Left : GROUP.Right));
-        if (isTraitor) { group_rg.setBackgroundColor(Color.YELLOW); }
+        group_rg.setText("Group:"+(is_group_left ? GROUP.Left : GROUP.Right));
+        if (isTraitor) {
+            group_rg.setBackgroundColor(Color.YELLOW);
+            group_rg.setTextColor(Color.BLACK);
+        }
         return me;
     }
 

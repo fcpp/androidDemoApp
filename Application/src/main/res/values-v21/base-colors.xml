@@ -20,5 +20,6 @@
         <color name="colorPrimary">#434AB3</color>
         <color name="colorPrimaryDark">#34379D</color>
         <color name="textColorPrimary">#FFFFFF</color>
+        <color name="textColorBlack">#000000</color>
 
 </resources>
