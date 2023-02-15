@@ -120,3 +120,10 @@ TEST(TemplateRemoverTest, Setter) {
     EXPECT_EQ(get<mess::gat>(t), "nah");
     EXPECT_EQ(get<hto>(t), 17);
 }
+
+TEST(TemplateRemoverTest, TaggedTupleUnite) {
+    using t0 = tagged_tuple_t<mess::gat, bool, oth, std::string, hto, short>;
+    using t1 = tagged_tuple_t<mess::tag, int, mess::gat, double>;
+    using t2 = tagged_tuple_t<mess::tag, int, oth, std::string>;
+    EXPECT_SAME(tagged_tuple_unite<t0,t1,t2>, tagged_tuple_t<hto, short, mess::gat, double, mess::tag, int, oth, std::string>);
+}

@@ -155,6 +155,36 @@ void setter(std::string const& name, U& t, R&& val) {
     applier<can_assign<R>::template predicate>(name, t, [&val](auto& x){ x = std::forward<R>(val); });
 }
 
+
+//! @cond INTERNAL
+namespace details {
+    // General form.
+    template <typename... Ts>
+    struct tagged_tuple_unite;
+
+    // No tuple to concatenate.
+    template <>
+    struct tagged_tuple_unite<> {
+        using type = tagged_tuple<type_sequence<>, type_sequence<>>;
+    };
+
+    // The first tuple is empty.
+    template <typename... Ts>
+    struct tagged_tuple_unite<tagged_tuple<type_sequence<>, type_sequence<>>, Ts...> : tagged_tuple_unite<Ts...> {};
+
+    // The first tuple is not empty.
+    template <typename S, typename... Ss, typename T, typename... Ts, typename... Us>
+    struct tagged_tuple_unite<tagged_tuple<type_sequence<S, Ss...>, type_sequence<T, Ts...>>, Us...> {
+        using tmp = typename tagged_tuple_unite<tagged_tuple<type_sequence<Ss...>, type_sequence<Ts...>>, Us...>::type;
+        using type = std::conditional_t<tmp::tags::template count<S> == 0, typename tmp::template push_front<S,T>, tmp>;
+    };
+}
+//! @endcond
+
+//! @brief Unites multiple `tagged_tuple` types into a single `tagged_tuple` type, merging duplicates.
+template <typename... Ts>
+using tagged_tuple_unite = typename details::tagged_tuple_unite<Ts...>::type;
+
 } // namespace common
 
 } // namespace fcpp
