@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.foldr.fcpp.androidDemo;
+package org.foldr.fcpp.androidDemo.evacuation1;
 
 import static org.foldr.fcpp.androidDemo.Constants.LOG_TAG;
 
@@ -26,6 +26,7 @@ import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -39,30 +40,45 @@ import android.widget.Toolbar;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.preference.Preference;
-import androidx.preference.PreferenceFragmentCompat;
+
+import org.foldr.fcpp.androidDemo.AP;
+import org.foldr.fcpp.androidDemo.AdvertiserFragment;
+import org.foldr.fcpp.androidDemo.AdvertiserService;
+import org.foldr.fcpp.androidDemo.Constants;
+import org.foldr.fcpp.androidDemo.MainActivity;
+import org.foldr.fcpp.androidDemo.R;
+import org.foldr.fcpp.androidDemo.ScannerFragment;
 
 /**
  * Setup display fragments and ensure the device supports Bluetooth.
  */
-public class MainActivity extends FragmentActivity {
+public class EvacuationActivity extends FragmentActivity {
 
     private BluetoothAdapter mBluetoothAdapter;
     private Toolbar mToolbar;
     AP application;
     private LocationListener locationListener;
+    private boolean isTraitor;
+    private EvacuationFragment frag;
+    private int retain;
+    private int delay;
+    private int diameter;
 
     @SuppressLint("MissingPermission")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.isTraitor = getIntent().getBooleanExtra(getString(R.string.param_traitor), false);
+        this.retain = getIntent().getIntExtra("retain", -1);
+        this.delay = getIntent().getIntExtra("delay", -1);
+        this.diameter = getIntent().getIntExtra("diameter", -1);
+
+        // The options are for FCPP:
+        frag = EvacuationFragment.newInstance(isTraitor);
         application = (AP) getApplication();
-        if (!application.locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            Intent settingsIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-            startActivity(settingsIntent);
-        }
 
         locationListener = new LocationListener() {
             @Override
@@ -72,16 +88,23 @@ public class MainActivity extends FragmentActivity {
                 AP.set_accuracy(location.getAccuracy());
             }
         };
-        application.locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10,
-                locationListener);
         setContentView(R.layout.activity_main);
         setTitle(R.string.activity_main_title);
-//        mToolbar = findViewById(R.id.AdvertiserToolbar);
-//        assert mToolbar != null;
 
         if (savedInstanceState == null) {
-            checkPermissions(this, this);
+            MainActivity.checkPermissions(this, this);
 
+            // TODO: Should be dead code?
+            if (!application.locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                Log.d(LOG_TAG, "Should not have happened?");
+                Intent settingsIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                startActivity(settingsIntent);
+            }
+
+            application.locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10,
+                    locationListener);
+
+            // TODO: Probably all this could be checked in the Parameter screen already?
             mBluetoothAdapter = ((BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE))
                     .getAdapter();
 
@@ -131,34 +154,6 @@ public class MainActivity extends FragmentActivity {
                 showErrorText(R.string.bt_not_supported);
             }
         }
-    }
-
-    public static void checkPermissions(Activity activity, Context context){
-        int PERMISSION_ALL = 1;
-        String[] PERMISSIONS = {
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.BLUETOOTH,
-                Manifest.permission.BLUETOOTH_ADMIN,
-                Manifest.permission.BLUETOOTH_PRIVILEGED
-                , Manifest.permission.BLUETOOTH_SCAN
-                , Manifest.permission.BLUETOOTH_CONNECT
-                , Manifest.permission.BLUETOOTH_ADVERTISE
-        };
-
-        if(!hasPermissions(context, PERMISSIONS)){
-            ActivityCompat.requestPermissions( activity, PERMISSIONS, PERMISSION_ALL);
-        }
-    }
-
-    public static boolean hasPermissions(Context context, String... permissions) {
-        if (context != null && permissions != null) {
-            for (String permission : permissions) {
-                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
-                    return false;
-                }
-            }
-        }
-        return true;
     }
 
     @Override
@@ -214,57 +209,6 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
-    public static class BLEPreferencesFragments extends PreferenceFragmentCompat {
-        @Override
-        public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
-            setPreferencesFromResource(R.xml.preferences, rootKey);
-            {
-                Preference p;
-                p = findPreference(getString(R.string.prefs_fcpp_diameter));
-                p.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                    @Override
-                    public boolean onPreferenceChange(@NonNull Preference preference, Object newValue) {
-                        // TODO: error handling
-                        int v = Integer.valueOf((String)newValue);
-                        AP.set_diameter(v);
-                        return true;
-                    }
-                });
-                p = findPreference(getString(R.string.prefs_fcpp_period));
-                p.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                    @Override
-                    public boolean onPreferenceChange(@NonNull Preference preference, Object newValue) {
-                        // TODO: error handling
-                        float v = Float.parseFloat(((String)newValue));
-                        AP.set_round_period(v);
-                        return true;
-                    }
-                });
-                p = findPreference(getString(R.string.prefs_fcpp_retain));
-                p.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                    @Override
-                    public boolean onPreferenceChange(@NonNull Preference preference, Object newValue) {
-                        // TODO: error handling
-                        float v = Float.parseFloat(((String)newValue));
-                        AP.set_retain_time(v);
-                        return true;
-                    }
-                });
-            }
-            { // Patch uid into preferences dialog:
-                Preference uid_prefs = findPreference(getString(R.string.prefs_uid));
-                uid_prefs.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                    @Override
-                    public boolean onPreferenceChange(@NonNull Preference preference, Object newValue) {
-                        Toast.makeText(getContext(), "Please restart the app now!", Toast.LENGTH_LONG).show();
-                        return true;
-                    }
-                });
-                uid_prefs.setTitle(uid_prefs.getTitle() + ": "+ AP.uid);
-            }
-        }
-    }
-
     /**
      * Note that we have two entry-points. Currently we're using an extra one when the user
      * has to enable BT through the permissions dialog.
@@ -280,21 +224,13 @@ public class MainActivity extends FragmentActivity {
 
         AdvertiserFragment advertiserFragment = new AdvertiserFragment();
         transaction.replace(R.id.advertiser_fragment_container, advertiserFragment);
-
-        // TODO: hook up to menu or something instead.
-        PreferenceFragmentCompat preferencesFragment = new BLEPreferencesFragments();
-        transaction.replace(R.id.preferences_fragment_container, preferencesFragment);
+        
+        transaction.replace(R.id.preferences_fragment_container, frag);
 
         transaction.commit();
     }
 
     private void showErrorText(int messageId) {
-        showErrorText(this, messageId);
-    }
-
-    public static void showErrorText(Activity me, int messageId) {
-        Log.e(LOG_TAG, me.getString(messageId));
-        TextView view = me.findViewById(R.id.error_textview);
-        view.setText(me.getString(messageId));
+        MainActivity.showErrorText(this, messageId);
     }
 }

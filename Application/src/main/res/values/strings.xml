@@ -40,4 +40,6 @@
     <string name="prefs_fcpp_diameter">fcpp_diameter</string>
     <string name="prefs_fcpp_period">fcpp_period</string>
     <string name="prefs_fcpp_retain">fcpp_retain</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="param_traitor">traitor</string>
 </resources>

@@ -29,8 +29,8 @@ import okhttp3.Response;
 
 public class AP extends Application {
 
-    static int uid;
-    LocationManager locationManager;
+    public static int uid;
+    public LocationManager locationManager;
 
     /* These native definitions are from ap-getters.cpp: */
     static native void fcpp_start(int uid);
@@ -182,14 +182,15 @@ public class AP extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        int uid = setUID();
+        Log.i(LOG_TAG, "fccp_start: " + uid);
+        fcpp_start(uid);
+
         // TODO: proper initial values for fcpp?
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String prefs_diameter = prefs.getString(getString(R.string.prefs_fcpp_diameter), "1");
         String prefs_period = prefs.getString(getString(R.string.prefs_fcpp_period), "1.0");
         String prefs_retain = prefs.getString(getString(R.string.prefs_fcpp_retain), "1.0");
-        int uid = setUID();
-        Log.i(LOG_TAG, "fccp_start: " + uid);
-        fcpp_start(uid);
         int the_diameter;
         try {
              the_diameter = Integer.parseInt(prefs_diameter);

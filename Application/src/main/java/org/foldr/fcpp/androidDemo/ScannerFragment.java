@@ -63,7 +63,6 @@ public class ScannerFragment extends ListFragment {
     private ScanResultAdapter mAdapter;
 
     private Toolbar mToolbar;
-    private AP mAp;
 
     /**
      * Must be called after object creation by MainActivity.
@@ -88,8 +87,6 @@ public class ScannerFragment extends ListFragment {
         // default theme, so generate it from getActivity() and pass it in separately.
         mAdapter = new ScanResultAdapter(getActivity().getApplicationContext(),
                 LayoutInflater.from(getActivity()));
-
-        mAp = (AP) getActivity().getApplication();
     }
 
     @Override
@@ -97,9 +94,7 @@ public class ScannerFragment extends ListFragment {
                              Bundle savedInstanceState) {
 
         final View view = super.onCreateView(inflater, container, savedInstanceState);
-
         setListAdapter(mAdapter);
-
         return view;
     }
 
@@ -114,7 +109,6 @@ public class ScannerFragment extends ListFragment {
 
         // Trigger refresh on app's 1st load
         startScanning();
-
     }
 
     @Override
@@ -207,7 +201,7 @@ public class ScannerFragment extends ListFragment {
 
             for (ScanResult result : results) {
                 mAdapter.add(result);
-                mAp.pending.add(result);
+                AP.pending.add(result);
             }
             mAdapter.notifyDataSetChanged();
         }
@@ -217,7 +211,7 @@ public class ScannerFragment extends ListFragment {
             super.onScanResult(callbackType, result);
 
             mAdapter.add(result);
-            mAp.pending.add(result);
+            AP.pending.add(result);
             mAdapter.notifyDataSetChanged();
         }
 
