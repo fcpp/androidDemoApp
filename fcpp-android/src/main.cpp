@@ -13,6 +13,7 @@
 
 #include "main.hpp"
 #include "lib/fcpp.hpp"
+#include "lib/common/template_remover.hpp"
 
 #include "driver.hpp"
 
@@ -204,6 +205,29 @@ std::string running_experiment = "vulnerability_detection";
 //! @brief The thread running the experiment.
 std::thread t;
 
+//! @cond INTERNAL
+namespace details {
+    //! @brief Converts since the target is a string.
+    template <typename T>
+    inline std::string maybe_convert(T&& x, common::type_sequence<std::string>) {
+        return to_string(std::forward<T>(x));
+    }
+    //! @brief Does not convert since the target is not a string.
+    template <typename T, typename R, typename = std::enable_if_t<not std::is_same<R, std::string>::value>>
+    inline T&& maybe_convert(T&& x, common::type_sequence<R>) {
+        return std::forward<T>(x);
+    }
+}
+//! @endcond
+
+//! @brief Accesses a field of the storage by the string name of a tag.
+template <typename R>
+inline R storage_getter(std::string const& name) {
+    return common::applier(running_experiment, network, [&name](auto* n){
+        return details::maybe_convert(common::getter<R>(name, n->node_at(os::uid()).storage_tuple()), common::type_sequence<R>{});
+    });
+}
+
 //! @brief Starts FCPP, returning a pointer to the storage.
 void start(JNIEnv *env, jclass apclazz, int uid) {
     env->GetJavaVM(&jvm);
@@ -235,7 +259,9 @@ void stop() {
 }
 
 char* get_storage() {
-    std::string s = to_string(get<vulnerability_detection>(network)->node_at(os::uid()).storage_tuple());
+    std::string s = common::applier(running_experiment, network, [](auto* n){
+        return to_string(n->node_at(os::uid()).storage_tuple());
+    });
     char* c = new char[s.size()+1];
     strcpy(c, s.c_str());
     return c;
@@ -249,39 +275,39 @@ char* get_nbr_lags() {
 }
 
 uint16_t get_round_count() {
-    return get<vulnerability_detection>(network)->node_at(os::uid()).storage(option::round_count{});
+    return storage_getter<uint16_t>("round_count");
 }
 
 uint8_t get_max_msg_size() {
-    return get<vulnerability_detection>(network)->node_at(os::uid()).storage(option::max_msg{});
+    return storage_getter<uint8_t>("max_msg");
 }
 
 bool get_im_weak() {
-    return get<vulnerability_detection>(network)->node_at(os::uid()).storage(option::im_weak{});
+    return storage_getter<bool>("im_weak");
 }
 
 bool get_some_weak() {
-    return get<vulnerability_detection>(network)->node_at(os::uid()).storage(option::some_weak{});
+    return storage_getter<bool>("some_weak");
 }
 
 uint8_t get_min_uid() {
-    return get<vulnerability_detection>(network)->node_at(os::uid()).storage(option::min_uid{});
+    return storage_getter<uint8_t>("min_uid");
 }
 
 float get_global_clock() {
-    return get<vulnerability_detection>(network)->node_at(os::uid()).storage(option::global_clock{});
+    return storage_getter<float>("global_clock");
 }
 
 uint8_t get_hop_dist() {
-    return get<vulnerability_detection>(network)->node_at(os::uid()).storage(option::hop_dist{});
+    return storage_getter<uint8_t>("hop_dist");
 }
 
 uint8_t get_degree() {
-    return get<vulnerability_detection>(network)->node_at(os::uid()).storage(option::degree{});
+    return storage_getter<uint8_t>("degree");
 }
 
 uint8_t get_diameter() {
-    return get<vulnerability_detection>(network)->node_at(os::uid()).storage(option::diameter{});
+    return storage_getter<uint8_t>("diameter");
 }
 
 void set_diameter(uint8_t v) {
