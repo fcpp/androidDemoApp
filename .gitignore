@@ -6,3 +6,8 @@
 .cxx
 local.properties
 .DS_Store
+arm64-v8a/
+x86_64/
+plot/
+bin/
+local.mk

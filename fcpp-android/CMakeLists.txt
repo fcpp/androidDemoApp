@@ -16,3 +16,5 @@ project(
 
 # target declaration
 fcpp_header(./src/main.cpp OFF)
+
+fcpp_test(./test/common/template_remover.cpp)
