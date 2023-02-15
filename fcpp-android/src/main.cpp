@@ -200,7 +200,7 @@ struct exp_t<common::type_sequence<Es...>> : common::tagged_tuple<common::type_s
 exp_t<experiments> network;
 
 //! @brief Which experiment is currently running.
-std::string running_experiment = "vulnerability_detection";
+std::string running_experiment = "";
 
 //! @brief The thread running the experiment.
 std::thread t;
@@ -259,7 +259,7 @@ char* get_storage() {
 }
 
 //! @brief Accesses a field of the storage as a string by the string name of a tag.
-char* get_string(char* name) {
+char* get_string(char const* name) {
     std::string s = storage_getter<std::string>(name);
     char* c = new char[s.size()+1];
     strcpy(c, s.c_str());
@@ -267,42 +267,46 @@ char* get_string(char* name) {
 }
 
 //! @brief Accesses a floating-point field of the storage by the string name of a tag.
-double get_double(char* name) {
+double get_double(char const* name) {
     return storage_getter<double>(name);
 }
 
 //! @brief Accesses an integer field of the storage by the string name of a tag.
-int get_int(char* name) {
+int get_int(char const* name) {
     return storage_getter<int>(name);
 }
 
 //! @brief Accesses an integer field of the storage by the string name of a tag.
-int get_bool(char* name) {
+int get_bool(char const* name) {
     return storage_getter<bool>(name);
 }
 
 //! @brief Updates a string field of the storage by the string name of a tag.
-void set_string(char* name, char* val) {
+void set_string(char const* name, char const* val) {
     storage_setter(name, val);
 }
 
 //! @brief Updates a floating-point field of the storage by the string name of a tag.
-void set_double(char* name, double val) {
+void set_double(char const* name, double val) {
     storage_setter(name, val);
 }
 
 //! @brief Updates an integer field of the storage by the string name of a tag.
-void set_int(char* name, int val) {
+void set_int(char const* name, int val) {
     storage_setter(name, val);
 }
 
 //! @brief Updates an integer field of the storage by the string name of a tag.
-void set_bool(char* name, bool val) {
+void set_bool(char const* name, bool val) {
     storage_setter(name, val);
 }
+
+//! @brief Generic initialisation values.
+auto init_v = common::make_tagged_tuple<option::nbr_lags, option::diameter, option::threshold, option::retain_time, option::round_period>(0, DIAMETER, (times_t)RETAIN_TIME, (times_t)RETAIN_TIME, ROUND_PERIOD);
 
 //! @brief Starts FCPP, returning a pointer to the storage.
-void start(JNIEnv *env, jclass apclazz, int uid) {
+void start(JNIEnv *env, jclass apclazz, int uid, char const* experiment) {
+    assert(running_experiment == "");
     env->GetJavaVM(&jvm);
     /* Cache some frequently used, expensive values: */
     clazz = apclazz;
@@ -313,22 +317,31 @@ void start(JNIEnv *env, jclass apclazz, int uid) {
 
     // Sets the id.
     os::m_uid = uid;
-    // The initialisation values.
-    auto init_v = common::make_tagged_tuple<option::nbr_lags, option::diameter, option::threshold, option::round_period>(0, DIAMETER, (times_t)RETAIN_TIME, ROUND_PERIOD);
-    // Construct the network object.
-    get<vulnerability_detection>(network) = new net_t<vulnerability_detection>(init_v);
-    // Run the program until exit.
-    t = std::thread([]() {
-        get<vulnerability_detection>(network)->run();
+    // Construct the network object and run the program until exit.
+    running_experiment = experiment;
+    applier(running_experiment, network, [](auto& n){
+        n = new std::remove_pointer_t<std::decay_t<decltype(n)>>(init_v);
+        t = std::thread([&n]() {
+            n->run();
+        });
     });
 }
 
 //! @brief Stops FCPP.
 void stop() {
-    lock_type l;
-    get<vulnerability_detection>(network)->node_at(os::uid(), l).terminate();
-    t.join();
-    delete get<vulnerability_detection>(network);
+    applier(running_experiment, network, [](auto& n){
+        lock_type l;
+        n->node_at(os::uid(), l).terminate();
+        t.join();
+        delete n;
+    });
+    running_experiment = "";
+}
+
+// DEPRECATED
+
+void start(JNIEnv *env, jclass apclazz, int uid) {
+    start(env, apclazz, uid, "vulnerability_detection");
 }
 
 char* get_nbr_lags() {
