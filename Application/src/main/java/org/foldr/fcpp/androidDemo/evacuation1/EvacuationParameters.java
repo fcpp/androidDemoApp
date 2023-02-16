@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import org.foldr.fcpp.androidDemo.AP;
 import org.foldr.fcpp.androidDemo.R;
 
 import java.util.Random;
@@ -35,8 +36,12 @@ public class EvacuationParameters extends AppCompatActivity implements View.OnCl
         String delay = ((TextView) findViewById(R.id.param_delay)).getText().toString();
         boolean traitor = ((SwitchCompat) findViewById(R.id.param_traitor)).isChecked();
         Intent i = new Intent(this, EvacuationActivity.class);
+        // We fail hard on conversion errors below.
+        // We directly pass set most important values on to FCPP who's already running.
         i.putExtra("diameter", Integer.valueOf(diameter));
+        AP.set_diameter(Integer.valueOf(diameter));
         i.putExtra("retain", Integer.valueOf(retain));
+        AP.set_retain_time(Integer.valueOf(retain));
         i.putExtra("delay", Integer.valueOf(delay));
         i.putExtra("group_left", group_left);
         i.putExtra("traitor", traitor);

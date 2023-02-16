@@ -45,7 +45,7 @@
             android:id="@+id/param_retain"
             android:inputType="number"
             android:paddingRight="20dp"
-            android:text="20"
+            android:text="5"
             android:hint="retain"/>
     </LinearLayout>
     <LinearLayout
@@ -62,7 +62,7 @@
             android:layout_height="match_parent"
             android:id="@+id/param_diameter"
             android:inputType="number"
-            android:text="20"
+            android:text="10"
             android:hint="diameter"/>
     </LinearLayout>
     <LinearLayout
