@@ -22,7 +22,7 @@ set(
     ./lib/coordination/vulnerability_detection.cpp
     ./lib/coordination/main.cpp
     ./lib/configuration.cpp
-    ./src/main.cpp
+    ./run/main.cpp
 )
 fcpp_headers(main OFF "${SOURCE_LIST}")
 
