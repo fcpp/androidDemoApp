@@ -14,7 +14,15 @@ project(
     DESCRIPTION "Android Case Study."
 )
 
-# target declaration
-fcpp_header(./src/main.cpp OFF)
+# headers declaration
+set(
+    SOURCE_LIST
+    ./lib/common/template_remover.cpp
+    ./lib/coordination/general.cpp
+    ./lib/coordination/vulnerability_detection.cpp
+    ./src/main.cpp
+)
+fcpp_headers(main OFF "${SOURCE_LIST}")
 
+# test declaration
 fcpp_test(./test/common/template_remover.cpp)

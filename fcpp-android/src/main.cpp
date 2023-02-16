@@ -15,6 +15,7 @@
 #include "lib/fcpp.hpp"
 #include "lib/common/template_remover.hpp"
 #include "lib/coordination/general.hpp"
+#include "lib/coordination/vulnerability_detection.hpp"
 
 #include "driver.hpp"
 
@@ -25,9 +26,6 @@
  * @brief Namespace containing all the objects in the FCPP library.
  */
 namespace fcpp {
-
-//! @brief Tag for the vulnerability detection experiment.
-struct vulnerability_detection {};
 
 //! @brief Namespace containing OS-dependent functionalities.
 namespace os {
@@ -44,18 +42,6 @@ namespace coordination {
 
 //! @brief Tags used in the node storage.
 namespace tags {
-    //! @brief The degree of the node.
-    struct degree {};
-    //! @brief Minimum UID in the network.
-    struct min_uid {};
-    //! @brief Distance in hops to the device with minimum UID.
-    struct hop_dist {};
-    //! @brief Whether the current device has only one neighbour.
-    struct im_weak {};
-    //! @brief Whether some device in the network has only one neighbour.
-    struct some_weak {};
-    //! @brief Maximum diameter in hops for a deployment.
-    struct diameter {};
     //! @brief GPS latitude.
     struct position_latitude {};
     //! @brief GPS longitude.
@@ -64,29 +50,6 @@ namespace tags {
     struct position_accuracy {};
 }
 
-
-//! @brief The export type for each experiment.
-template <typename> struct experiment_t;
-//! @brief The storage tuple type for each experiment.
-template <typename> struct experiment_s;
-
-//! @brief Computes whether there is a node with only one connected neighbour at a given time.
-FUN void experiment(ARGS, vulnerability_detection) { CODE
-    using namespace tags;
-    int diameter = node.storage(tags::diameter{});
-    node.storage(degree{}) = node.size() - 1;
-    node.storage(im_weak{}) = node.size() <= 2;
-    tie(node.storage(min_uid{}), node.storage(hop_dist{})) = diameter_election_distance(CALL, diameter);
-    bool collect_weak = sp_collection(CALL, node.storage(hop_dist{}), node.size() <= 2, false, [](bool x, bool y) {
-        return x or y;
-    });
-    node.storage(some_weak{}) = broadcast(CALL, node.storage(hop_dist{}), collect_weak);
-}
-//! @brief The export type for the vulnerability detection experiment.
-template <>
-struct experiment_t<vulnerability_detection> : export_list<
-    diameter_election_distance_t<>, sp_collection_t<hops_t, bool>, broadcast_t<hops_t, bool>
-> {};
 //! @brief The storage tuple type for the vulnerability detection experiment.
 template <>
 struct experiment_s<vulnerability_detection> : storage_list<
@@ -97,7 +60,6 @@ struct experiment_s<vulnerability_detection> : storage_list<
     tags::some_weak,      bool,
     tags::diameter,       hops_t
 > {};
-
 
 //! @brief Templated main aggregate function.
 template <typename tag>
@@ -144,7 +106,9 @@ DECLARE_OPTIONS(main,
 } // namespace option
 
 //! @brief The list of supported experiments.
-using experiments = common::type_sequence<vulnerability_detection>;
+using experiments = common::type_sequence<
+    vulnerability_detection
+>;
 
 //! @brief Type of the network object for a given experiment.
 template <typename tag>
