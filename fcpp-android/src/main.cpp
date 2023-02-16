@@ -1,20 +1,16 @@
-// Copyright © 2022 Giorgio Audrito and Volker Stolz. All Rights Reserved.
+// Copyright © 2023 Giorgio Audrito and Volker Stolz. All Rights Reserved.
 
 #define FCPP_SYSTEM FCPP_SYSTEM_EMBEDDED
 #define FCPP_ENVIRONMENT FCPP_ENVIRONMENT_PHYSICAL
 #define FCPP_EXPORT_NUM 2
-
-#define DIAMETER     10
-#define RETAIN_TIME  10
-#define ROUND_PERIOD 1
 
 #include <android/log.h>
 #include <cstring>
 
 #include "main.hpp"
 #include "lib/fcpp.hpp"
+#include "lib/configuration.hpp"
 #include "lib/common/template_remover.hpp"
-#include "lib/coordination/main.hpp"
 
 #include "driver.hpp"
 
@@ -35,32 +31,6 @@ namespace os {
         return m_uid;
     }
 } // namespace os
-
-
-//! @brief Namespace for component options.
-namespace option {
-
-//! @brief Import tags to be used for component options.
-using namespace component::tags;
-//! @brief Import tags used by aggregate functions.
-using namespace coordination::tags;
-
-//! @brief Main FCPP option setup.
-template <typename tag>
-DECLARE_OPTIONS(main,
-    program<coordination::main<tag>>,
-    exports<coordination::main_t<tag>>,
-    tuple_store<coordination::main_s<tag>>,
-    retain<metric::retain<RETAIN_TIME>>,
-    message_push<false>
-);
-
-} // namespace option
-
-//! @brief The list of supported experiments.
-using experiments = common::type_sequence<
-    vulnerability_detection
->;
 
 //! @brief Type of the network object for a given experiment.
 template <typename tag>
@@ -185,7 +155,7 @@ void set_bool(char const* name, bool val) {
 //! @brief Generic initialisation values.
 auto init_v = common::make_tagged_tuple<option::nbr_lags, option::diameter, option::threshold, option::retain_time, option::round_period>(0, DIAMETER, (times_t)RETAIN_TIME, (times_t)RETAIN_TIME, ROUND_PERIOD);
 
-//! @brief Starts FCPP, returning a pointer to the storage.
+//! @brief Starts FCPP with a given experiment.
 void start(JNIEnv *env, jclass apclazz, int uid, char const* experiment) {
     assert(running_experiment == "");
     env->GetJavaVM(&jvm);

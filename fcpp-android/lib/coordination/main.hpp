@@ -8,8 +8,6 @@
 #ifndef FCPP_COORDINATION_MAIN_H_
 #define FCPP_COORDINATION_MAIN_H_
 
-#include <cassert>
-
 #include "lib/component/base.hpp"
 #include "lib/coordination/tracker.hpp"
 #include "lib/coordination/vulnerability_detection.hpp"

@@ -21,6 +21,7 @@ set(
     ./lib/coordination/tracker.cpp
     ./lib/coordination/vulnerability_detection.cpp
     ./lib/coordination/main.cpp
+    ./lib/configuration.cpp
     ./src/main.cpp
 )
 fcpp_headers(main OFF "${SOURCE_LIST}")

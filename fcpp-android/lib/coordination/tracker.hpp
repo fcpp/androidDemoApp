@@ -8,8 +8,6 @@
 #ifndef FCPP_COORDINATION_TRACKER_H_
 #define FCPP_COORDINATION_TRACKER_H_
 
-#include <cassert>
-
 #include "lib/beautify.hpp"
 #include "lib/coordination.hpp"
 
