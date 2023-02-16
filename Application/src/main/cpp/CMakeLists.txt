@@ -33,7 +33,7 @@ add_library(ap-libs SHARED
             ap-getters.cpp)
 
 target_include_directories(ap-libs PRIVATE
-                           ${distribution_DIR}/src
+                           ${distribution_DIR}/run
                            )
 
 target_link_libraries(ap-libs
