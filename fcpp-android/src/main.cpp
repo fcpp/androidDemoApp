@@ -14,8 +14,7 @@
 #include "main.hpp"
 #include "lib/fcpp.hpp"
 #include "lib/common/template_remover.hpp"
-#include "lib/coordination/general.hpp"
-#include "lib/coordination/vulnerability_detection.hpp"
+#include "lib/coordination/main.hpp"
 
 #include "driver.hpp"
 
@@ -36,53 +35,6 @@ namespace os {
         return m_uid;
     }
 } // namespace os
-
-//! @brief Namespace containing the libraries of coordination routines.
-namespace coordination {
-
-//! @brief Tags used in the node storage.
-namespace tags {
-    //! @brief GPS latitude.
-    struct position_latitude {};
-    //! @brief GPS longitude.
-    struct position_longitude {};
-    //! @brief GPS accuracy.
-    struct position_accuracy {};
-}
-
-//! @brief The storage tuple type for the vulnerability detection experiment.
-template <>
-struct experiment_s<vulnerability_detection> : storage_list<
-    tags::degree,         int8_t,
-    tags::min_uid,        device_t,
-    tags::hop_dist,       hops_t,
-    tags::im_weak,        bool,
-    tags::some_weak,      bool,
-    tags::diameter,       hops_t
-> {};
-
-//! @brief Templated main aggregate function.
-template <typename tag>
-struct main {
-    template <typename node_t>
-    void operator()(node_t& node, times_t) {
-        using namespace tags;
-        experiment(CALL, tag{});
-        tracker(CALL);
-    }
-};
-//! @brief The export type for the main aggregate function.
-template <typename tag>
-FUN_EXPORT main_t = export_list<experiment_t<tag>, tracker_t>;
-template <typename tag>
-FUN_EXPORT main_s = storage_list<experiment_s<tag>, tracker_s,
-    component::tags::uid,     device_t,
-    tags::position_latitude,  double,
-    tags::position_longitude, double,
-    tags::position_accuracy,  float
->;
-
-} // namespace coordination
 
 
 //! @brief Namespace for component options.

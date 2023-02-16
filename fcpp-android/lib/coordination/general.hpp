@@ -19,7 +19,6 @@
  */
 namespace fcpp {
 
-
 //! @brief Namespace containing the libraries of coordination routines.
 namespace coordination {
 
@@ -60,11 +59,6 @@ FUN_EXPORT tracker_s = storage_list<
     tags::global_clock,       times_t,
     tags::max_msg,            uint8_t
 >;
-
-//! @brief The export type for each experiment.
-template <typename> struct experiment_t;
-//! @brief The storage tuple type for each experiment.
-template <typename> struct experiment_s;
 
 } // namespace coordination
 
