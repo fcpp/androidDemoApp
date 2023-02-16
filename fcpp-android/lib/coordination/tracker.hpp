@@ -1,12 +1,12 @@
 // Copyright © 2023 Giorgio Audrito. All Rights Reserved.
 
 /**
- * @file general.hpp
+ * @file tracker.hpp
  * @brief Aggregate function tracking the basic functioning of the device.
  */
 
-#ifndef FCPP_COORDINATION_GENERAL_H_
-#define FCPP_COORDINATION_GENERAL_H_
+#ifndef FCPP_COORDINATION_TRACKER_H_
+#define FCPP_COORDINATION_TRACKER_H_
 
 #include <cassert>
 
@@ -64,4 +64,4 @@ FUN_EXPORT tracker_s = storage_list<
 
 } // namespace fcpp
 
-#endif  // FCPP_COORDINATION_GENERAL_H_
+#endif  // FCPP_COORDINATION_TRACKER_H_

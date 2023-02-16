@@ -18,7 +18,7 @@ project(
 set(
     SOURCE_LIST
     ./lib/common/template_remover.cpp
-    ./lib/coordination/general.cpp
+    ./lib/coordination/tracker.cpp
     ./lib/coordination/vulnerability_detection.cpp
     ./lib/coordination/main.cpp
     ./src/main.cpp

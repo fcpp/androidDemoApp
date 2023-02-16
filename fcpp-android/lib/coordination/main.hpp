@@ -11,7 +11,7 @@
 #include <cassert>
 
 #include "lib/component/base.hpp"
-#include "lib/coordination/general.hpp"
+#include "lib/coordination/tracker.hpp"
 #include "lib/coordination/vulnerability_detection.hpp"
 
 
