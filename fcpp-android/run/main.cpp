@@ -3,6 +3,7 @@
 #define FCPP_SYSTEM FCPP_SYSTEM_EMBEDDED
 #define FCPP_ENVIRONMENT FCPP_ENVIRONMENT_PHYSICAL
 #define FCPP_EXPORT_NUM 2
+#define FCPP_TRACE 32
 
 #include <android/log.h>
 #include <cstring>
