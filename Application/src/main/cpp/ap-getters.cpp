@@ -42,81 +42,83 @@ Java_org_foldr_fcpp_androidDemo_AP_get_1max_1msg_1size(JNIEnv *env, jclass thiz)
 /* Note the escaped `_` below. */
 extern "C" JNIEXPORT jboolean JNICALL
 Java_org_foldr_fcpp_androidDemo_AP_get_1im_1weak(JNIEnv *env, jclass thiz) {
-    return fcpp::get_im_weak();
+    return fcpp::get_bool("im_weak");
 }
 
 extern "C" JNIEXPORT jboolean JNICALL
 Java_org_foldr_fcpp_androidDemo_AP_get_1some_1weak(JNIEnv *env, jclass thiz) {
-    return fcpp::get_some_weak();
+    return fcpp::get_bool("some_weak");
 }
 
 extern "C"
 JNIEXPORT jint JNICALL
 Java_org_foldr_fcpp_androidDemo_AP_get_1degree(JNIEnv *env, jclass clazz) {
-    return fcpp::get_degree();
+    return fcpp::get_int("degree");
 }
 
 extern "C"
 JNIEXPORT jint JNICALL
 Java_org_foldr_fcpp_androidDemo_AP_get_1diameter(JNIEnv *env, jclass clazz) {
-    return fcpp::get_diameter();
+    return fcpp::get_int("diameter");
 }
 
 extern "C"
 JNIEXPORT void JNICALL
 Java_org_foldr_fcpp_androidDemo_AP_set_1diameter(JNIEnv *env, jclass clazz, jint diam) {
-    fcpp::set_diameter(diam);
+    fcpp::set_int("diameter", diam);
 }
 
 extern "C"
 JNIEXPORT jfloat JNICALL
 Java_org_foldr_fcpp_androidDemo_AP_get_1retain_1time(JNIEnv *env, jclass clazz) {
-    return fcpp::get_retain_time();
+    return fcpp::get_double("retain_time");
 }
 
 extern "C"
 JNIEXPORT void JNICALL
 Java_org_foldr_fcpp_androidDemo_AP_set_1retain_1time(JNIEnv *env, jclass clazz, jfloat time) {
-    fcpp::set_retain_time(time);
+    fcpp::set_double("retain_time", time);
 }
 
 extern "C"
 JNIEXPORT jfloat JNICALL
 Java_org_foldr_fcpp_androidDemo_AP_get_1round_1period(JNIEnv *env, jclass clazz) {
-    return fcpp::get_round_period();
+    return fcpp::get_double("round_period");
 }
 
 extern "C"
 JNIEXPORT void JNICALL
 Java_org_foldr_fcpp_androidDemo_AP_set_1round_1period(JNIEnv *env, jclass clazz, jfloat time) {
-    fcpp::set_round_period(time);
+    fcpp::set_double("round_period", time);
 }
 
 extern "C" JNIEXPORT jstring JNICALL
 Java_org_foldr_fcpp_androidDemo_AP_get_1nbr_1lags(JNIEnv *env, jclass clazz) {
+    // Danger Will Robinson. TODO: refactor to new FCPP-API.
     return env->NewStringUTF(fcpp::get_nbr_lags());
 }
 
 extern "C" JNIEXPORT jfloat JNICALL
 Java_org_foldr_fcpp_androidDemo_AP_get_1global_1clock(JNIEnv *env, jclass clazz) {
-    return fcpp::get_global_clock();
+    return fcpp::get_double("global_clock");
 }
 
 extern "C" JNIEXPORT jint JNICALL
 Java_org_foldr_fcpp_androidDemo_AP_get_1hop_1dist(JNIEnv *env, jclass clazz) {
-    return fcpp::get_hop_dist();
+    return fcpp::get_int("hop_dist");
 }
 
 extern "C" JNIEXPORT jint JNICALL
 Java_org_foldr_fcpp_androidDemo_AP_get_1min_1uid(JNIEnv *env, jclass clazz) {
-    return fcpp::get_min_uid();
+    return fcpp::get_int("min_uid");
 }
 extern "C" JNIEXPORT void JNICALL
 Java_org_foldr_fcpp_androidDemo_AP_set_1latlong(JNIEnv *env, jclass clazz, jdouble latitude,
                                                 jdouble longitude) {
-    fcpp::set_position_latlong(latitude, longitude);
+    fcpp::set_double("position_latitude", latitude);
+    fcpp::set_double("position_longitude", longitude);
 }
 extern "C" JNIEXPORT void JNICALL
 Java_org_foldr_fcpp_androidDemo_AP_set_1accuracy(JNIEnv *env, jclass clazz, jfloat accuracy) {
-    fcpp::set_position_accuracy(accuracy);
+    fcpp::set_double("position_accuracy", accuracy);
 }

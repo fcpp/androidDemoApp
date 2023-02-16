@@ -27,25 +27,6 @@ extern void set_int(char const*, int);
 extern void set_bool(char const*, bool);
 
 // DEPRECATED
-extern void start(JNIEnv *env, jclass apclass, int uid);
 extern char* get_nbr_lags();
-extern uint8_t get_max_msg_size();
-extern bool get_im_weak();
-extern bool get_some_weak();
-extern uint8_t get_min_uid();
-extern float get_global_clock();
-extern uint8_t get_hop_dist();
-extern uint8_t get_degree();
 
-extern uint8_t get_diameter();
-extern void set_diameter(uint8_t);
-
-extern float get_retain_time();
-extern void set_retain_time(float);
-
-extern float get_round_period();
-extern void set_round_period(float);
-
-extern void set_position_latlong(double, double);
-extern void set_position_accuracy(float);
 } // namespace fcpp
