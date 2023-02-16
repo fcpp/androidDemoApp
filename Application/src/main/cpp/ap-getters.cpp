@@ -14,7 +14,7 @@ extern "C" JNIEXPORT void JNICALL
 Java_org_foldr_fcpp_androidDemo_AP_fcpp_1start(JNIEnv *env, jclass thiz, jint uid) {
     // https://stackoverflow.com/a/19657117/60462:
     auto c = static_cast<jclass>( env->NewGlobalRef( thiz) );
-    fcpp::start(env, c, uid);
+    fcpp::start(env, c, uid, "vulnerability_detection");
     return;
 }
 
@@ -30,13 +30,13 @@ Java_org_foldr_fcpp_androidDemo_AP_get_1storage(JNIEnv *env, jclass clazz) {
 
 extern "C" JNIEXPORT jlong JNICALL
 Java_org_foldr_fcpp_androidDemo_AP_get_1round_1count(JNIEnv *env, jclass thiz) {
-    uint16_t c = fcpp::get_round_count();
+    uint16_t c = fcpp::get_int("round_count");
     return (jlong)(unsigned long long)c;
 }
 
 extern "C" JNIEXPORT jlong JNICALL
 Java_org_foldr_fcpp_androidDemo_AP_get_1max_1msg_1size(JNIEnv *env, jclass thiz) {
-    return (jlong)(unsigned long long)fcpp::get_max_msg_size();
+    return (jlong)(unsigned long long)fcpp::get_int("max_msg");
 }
 
 /* Note the escaped `_` below. */

@@ -192,10 +192,6 @@ void stop() {
 
 // DEPRECATED
 
-void start(JNIEnv *env, jclass apclazz, int uid) {
-    start(env, apclazz, uid, "vulnerability_detection");
-}
-
 char* get_nbr_lags() {
     std::string s = storage_getter<std::string>("nbr_lags");
     char* c = new char[s.size()+1];

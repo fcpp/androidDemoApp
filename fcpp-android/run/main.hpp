@@ -29,7 +29,6 @@ extern void set_bool(char const*, bool);
 // DEPRECATED
 extern void start(JNIEnv *env, jclass apclass, int uid);
 extern char* get_nbr_lags();
-extern uint16_t get_round_count();
 extern uint8_t get_max_msg_size();
 extern bool get_im_weak();
 extern bool get_some_weak();
