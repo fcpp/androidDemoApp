@@ -23,6 +23,7 @@ set(
     ./lib/coordination/past_ctl.cpp
     ./lib/coordination/slcs.cpp
     ./lib/coordination/tracker.cpp
+    ./lib/coordination/traitor_detection.cpp
     ./lib/coordination/vulnerability_detection.cpp
     ./lib/configuration.cpp
     ./run/main.cpp

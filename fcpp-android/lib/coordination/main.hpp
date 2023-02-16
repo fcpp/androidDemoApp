@@ -10,6 +10,7 @@
 
 #include "lib/component/base.hpp"
 #include "lib/coordination/tracker.hpp"
+#include "lib/coordination/traitor_detection.hpp"
 #include "lib/coordination/vulnerability_detection.hpp"
 
 

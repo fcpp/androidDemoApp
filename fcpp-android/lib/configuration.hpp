@@ -47,6 +47,7 @@ DECLARE_OPTIONS(main,
 
 //! @brief The list of supported experiments.
 using experiments = common::type_sequence<
+    traitor_detection,
     vulnerability_detection
 >;
 
