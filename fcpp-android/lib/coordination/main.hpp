@@ -9,6 +9,8 @@
 #define FCPP_COORDINATION_MAIN_H_
 
 #include "lib/component/base.hpp"
+#include "lib/component/logger.hpp"
+#include "lib/coordination/movement.hpp"
 #include "lib/coordination/tracker.hpp"
 #include "lib/coordination/traitor_detection.hpp"
 #include "lib/coordination/vulnerability_detection.hpp"
@@ -34,26 +36,37 @@ namespace tags {
 }
 
 //! @brief Templated main aggregate function.
-template <typename tag>
+template <typename tag, bool simulation>
 struct main {
     template <typename node_t>
     void operator()(node_t& node, times_t) {
         using namespace tags;
-        experiment(CALL, tag{});
+        experiment(CALL, tag{}, common::bool_pack<simulation>{});
         tracker(CALL);
     }
 };
 //! @brief Export list for the main aggregate function.
-template <typename tag>
-FUN_EXPORT main_t = export_list<experiment_t<tag>, tracker_t>;
+template <typename tag, bool simulation>
+FUN_EXPORT main_t = export_list<experiment_t<tag, simulation>, tracker_t>;
 //! @brief Storage list for the main aggregate function.
-template <typename tag>
-FUN_EXPORT main_s = storage_list<experiment_s<tag>, tracker_s,
+template <typename tag, bool simulation>
+FUN_EXPORT main_s = storage_list<experiment_s<tag, simulation>, tracker_s,
     component::tags::uid,     device_t,
     tags::position_latitude,  double,
     tags::position_longitude, double,
     tags::position_accuracy,  float
 >;
+//! @brief Aggregator list for the main aggregate function.
+template <typename tag>
+FUN_EXPORT main_a = common::apply_templates<storage_list<
+    component::tags::uid,     aggregator::max<int>,
+    tracker_a,
+    experiment_a<tag>
+>, component::tags::aggregators>;
+//! @brief Plot list for the main aggregate function.
+template <typename tag, typename A = main_a<tag>>
+FUN_EXPORT main_p = plot::join<tracker_p<A>, experiment_p<tag,A>>;
+
 
 } // namespace coordination
 

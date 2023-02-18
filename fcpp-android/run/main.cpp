@@ -35,7 +35,7 @@ namespace os {
 
 //! @brief Type of the network object for a given experiment.
 template <typename tag>
-using net_t = typename component::deployment<option::main<tag>>::net;
+using net_t = typename component::deployment<option::main<tag, false>>::net;
 
 //! @brief The type of locks for accessing node objects.
 using lock_type = typename net_t<experiments::front>::lock_type;

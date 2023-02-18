@@ -11,13 +11,15 @@
 //! @brief initial diameter upper bound
 #define DIAMETER     10
 //! @brief initial retain time
-#define RETAIN_TIME  10
+#define RETAIN_TIME  5
 //! @brief initial round period
 #define ROUND_PERIOD 1
 
 #include "lib/component.hpp"
 #include "lib/deployment.hpp"
 #include "lib/coordination/main.hpp"
+#include "lib/data/shape.hpp"
+#include "lib/simulation/displayer.hpp"
 
 
 /**
@@ -34,13 +36,39 @@ using namespace component::tags;
 using namespace coordination::tags;
 
 //! @brief Main FCPP option setup.
-template <typename tag>
+template <typename tag, bool simulation>
 DECLARE_OPTIONS(main,
-    program<coordination::main<tag>>,
-    exports<coordination::main_t<tag>>,
-    tuple_store<coordination::main_s<tag>>,
+    program<coordination::main<tag, simulation>>,
+    exports<coordination::main_t<tag, simulation>>,
+    tuple_store<coordination::main_s<tag, simulation>>,
     retain<metric::retain<RETAIN_TIME>>,
     message_push<false>
+);
+
+//! @brief The maximum communication range between nodes.
+constexpr size_t communication_range = 100;
+
+template <typename tag>
+DECLARE_OPTIONS(simulation,
+    parallel<false>,     // multithreading enabled on node rounds
+    synchronised<false>, // optimise for asynchronous networks
+    message_size<true>,  // emulate message sizes
+    log_schedule<sequence::periodic_n<1, 0, 1>>,    // the sequence generator for log events on the network
+    coordination::main_a<tag>,                      // the tags and corresponding aggregators to be logged
+    plot_type<coordination::main_p<tag>>,           // the plot description
+    connector<connect::fixed<communication_range>>, // connection allowed within a fixed comm range
+    area<0, 0, hi_x, hi_y>, // bounding coordinates of the simulated space
+    shape_tag<node_shape>,  // the shape of a node is read from this tag in the store
+    size_tag<node_size>,    // the size  of a node is read from this tag in the store
+    color_tag<node_color>,  // the color of a node is read from this tag in the store
+    spawn_schedule<sequence::multiple_n<100, 0>>, // create 100 devices at time 0
+    init<
+        x,              rectangle_d, // random displacement of devices in the simulation area
+        diameter,       distribution::constant_i<int, diameter>,        // pass net construction parameters to nodes
+        threshold,      distribution::constant_i<times_t, retain_time>, // pass net construction parameters to nodes
+        retain_time,    distribution::constant_i<times_t, retain_time>, // pass net construction parameters to nodes
+        round_period,   distribution::constant_i<times_t, round_period> // pass net construction parameters to nodes
+    >
 );
 
 } // namespace option

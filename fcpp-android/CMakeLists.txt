@@ -18,6 +18,7 @@ project(
 set(
     SOURCE_LIST
     ./lib/common/template_remover.cpp
+    ./lib/coordination/experiment_helper.cpp
     ./lib/coordination/main.cpp
     ./lib/coordination/movement.cpp
     ./lib/coordination/past_ctl.cpp
@@ -29,6 +30,9 @@ set(
     ./run/main.cpp
 )
 fcpp_headers(main OFF "${SOURCE_LIST}")
+
+# executable declaration
+fcpp_target(./run/simulation.cpp ON)
 
 # test declaration
 fcpp_test(./test/common/template_remover.cpp)

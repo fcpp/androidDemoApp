@@ -10,6 +10,8 @@
 
 #include "lib/beautify.hpp"
 #include "lib/coordination.hpp"
+#include "lib/common/plot.hpp"
+#include "lib/option/aggregator.hpp"
 
 
 /**
@@ -57,6 +59,12 @@ FUN_EXPORT tracker_s = storage_list<
     tags::global_clock,       times_t,
     tags::max_msg,            uint8_t
 >;
+//! @brief Aggregator list for tracker.
+FUN_EXPORT tracker_a = storage_list<
+    tags::max_msg,  aggregator::mean<double>
+>;
+//! @brief Plot list for tracker.
+GEN_EXPORT(A) tracker_p = plot::split<plot::time, plot::values<A, common::type_sequence<>, tags::max_msg>>;
 
 } // namespace coordination
 

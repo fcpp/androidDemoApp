@@ -8,6 +8,7 @@ local.properties
 .DS_Store
 arm64-v8a/
 x86_64/
+output/
 plot/
 bin/
 local.mk
