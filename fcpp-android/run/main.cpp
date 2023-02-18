@@ -14,7 +14,7 @@
 #include "lib/configuration.hpp"
 #include "lib/common/template_remover.hpp"
 
-#include "driver.hpp"
+#include "lib/driver.hpp"
 
 #define LOGI(...) \
   ((void)__android_log_print(ANDROID_LOG_INFO, "fcpp", __VA_ARGS__))
