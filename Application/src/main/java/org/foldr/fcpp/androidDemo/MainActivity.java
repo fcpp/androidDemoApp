@@ -67,8 +67,9 @@ public class MainActivity extends FragmentActivity implements ActivityCompat.OnR
             @Override
             public void onLocationChanged(@NonNull Location location) {
                 // Call into FCPP:
-                AP.set_latlong(location.getLatitude(), location.getLongitude());
-                AP.set_accuracy(location.getAccuracy());
+                AP.set_double("position_latitude", location.getLatitude());
+                AP.set_double("position_longitude", location.getLongitude());
+                AP.set_double("accuracy", location.getAccuracy());
             }
         };
 

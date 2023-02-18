@@ -46,6 +46,7 @@ public class AP extends Application {
     public static native void set_bool(String attribute, boolean value);
     public static native void set_int(String attribute, int value);
     public static native void set_string(String attribute, String value);
+    public static native void set_double(String attribute, double value);
 
     public static native String get_storage();
 
@@ -67,9 +68,6 @@ public class AP extends Application {
     public static native void set_retain_time(float time);
     public static native float get_round_period();
     public static native void set_round_period(float time);
-
-    public static native void set_latlong(double latitude, double longitude);
-    public static native void set_accuracy(float accuracy);
 
     // TO HERE
 

@@ -182,9 +182,3 @@ extern "C" JNIEXPORT jint JNICALL
 Java_org_foldr_fcpp_androidDemo_AP_get_1min_1uid(JNIEnv *env, jclass clazz) {
     return fcpp::get_int("min_uid");
 }
-extern "C" JNIEXPORT void JNICALL
-Java_org_foldr_fcpp_androidDemo_AP_set_1latlong(JNIEnv *env, jclass clazz, jdouble latitude,
-                                                jdouble longitude) {
-    fcpp::set_double("position_latitude", latitude);
-    fcpp::set_double("position_longitude", longitude);
-}
