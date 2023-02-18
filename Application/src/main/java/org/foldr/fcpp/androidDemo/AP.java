@@ -59,6 +59,7 @@ public class AP extends Application {
 
     public static native void set_latlong(double latitude, double longitude);
     public static native void set_accuracy(float accuracy);
+    public static native boolean get_bool(String attribute);
 
     /* Deque for received transmissions. Read from first, append to end. */
     static Deque<ScanResult> pending = new ConcurrentLinkedDeque<>();

@@ -14,7 +14,7 @@ extern "C" JNIEXPORT void JNICALL
 Java_org_foldr_fcpp_androidDemo_AP_fcpp_1start(JNIEnv *env, jclass thiz, jint uid) {
     // https://stackoverflow.com/a/19657117/60462:
     auto c = static_cast<jclass>( env->NewGlobalRef( thiz) );
-    fcpp::start(env, c, uid, "vulnerability_detection");
+    fcpp::start(env, c, uid, "traitor_detection");
     return;
 }
 
@@ -118,7 +118,11 @@ Java_org_foldr_fcpp_androidDemo_AP_set_1latlong(JNIEnv *env, jclass clazz, jdoub
     fcpp::set_double("position_latitude", latitude);
     fcpp::set_double("position_longitude", longitude);
 }
-extern "C" JNIEXPORT void JNICALL
-Java_org_foldr_fcpp_androidDemo_AP_set_1accuracy(JNIEnv *env, jclass clazz, jfloat accuracy) {
-    fcpp::set_double("position_accuracy", accuracy);
+
+extern "C" JNIEXPORT jboolean JNICALL
+Java_org_foldr_fcpp_androidDemo_AP_get_1bool(JNIEnv *env, jclass clazz, jstring attribute_name) {
+    const char* str = env->GetStringUTFChars(attribute_name,0);
+    bool result = fcpp::get_bool(str);
+    env->ReleaseStringUTFChars(attribute_name, str);
+    return result;
 }
