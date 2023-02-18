@@ -9,9 +9,11 @@
 #define FCPP_ANDROID_DRIVER_H_
 
 #include <cassert>
+#include <chrono>
 #include <cstdio>
 #include <exception>
 #include <random>
+#include <thread>
 #include <vector>
 #include <jni.h>
 #include <android/log.h>
@@ -162,6 +164,7 @@ struct transceiver {
             // TODO: actually try to receive the packet
             std::vector<char> vs_packet = pollData();
             if (vs_packet.size() == 0) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(250));
                 return m;
             }
             memcpy(packet, vs_packet.data(),std::min((size_t)maxPacketSize,vs_packet.size()));
