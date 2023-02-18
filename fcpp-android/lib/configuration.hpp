@@ -41,6 +41,7 @@ DECLARE_OPTIONS(main,
     program<coordination::main<tag, simulation>>,
     exports<coordination::main_t<tag, simulation>>,
     tuple_store<coordination::main_s<tag, simulation>>,
+    round_schedule<sequence::periodic_n<1, 0, 1>>,    // the sequence generator for round events on the network
     retain<metric::retain<RETAIN_TIME>>,
     message_push<false>
 );
