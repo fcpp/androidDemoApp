@@ -95,7 +95,7 @@ Java_org_foldr_fcpp_androidDemo_AP_set_1round_1period(JNIEnv *env, jclass clazz,
 extern "C" JNIEXPORT jstring JNICALL
 Java_org_foldr_fcpp_androidDemo_AP_get_1nbr_1lags(JNIEnv *env, jclass clazz) {
     // Danger Will Robinson. TODO: refactor to new FCPP-API.
-    return env->NewStringUTF(fcpp::get_nbr_lags());
+    return env->NewStringUTF(fcpp::get_string("nbr_lags"));
 }
 
 extern "C" JNIEXPORT jfloat JNICALL
