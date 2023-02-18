@@ -25,6 +25,8 @@ jclass clazz;
 jmethodID messageMe;
 jmethodID postMsg;
 
+constexpr bool enable_debugging = true;
+
 #define LOGI(...) \
   ((void)__android_log_print(ANDROID_LOG_INFO, "fcpp", __VA_ARGS__))
 #define LOGD(...) \
@@ -32,7 +34,7 @@ jmethodID postMsg;
 
 
 std::vector<char> pollData() {
-    //LOGD("Polling...");
+    LOGD("Polling...");
     std::vector<char> empty;
     JNIEnv *env;
     int attachResult = jvm->AttachCurrentThread(&env, NULL);
@@ -41,11 +43,11 @@ std::vector<char> pollData() {
     jobject ptr = env->CallStaticObjectMethod(clazz, messageMe);
     jbyteArray *data = reinterpret_cast<jbyteArray *>(&ptr);
     if (*data == NULL) {
-        // LOGD("data==NULL");
+        LOGD("data==NULL");
         return empty; // XXX?
     }
     jsize length = env->GetArrayLength(*data);
-    //LOGD("%s", ("data len="+ std::to_string(length)).c_str());
+    LOGD("%s", ("data len="+ std::to_string(length)).c_str());
     if (length == 0) {
         return empty;
     }
@@ -111,7 +113,7 @@ struct transceiver {
         // try to send it
         try {
             if (true) { // TODO: actually try to send the packet
-                // LOGD("Sending...");
+                LOGD("Sending...");
                 JNIEnv *env;
                 int attachResult = jvm->AttachCurrentThread(&env, NULL);
                 assert (attachResult == JNI_OK);
@@ -125,12 +127,12 @@ struct transceiver {
                 memcpy(ptr, &id, sizeof(device_t));                
                 env->ReleasePrimitiveArrayCritical(retArray, temp, 0);
                 env->CallStaticVoidMethod(clazz, postMsg, retArray, size);
-                if (false) {
+                if (enable_debugging) {
                     char strbuf[2*size+1];
                     btox(strbuf, (char *)temp, 2*size);
-                    // LOGD("Sent %d byte packet: %s\n", (int)size, strbuf);
+                    LOGD("Sent %d byte packet: %s\n", (int)size, strbuf);
                 } else {
-                    // LOGD("Sent %d byte packet\n", (int)size);
+                    LOGD("Sent %d byte packet\n", (int)size);
                 }
                 // Let's hope the Java side deallocates the string eventually.
                 return true;
@@ -170,14 +172,14 @@ struct transceiver {
                 m.content.resize(size - panHeaderSize - sizeof(device_t));
                 // Skips the panHeader of course:
                 memcpy(m.content.data(), packet + panHeaderSize, size - panHeaderSize - sizeof(device_t));
-                if (false) {
+                if (enable_debugging) {
                     char strbuf[2*size+1];
                     btox(strbuf, vs_packet.data(), 2*size);
-                    // LOGD("Raw packet recvd: %s\n", strbuf);
+                    LOGD("Raw packet recvd: %s\n", strbuf);
                     btox(strbuf, m.content.data(), 2*(size - panHeaderSize - sizeof(device_t)));
-                    // LOGD("Received %d byte packet from device %d at time %f: %s\n", (int)size, m.device, m.time, strbuf);
+                    LOGD("Received %d byte packet from device %d at time %f: %s\n", (int)size, m.device, m.time, strbuf);
                 } else {
-                    // LOGD("Received %d byte packet from device %d at time %f\n", (int)size, m.device, m.time);
+                    LOGD("Received %d byte packet from device %d at time %f\n", (int)size, m.device, m.time);
                 }
             } else {
                 LOGI("Receive error, size: %ld\n", size);

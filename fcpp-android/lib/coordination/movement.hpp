@@ -20,8 +20,8 @@
 namespace fcpp {
 
 constexpr int max_group_size = 100;
-constexpr int hi_x = 1200;
-constexpr int hi_y = 800;
+constexpr int hi_x = 120;
+constexpr int hi_y = 80;
 
 //! @brief Namespace containing the libraries of coordination routines.
 namespace coordination {

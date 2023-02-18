@@ -46,7 +46,7 @@ DECLARE_OPTIONS(main,
 );
 
 //! @brief The maximum communication range between nodes.
-constexpr size_t communication_range = 100;
+constexpr size_t communication_range = 10;
 
 template <typename tag>
 DECLARE_OPTIONS(simulation,
