@@ -4,6 +4,7 @@
 #define FCPP_ENVIRONMENT FCPP_ENVIRONMENT_PHYSICAL
 #define FCPP_EXPORT_NUM 2
 #define FCPP_TRACE 32
+#define FCPP_WARNING_TRACE false
 
 #include <android/log.h>
 #include <cstring>
@@ -188,15 +189,6 @@ void stop() {
         delete n;
     });
     running_experiment = "";
-}
-
-// DEPRECATED
-
-char* get_nbr_lags() {
-    std::string s = storage_getter<std::string>("nbr_lags");
-    char* c = new char[s.size()+1];
-    strcpy(c, s.c_str());
-    return c;
 }
 
 } // namespace fcpp

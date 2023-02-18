@@ -26,7 +26,4 @@ extern void set_double(char const*, double);
 extern void set_int(char const*, int);
 extern void set_bool(char const*, bool);
 
-// DEPRECATED
-extern char* get_nbr_lags();
-
 } // namespace fcpp
