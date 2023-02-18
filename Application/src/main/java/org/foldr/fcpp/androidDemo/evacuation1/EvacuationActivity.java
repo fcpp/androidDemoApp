@@ -95,7 +95,7 @@ public class EvacuationActivity extends FragmentActivity {
                 // Call into FCPP:
                 AP.set_double("position_latitude", location.getLatitude());
                 AP.set_double("position_longitude", location.getLongitude());
-                AP.set_double("accuracy", location.getAccuracy());
+                AP.set_double("position_accuracy", location.getAccuracy());
             }
         };
         setContentView(R.layout.activity_main);

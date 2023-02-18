@@ -86,7 +86,13 @@ public class EvacuationFragment extends Fragment {
             public void run() {
                 // TODO -- first approximation, should at least contain self.
                 // But VS thinks this is from the old example, so it might need changing.
-                state_rg.setBackgroundColor("{*:inf}".equals(AP.get_nbr_lags()) ? Color.RED : Color.GREEN);
+                if ("{*:inf}".equals(AP.get_nbr_lags())) {
+                    state_rg.setBackgroundColor(Color.GREEN);
+                    state_rg.setText("✓");
+                } else {
+                    state_rg.setBackgroundColor(Color.RED);
+                    state_rg.setText("x");
+                }
                 // Log.d(LOG_TAG, AP.get_nbr_lags());
                 state_rg.postDelayed(this, 250); // while(true)...
                 b1.setBackgroundColor(AP.get_bool("evacuation_done") ? Color.GREEN : Color.RED);
