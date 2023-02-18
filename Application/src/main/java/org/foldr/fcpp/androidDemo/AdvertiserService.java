@@ -313,6 +313,10 @@ public class AdvertiserService extends Service {
         sendBroadcast(failureIntent);
     }
 
+    /**
+     * Logs AP node contents. We don't necessarily have a UI, so we broadcast and hope
+     * that there's a logger :-)
+     */
     private void sendStorageIntent(){
         Intent failureIntent = new Intent();
         failureIntent.setAction(ADVERTISING_STORAGE);
