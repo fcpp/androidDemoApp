@@ -64,7 +64,6 @@ android {
         }
         androidTest.setRoot('tests')
         androidTest.java.srcDirs = ['tests/src']
-
     }
 
     // https://developer.android.com/studio/build/configure-apk-splits
@@ -73,7 +72,7 @@ android {
     externalNativeBuild {
         cmake {
             version '3.18.1'
-            path 'src/main/cpp/CMakeLists.txt'
+            path '../fcpp-android/CMakeLists.txt'
         }
     }
 }

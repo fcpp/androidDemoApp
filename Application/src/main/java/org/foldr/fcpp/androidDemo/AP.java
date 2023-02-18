@@ -240,7 +240,7 @@ public class AP extends Application {
     }
 
     static {
-        System.loadLibrary("ap-libs");
+        System.loadLibrary("ap");
     }
 
 }

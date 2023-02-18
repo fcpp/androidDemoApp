@@ -27,9 +27,10 @@ set(
     ./lib/coordination/traitor_detection.cpp
     ./lib/coordination/vulnerability_detection.cpp
     ./lib/configuration.cpp
+    ./lib/ap-getters.cpp
     ./run/main.cpp
 )
-fcpp_headers(main OFF "${SOURCE_LIST}")
+fcpp_headers(libap OFF "${SOURCE_LIST}")
 
 # executable declaration
 fcpp_target(./run/simulation.cpp ON)

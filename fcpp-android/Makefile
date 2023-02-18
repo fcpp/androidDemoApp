@@ -17,4 +17,4 @@ fcpp/src:
 $(abis): fcpp/src
 	mkdir -p $@
 	$(CMAKE) -S . -B $@ -DCMAKE_TOOLCHAIN_FILE=$(ANDROID_HOME)/ndk/$(NDK_VERSION)/build/cmake/android.toolchain.cmake   -DANDROID_ABI=$@     -DANDROID_PLATFORM=android-$(PLATFORM) -DCMAKE_MAKE_PROGRAM=$(MAKE) -G "Unix Makefiles"
-	cd $@ && $(MAKE) main
+	cd $@ && $(MAKE) libap
