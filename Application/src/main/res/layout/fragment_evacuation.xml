@@ -54,7 +54,7 @@
                     android:layout_height="wrap_content"
                     android:paddingLeft="20dp"
                     android:paddingRight="20dp"
-                    android:text="B1"
+                    android:text="ED"
                     android:textSize="48sp" />
 
                 <TextView
@@ -63,7 +63,7 @@
                     android:layout_height="wrap_content"
                     android:paddingLeft="20dp"
                     android:paddingRight="20dp"
-                    android:text="B2"
+                    android:text="HG"
                     android:textSize="48sp" />
 
                 <TextView
@@ -81,7 +81,7 @@
                     android:layout_height="wrap_content"
                     android:paddingLeft="20dp"
                     android:paddingRight="20dp"
-                    android:text="B3"
+                    android:text="TF"
                     android:textSize="48sp" />
 
                 <TextView
@@ -90,7 +90,7 @@
                     android:layout_height="wrap_content"
                     android:paddingLeft="20dp"
                     android:paddingRight="20dp"
-                    android:text="B4"
+                    android:text="OK"
                     android:textSize="48sp" />
                 <TextView
                     android:id="@+id/text_group_lr"

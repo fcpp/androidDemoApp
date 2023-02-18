@@ -21,8 +21,9 @@ import org.foldr.fcpp.androidDemo.R;
  */
 public class EvacuationFragment extends Fragment {
 
-    private static final String ARG_PARAM_TRAITOR = "traitor";
-    private static final String ARG_PARAM_IS_GROUP_LEFT = "is_group_left";
+    static final String ARG_PARAM_TRAITOR = "traitor";
+    static final String ARG_PARAM_IS_GROUP_LEFT = "evacuation_group";
+    static final String ARG_PARAM_EVACUATION_TIME = "evacuation_time";
 
     private boolean isTraitor;
     private boolean is_group_left;
@@ -37,11 +38,12 @@ public class EvacuationFragment extends Fragment {
      *
      * @return A new instance of fragment EvacuationFragment.
      */
-    public static EvacuationFragment newInstance(boolean isTraitor, boolean is_group_left) {
+    public static EvacuationFragment newInstance(boolean isTraitor, boolean is_group_left, int evacuation_time) {
         EvacuationFragment fragment = new EvacuationFragment();
         Bundle args = new Bundle();
         args.putBoolean(ARG_PARAM_TRAITOR, isTraitor);
         args.putBoolean(ARG_PARAM_IS_GROUP_LEFT, is_group_left);
+        args.putInt(ARG_PARAM_EVACUATION_TIME, evacuation_time);
         fragment.setArguments(args);
         return fragment;
     }
@@ -54,6 +56,8 @@ public class EvacuationFragment extends Fragment {
         }
         isTraitor = getArguments().getBoolean(ARG_PARAM_TRAITOR);
         is_group_left = getArguments().getBoolean(ARG_PARAM_IS_GROUP_LEFT);
+        AP.set_bool(ARG_PARAM_IS_GROUP_LEFT, is_group_left);
+        AP.set_int(ARG_PARAM_EVACUATION_TIME, getArguments().getInt(ARG_PARAM_EVACUATION_TIME));
     }
 
     @Override
@@ -84,7 +88,11 @@ public class EvacuationFragment extends Fragment {
                 // But VS thinks this is from the old example, so it might need changing.
                 state_rg.setBackgroundColor("{*:inf}".equals(AP.get_nbr_lags()) ? Color.RED : Color.GREEN);
                 // Log.d(LOG_TAG, AP.get_nbr_lags());
-                state_rg.postDelayed(this, 5000); // while(true)...
+                state_rg.postDelayed(this, 250); // while(true)...
+                b1.setBackgroundColor(AP.get_bool("evacuation_done") ? Color.GREEN : Color.RED);
+                b2.setBackgroundColor(AP.get_bool("homogeneous_group") ? Color.GREEN : Color.RED);
+                b3.setBackgroundColor(AP.get_bool("traitor_free") ? Color.GREEN : Color.RED);
+                b4.setBackgroundColor(AP.get_bool(ARG_PARAM_IS_GROUP_LEFT) == is_group_left? Color.GREEN : Color.RED);
             }
         }, 5000);
 

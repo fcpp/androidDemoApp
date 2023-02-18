@@ -21,14 +21,31 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:paddingRight="20dp"
-            android:text="Delay (T):"/>
+            android:text="Round period (s):"/>
         <EditText
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:id="@+id/param_delay"
             android:inputType="number"
-            android:text="20"
+            android:text="1"
             android:hint="delay"/>
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingRight="20dp"
+            android:text="Evacuation time (s):"/>
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/param_evacuation_time"
+            android:inputType="number"
+            android:text="180"
+            android:hint="evacuation time"/>
     </LinearLayout>
     <LinearLayout
         android:orientation="horizontal"

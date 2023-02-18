@@ -1,6 +1,9 @@
 package org.foldr.fcpp.androidDemo.evacuation1;
 
 import static org.foldr.fcpp.androidDemo.Constants.LOG_TAG;
+import static org.foldr.fcpp.androidDemo.evacuation1.EvacuationFragment.ARG_PARAM_EVACUATION_TIME;
+import static org.foldr.fcpp.androidDemo.evacuation1.EvacuationFragment.ARG_PARAM_IS_GROUP_LEFT;
+import static org.foldr.fcpp.androidDemo.evacuation1.EvacuationFragment.ARG_PARAM_TRAITOR;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
@@ -34,6 +37,7 @@ public class EvacuationParameters extends AppCompatActivity implements View.OnCl
         String diameter = ((TextView) findViewById(R.id.param_diameter)).getText().toString();
         String retain = ((TextView) findViewById(R.id.param_retain)).getText().toString();
         String delay = ((TextView) findViewById(R.id.param_delay)).getText().toString();
+        String evacuation_time = ((TextView) findViewById(R.id.param_evacuation_time)).getText().toString();
         boolean traitor = ((SwitchCompat) findViewById(R.id.param_traitor)).isChecked();
         Intent i = new Intent(this, EvacuationActivity.class);
         // We fail hard on conversion errors below.
@@ -42,9 +46,11 @@ public class EvacuationParameters extends AppCompatActivity implements View.OnCl
         AP.set_diameter(Integer.valueOf(diameter));
         i.putExtra("retain", Integer.valueOf(retain));
         AP.set_retain_time(Integer.valueOf(retain));
-        i.putExtra("delay", Integer.valueOf(delay));
-        i.putExtra("group_left", group_left);
-        i.putExtra("traitor", traitor);
+        int round_period = Integer.valueOf(delay);
+        AP.set_int("round_period", round_period);
+        i.putExtra(ARG_PARAM_IS_GROUP_LEFT, group_left);
+        i.putExtra(ARG_PARAM_TRAITOR, traitor);
+        i.putExtra(ARG_PARAM_EVACUATION_TIME, evacuation_time);
         startActivity(i);
         finish(); // terminate prefs dialog.
     }

@@ -18,6 +18,9 @@ package org.foldr.fcpp.androidDemo.evacuation1;
 
 import static org.foldr.fcpp.androidDemo.AdvertiserFragment.ARG_BROADCAST_ON_FIRST_BOOT;
 import static org.foldr.fcpp.androidDemo.Constants.LOG_TAG;
+import static org.foldr.fcpp.androidDemo.evacuation1.EvacuationFragment.ARG_PARAM_EVACUATION_TIME;
+import static org.foldr.fcpp.androidDemo.evacuation1.EvacuationFragment.ARG_PARAM_IS_GROUP_LEFT;
+import static org.foldr.fcpp.androidDemo.evacuation1.EvacuationFragment.ARG_PARAM_TRAITOR;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -68,19 +71,21 @@ public class EvacuationActivity extends FragmentActivity {
     private int delay;
     private int diameter;
     private boolean is_group_left;
+    private int evacuation_time;
 
     @SuppressLint("MissingPermission")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.isTraitor = getIntent().getBooleanExtra("traitor", false);
-        this.is_group_left = getIntent().getBooleanExtra("group_left", false);
+        this.isTraitor = getIntent().getBooleanExtra(ARG_PARAM_TRAITOR, false);
+        this.is_group_left = getIntent().getBooleanExtra(ARG_PARAM_IS_GROUP_LEFT, false);
+        this.evacuation_time = getIntent().getIntExtra(ARG_PARAM_EVACUATION_TIME, 180);
         this.retain = getIntent().getIntExtra("retain", -1);
         this.delay = getIntent().getIntExtra("delay", -1);
         this.diameter = getIntent().getIntExtra("diameter", -1);
 
         // The options are for FCPP:
-        frag = EvacuationFragment.newInstance(isTraitor, is_group_left);
+        frag = EvacuationFragment.newInstance(isTraitor, is_group_left, evacuation_time);
         application = (AP) getApplication();
         /* Note that FCPP is already running by the time we install the logger. */
         application.jsonhttpFormatter = getJSONHTTPFormatter();
