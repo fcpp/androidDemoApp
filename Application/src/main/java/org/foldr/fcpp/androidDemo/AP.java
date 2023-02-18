@@ -36,10 +36,21 @@ public class AP extends Application {
     public LocationManager locationManager;
 
     /* These native definitions are from ap-getters.cpp: */
-    static native void fcpp_start(int uid);
+    static native void fcpp_start(int uid, String experiment_name);
     public static native void fcpp_stop();
 
+    public static native boolean get_bool(String attribute);
+    public static native int get_int(String attribute);
+    public static native double get_double(String attribute);
+    public static native String get_string(String attribute);
+    public static native void set_bool(String attribute, boolean value);
+    public static native void set_int(String attribute, int value);
+    public static native void set_string(String attribute, String value);
+
     public static native String get_storage();
+
+    // DEPRECATED FROM HERE
+
     public static native String get_nbr_lags();
     public static native long get_round_count();
     public static native long get_max_msg_size();
@@ -59,7 +70,8 @@ public class AP extends Application {
 
     public static native void set_latlong(double latitude, double longitude);
     public static native void set_accuracy(float accuracy);
-    public static native boolean get_bool(String attribute);
+
+    // TO HERE
 
     /* Deque for received transmissions. Read from first, append to end. */
     static Deque<ScanResult> pending = new ConcurrentLinkedDeque<>();
@@ -188,7 +200,7 @@ public class AP extends Application {
         super.onCreate();
         int uid = setUID();
         Log.i(LOG_TAG, "fcpp_start: " + uid);
-        fcpp_start(uid);
+        fcpp_start(uid, "traitor_detection");
 
         // TODO: proper initial values for fcpp?
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
