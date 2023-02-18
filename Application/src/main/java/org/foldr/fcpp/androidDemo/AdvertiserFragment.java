@@ -50,9 +50,14 @@ public class AdvertiserFragment extends Fragment implements View.OnClickListener
      */
     private BroadcastReceiver advertisingFailureReceiver;
 
+    public static final String ARG_BROADCAST_ON_FIRST_BOOT = "broadcast_on_first_boot";
+    private boolean firstBoot;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        firstBoot = getArguments().getBoolean(ARG_BROADCAST_ON_FIRST_BOOT, false);
 
         advertisingFailureReceiver = new BroadcastReceiver() {
 
@@ -133,6 +138,17 @@ public class AdvertiserFragment extends Fragment implements View.OnClickListener
         super.onResume();
 
         mSwitch.setChecked(AdvertiserService.running);
+        if (firstBoot) {
+            // On first start, we immediately start broadcasting:
+            firstBoot = false;
+            startAdvertising();
+            // Possibly out of sync for a bit:
+            mSwitch.setChecked(true);
+        } else {
+            // Whatever the current state is:
+            mSwitch.setChecked(AdvertiserService.running);
+        }
+
 
         IntentFilter failureFilter = new IntentFilter(AdvertiserService.ADVERTISING_FAILED);
         getActivity().registerReceiver(advertisingFailureReceiver, failureFilter);

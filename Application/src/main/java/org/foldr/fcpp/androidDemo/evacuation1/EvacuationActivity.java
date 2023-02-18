@@ -16,6 +16,7 @@
 
 package org.foldr.fcpp.androidDemo.evacuation1;
 
+import static org.foldr.fcpp.androidDemo.AdvertiserFragment.ARG_BROADCAST_ON_FIRST_BOOT;
 import static org.foldr.fcpp.androidDemo.Constants.LOG_TAG;
 
 import android.Manifest;
@@ -240,6 +241,9 @@ public class EvacuationActivity extends FragmentActivity {
         transaction.replace(R.id.scanner_fragment_container, scannerFragment);
 
         AdvertiserFragment advertiserFragment = new AdvertiserFragment();
+        Bundle args = new Bundle();
+        args.putBoolean(ARG_BROADCAST_ON_FIRST_BOOT, true);
+        advertiserFragment.setArguments(args);
         transaction.replace(R.id.advertiser_fragment_container, advertiserFragment);
         
         transaction.replace(R.id.preferences_fragment_container, frag);
