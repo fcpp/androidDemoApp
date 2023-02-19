@@ -30,7 +30,11 @@ set(
     ./lib/ap-getters.cpp
     ./run/main.cpp
 )
-fcpp_headers(libap OFF "${SOURCE_LIST}" "android log")
+set(ANDROID_LIBS
+        android
+        log
+)
+fcpp_headers(libap OFF "${SOURCE_LIST}" "${ANDROID_LIBS}")
 
 # executable declaration
 fcpp_target(./run/simulation.cpp ON)
