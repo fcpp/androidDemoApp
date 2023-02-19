@@ -38,6 +38,7 @@ List<String> dirs = [
 android {
     compileSdkVersion 33
     ndkVersion '22.1.7171670'
+    namespace 'org.foldr.fcpp.androidDemo'
 
     defaultConfig {
         minSdkVersion 26

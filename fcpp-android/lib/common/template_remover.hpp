@@ -111,9 +111,27 @@ template <template<class> class P, typename T>
 using tagged_tuple_filter = typename details::tagged_tuple_filter<type_predicate<P>, typename std::decay_t<T>::tags, typename std::decay_t<T>::types>::type;
 
 
+//! @cond INTERNAL
+namespace details {
+    template <typename F, typename T>
+    struct applier_return_type_impl {
+        struct type {
+            template <typename U>
+            operator U() const {
+                return *((U*)42);
+            }
+        };
+    };
+    template <typename F, typename S, typename T, typename... Ts>
+    struct applier_return_type_impl<F, tagged_tuple<S, type_sequence<T, Ts...>>> {
+        using type = decltype(std::declval<F>()(std::declval<T&>()));
+    };
+}
+//! @endcond
+
 //! @brief The type returned by an applier call with given argument types.
 template <typename U, typename F, template<class> class P = any_type>
-using applier_return_type = decltype(std::declval<F>()(std::declval<typename tagged_tuple_filter<P,U>::types::front&>()));
+using applier_return_type = typename details::applier_return_type_impl<F, tagged_tuple_filter<P,U>>::type;
 
 
 //! @cond INTERNAL
