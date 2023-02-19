@@ -36,7 +36,7 @@ using namespace component::tags;
 using namespace coordination::tags;
 
 //! @brief Main FCPP option setup.
-template <typename tag, bool simulation>
+template <typename tag, bool simulation = false>
 DECLARE_OPTIONS(main,
     program<coordination::main<tag, simulation>>,
     exports<coordination::main_t<tag, simulation>>,
@@ -51,6 +51,7 @@ constexpr size_t communication_range = 10;
 
 template <typename tag>
 DECLARE_OPTIONS(simulation,
+    main<tag, true>,     // import general options
     parallel<false>,     // multithreading enabled on node rounds
     synchronised<false>, // optimise for asynchronous networks
     message_size<true>,  // emulate message sizes

@@ -25,7 +25,7 @@ void run_experiment(common::type_sequence<E, Es...>) {
         // Initialisation values.
         auto init_v = common::make_tagged_tuple<option::diameter, option::retain_time, option::round_period, option::name, option::plotter>(DIAMETER, RETAIN_TIME, ROUND_PERIOD, name, &p);
         // The network object type (interactive simulator with given options).
-        using net_t = typename component::interactive_simulator<option::main<E, true>, option::simulation<E>>::net;
+        using net_t = typename component::interactive_simulator<option::simulation<E>>::net;
         // Construct the network object.
         net_t network{init_v};
         // Run the simulation until exit.
