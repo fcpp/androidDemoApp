@@ -46,8 +46,11 @@ DECLARE_OPTIONS(main,
     message_push<false>
 );
 
-//! @brief The maximum communication range between nodes.
-constexpr size_t communication_range = 10;
+//! @brief The communication model (50% loss at 10m, 99% loss at 15m).
+using connector_t = connect::radial<10,connect::fixed<15>>;
+
+//! @brief The sequence of spawn events (100 devices in interval from 0 to 1s)
+using spawn_s = sequence::multiple<distribution::constant_n<size_t, 100>, distribution::interval_n<times_t, 0, 1>>;
 
 //! @brief The distribution of initial node positions (random in a 120x80 rectangle).
 using rectangle_d = distribution::rect_n<1, 0, 0, hi_x, hi_y>;
@@ -61,12 +64,12 @@ DECLARE_OPTIONS(simulation,
     log_schedule<sequence::periodic_n<1, 0, 1>>,    // the sequence generator for log events on the network
     coordination::main_a<tag>,                      // the tags and corresponding aggregators to be logged
     plot_type<coordination::main_p<tag>>,           // the plot description
-    connector<connect::fixed<communication_range>>, // connection allowed within a fixed comm range
+    connector<connector_t>, // probabilistic communication model
     area<0, 0, hi_x, hi_y>, // bounding coordinates of the simulated space
     shape_tag<node_shape>,  // the shape of a node is read from this tag in the store
     size_tag<node_size>,    // the size  of a node is read from this tag in the store
     color_tag<node_color>,  // the color of a node is read from this tag in the store
-    spawn_schedule<sequence::multiple_n<100, 0>>, // create 100 devices at time 0
+    spawn_schedule<spawn_s>,// definition of the spawn events
     init<
         x,              rectangle_d, // random displacement of devices in the simulation area
         diameter,       distribution::constant_i<int, diameter>,        // pass net construction parameters to nodes

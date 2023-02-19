@@ -178,10 +178,11 @@ struct experiment_s<friend_finding, simulation> : storage_list<
 //! @brief Aggregator list for the friend finding experiment.
 template <>
 struct experiment_a<friend_finding> : storage_list<
+    tags::distance_score,   aggregator::mean<double>
 > {};
 //! @brief Plot list for the friend finding experiment.
 template <typename A>
-struct experiment_p<friend_finding,A> : public plot::split<plot::time, plot::value<plot::time>> {};
+struct experiment_p<friend_finding,A> : public plot::split<plot::time, plot::values<A, common::type_sequence<>, tags::distance_score>> {};
 
 } // namespace coordination
 
