@@ -136,7 +136,7 @@ int get_bool(char const* name) {
 
 //! @brief Updates a string field of the storage by the string name of a tag.
 void set_string(char const* name, char const* val) {
-    storage_setter(name, val);
+    //storage_setter(name, val);
 }
 
 //! @brief Updates a floating-point field of the storage by the string name of a tag.

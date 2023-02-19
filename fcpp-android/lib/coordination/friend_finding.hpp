@@ -8,6 +8,8 @@
 #ifndef FCPP_COORDINATION_FRIEND_FINDING_H_
 #define FCPP_COORDINATION_FRIEND_FINDING_H_
 
+#include "lib/common/option.hpp"
+#include "lib/component/calculus.hpp"
 #include "lib/coordination/experiment_helper.hpp"
 #include "lib/coordination/tracker.hpp"
 #include "lib/coordination/slcs.hpp"
@@ -144,7 +146,7 @@ GEN(S) void experiment(ARGS, friend_finding, S) { CODE
         return make_tuple(d, s);
     }, key_set);
     if (res.size() > 0) {
-        assert(res.size() == 1 and *res.begin()->first == *key_set.begin());
+        assert(res.size() == 1 and res.begin()->first == *key_set.begin());
         node.storage(distance_score{}) = res.begin()->second;
     }
     experiment_simulation(CALL, friend_finding{}, S{});
