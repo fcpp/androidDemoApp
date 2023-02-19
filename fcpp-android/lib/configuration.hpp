@@ -18,8 +18,8 @@
 #include "lib/component.hpp"
 #include "lib/deployment.hpp"
 #include "lib/coordination/main.hpp"
-#include "lib/data/shape.hpp"
-#include "lib/simulation/displayer.hpp"
+#include "lib/data.hpp"
+#include "lib/simulation.hpp"
 
 
 /**
@@ -48,6 +48,9 @@ DECLARE_OPTIONS(main,
 
 //! @brief The maximum communication range between nodes.
 constexpr size_t communication_range = 10;
+
+//! @brief The distribution of initial node positions (random in a 120x80 rectangle).
+using rectangle_d = distribution::rect_n<1, 0, 0, hi_x, hi_y>;
 
 template <typename tag>
 DECLARE_OPTIONS(simulation,
@@ -78,6 +81,7 @@ DECLARE_OPTIONS(simulation,
 //! @brief The list of supported experiments.
 using experiments = common::type_sequence<
     traitor_detection,
+    friend_finding,
     vulnerability_detection
 >;
 

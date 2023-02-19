@@ -20,6 +20,11 @@
  */
 namespace fcpp {
 
+//! @brief Maximum X coordinate of the simulation area.
+constexpr int hi_x = 120;
+//! @brief Maximum Y coordinate of the simulation area.
+constexpr int hi_y = 80;
+
 //! @brief Namespace containing the libraries of coordination routines.
 namespace coordination {
 
