@@ -80,11 +80,13 @@ namespace coordination {
 
 //! @brief Tags used in the node storage.
 namespace tags {
-    //! @brief Which friend has been requested (negative for no request).
+    //! @brief Which friend has been requested (zero for no request).
     struct friend_requested {};
     //! @brief A score approximating the distance to the searched friend (if any, zero otherwise).
     struct distance_score {};
-    //! @brief If the friend has already been found.
+    //! @brief Hop-count distance to the searched friend (if any, zero otherwise).
+    struct hop_distance {};
+    //! @brief If a friend has already been found.
     struct friend_found {};
 }
 
@@ -94,23 +96,27 @@ FUN void experiment_simulation(ARGS, friend_finding, common::bool_pack<true>) { 
     using namespace tags;
     vec<2> low = {0, 0};
     vec<2> hi = {hi_x, hi_y};
-    rectangle_walk(CALL, low, hi, 0.2, node.storage(round_period{}));
     if (counter(CALL) == 1)
-        node.storage(friend_requested{}) = -1;
+        node.position() = node.uid == 0 ? 0.2*hi : node.uid == 1 ? 0.8*hi : random_rectangle_target(CALL, 0.2*hi, 0.8*hi);
+    rectangle_walk(CALL, 0.2*hi, 0.8*hi, 0.2, node.storage(round_period{}));
     constexpr times_t request_time = 30;
+    field<bool> is_my_friend = false;
     if (node.uid == 0 and node.current_time() > request_time and not node.storage(friend_found{})) {
         node.storage(friend_requested{}) = 1;
-        // TODO: program a way for the node to try to search the friend
-        if (any_hood(node, call_point, node.nbr_uid() == node.storage(friend_requested{})))
-            node.storage(friend_found{}) = true;
+        follow_target(CALL, node.net.node_at(1).position(), 0.5, node.storage(round_period{}));
+        is_my_friend = node.nbr_uid() == node.storage(friend_requested{});
+    }
+    if (any_hood(CALL, is_my_friend)) {
+        node.storage(friend_found{}) = true;
+        node.storage(friend_requested{}) = 0;
     }
     node.storage(node_size{}) = node.uid > 1 ? 1 : 2;
     node.storage(node_shape{}) = node.uid == 0 ? shape::cube : node.uid == 1 ? shape::star : shape::sphere;
-    node.storage(node_color{}) = color(GRAY);
+    node.storage(node_color{}) = node.storage(friend_found{}) ? color(SEA_GREEN) : color(GRAY);
     if (node.current_time() > request_time) {
         real_t k = node.storage(distance_score{}) / node.storage(diameter{});
         if (node.uid == 1) node.storage(node_color{}) = color(GOLD);
-        if (node.uid != 1 and k > 0) node.storage(node_color{}) = k*color(BLUE) + (1-k)*color(RED);
+        else if (k > 0) node.storage(node_color{}) = k*color(BLUE) + (1-k)*color(RED);
     }
 }
 //! @brief Export list for the simulation logic of the friend finding experiment.
@@ -122,8 +128,7 @@ struct experiment_simulation_t<friend_finding, true> : export_list<
 template <>
 struct experiment_simulation_s<friend_finding, true> : storage_list<
     experiment_simulation_base_s,
-    tags::friend_found, bool,
-    tags::diameter,     hops_t
+    tags::friend_found, bool
 > {};
 
 
@@ -131,17 +136,20 @@ struct experiment_simulation_s<friend_finding, true> : storage_list<
 GEN(S) void experiment(ARGS, friend_finding, S) { CODE
     using namespace tags;
     node.storage(degree{}) = node.size() - 1;
+    node.storage(hop_distance{}) = 0;
     node.storage(distance_score{}) = 0;
-    bool requesting = node.current_time() > 2.5 and node.storage(friend_requested{}) >= 0;
+    bool requesting = node.current_time() > 2.5 and node.storage(friend_requested{}) > 0;
     common::option<request> key_set;
     if (requesting) key_set.emplace(node.uid, node.storage(friend_requested{}));
     auto res = spawn(CALL, [&](request r){
         bool source = node.uid == r.source;
         bool destination = node.uid == r.destination;
         hops_t h = abf_hops(CALL, destination);
-        real_t d = sum_hood(CALL, nbr(CALL, (real_t)h)) / count_hood(CALL);
+        field<real_t> w = node.storage(retain_time{}) - node.nbr_lag();
+        real_t d = sum_hood(CALL, nbr(CALL, h) * w) / sum_hood(CALL, w);
+        node.storage(hop_distance{}) = h;
         node.storage(distance_score{}) = d;
-        status s = status::internal;
+        status s = abf_hops(CALL, source) < node.storage(diameter{}) ? status::internal : status::external;
         if (source) s = requesting ? status::output : status::terminated;
         return make_tuple(d, s);
     }, key_set);
@@ -163,7 +171,9 @@ struct experiment_s<friend_finding, simulation> : storage_list<
     experiment_simulation_s<friend_finding, simulation>,
     tags::degree,           hops_t,
     tags::friend_requested, device_t,
-    tags::distance_score,   real_t
+    tags::distance_score,   real_t,
+    tags::hop_distance,     hops_t,
+    tags::diameter,         hops_t
 > {};
 //! @brief Aggregator list for the friend finding experiment.
 template <>
