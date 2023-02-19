@@ -78,13 +78,17 @@ public class AP extends Application {
     static Condition haveNewData = outgoing.newCondition();
     private static byte[] newData = null;
 
-    static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
-    public static String jsonhttpFormatter = null;
+    public static OkHttpWrapper.JSONFormatter jsonhttpFormatter = null;
 
-    static class OkHttpWrapper {
+    public static class OkHttpWrapper {
+        public interface JSONFormatter {
+            String getJSONHTTPFormatter();
+        }
+
         static OkHttpClient okHttpClient = new OkHttpClient();
         // TODO: configurable
         static String url = "https://www.foldr.org/fcpp/entry";
+        static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
 
         static int failCounter = 0;
 
@@ -93,8 +97,8 @@ public class AP extends Application {
             if (jsonhttpFormatter == null) {
                 return;
             }
-            //String json = "{ \"uid\": "+ Integer.toString(uid)+", \"entry\": \""+ get_storage()+"\"}";
-            RequestBody body = RequestBody.create(jsonhttpFormatter, JSON);
+            String jsonLogMsg = jsonhttpFormatter.getJSONHTTPFormatter();
+            RequestBody body = RequestBody.create(jsonLogMsg, JSON);
             Request request = new Request.Builder()
                     .url(url)
                     .post(body)
@@ -102,7 +106,7 @@ public class AP extends Application {
             try {
                 Response response = okHttpClient.newCall(request).execute();
                 if (!response.isSuccessful()) {
-                    Log.d(LOG_HTTP_TAG, jsonhttpFormatter);
+                    Log.d(LOG_HTTP_TAG, jsonLogMsg);
                     Log.d(LOG_HTTP_TAG, response.message());
                 }
                 response.close();
@@ -196,9 +200,18 @@ public class AP extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        // Set up location provider
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        if (locationManager == null) {
+            Log.e(LOG_TAG, "No location service :-(");
+        }
+    }
+
+    public void fcpp_start(String experiment) {
         int uid = setUID();
         Log.i(LOG_TAG, "fcpp_start: " + uid);
-        fcpp_start(uid, "traitor_detection");
+        fcpp_start(uid, experiment);
 
         // TODO: proper initial values for fcpp?
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -231,12 +244,6 @@ public class AP extends Application {
         set_diameter(the_diameter);
         set_round_period(the_period);
         set_retain_time(the_retain);
-
-        // Set up location provider
-        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        if (locationManager == null) {
-            Log.e(LOG_TAG, "No location service :-(");
-        }
     }
 
     static {

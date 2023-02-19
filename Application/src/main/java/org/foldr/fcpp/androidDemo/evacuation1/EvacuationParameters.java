@@ -1,8 +1,11 @@
 package org.foldr.fcpp.androidDemo.evacuation1;
 
 import static org.foldr.fcpp.androidDemo.Constants.LOG_TAG;
+import static org.foldr.fcpp.androidDemo.evacuation1.EvacuationFragment.ARG_PARAM_DIAMETER;
 import static org.foldr.fcpp.androidDemo.evacuation1.EvacuationFragment.ARG_PARAM_EVACUATION_TIME;
 import static org.foldr.fcpp.androidDemo.evacuation1.EvacuationFragment.ARG_PARAM_IS_GROUP_LEFT;
+import static org.foldr.fcpp.androidDemo.evacuation1.EvacuationFragment.ARG_PARAM_RETAIN;
+import static org.foldr.fcpp.androidDemo.evacuation1.EvacuationFragment.ARG_PARAM_ROUND_PERIOD;
 import static org.foldr.fcpp.androidDemo.evacuation1.EvacuationFragment.ARG_PARAM_TRAITOR;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -42,15 +45,12 @@ public class EvacuationParameters extends AppCompatActivity implements View.OnCl
         Intent i = new Intent(this, EvacuationActivity.class);
         // We fail hard on conversion errors below.
         // We directly pass set most important values on to FCPP who's already running.
-        i.putExtra("diameter", Integer.valueOf(diameter));
-        AP.set_diameter(Integer.valueOf(diameter));
-        i.putExtra("retain", Integer.valueOf(retain));
-        AP.set_retain_time(Integer.valueOf(retain));
-        int round_period = Integer.valueOf(delay);
-        AP.set_int("round_period", round_period);
+        i.putExtra(ARG_PARAM_DIAMETER, Integer.valueOf(diameter));
+        i.putExtra(ARG_PARAM_RETAIN, Integer.valueOf(retain));
+        i.putExtra(ARG_PARAM_ROUND_PERIOD, Integer.valueOf(delay));
         i.putExtra(ARG_PARAM_IS_GROUP_LEFT, group_left);
         i.putExtra(ARG_PARAM_TRAITOR, traitor);
-        i.putExtra(ARG_PARAM_EVACUATION_TIME, evacuation_time);
+        i.putExtra(ARG_PARAM_EVACUATION_TIME, Integer.valueOf(evacuation_time));
         startActivity(i);
         finish(); // terminate prefs dialog.
     }

@@ -18,9 +18,7 @@ package org.foldr.fcpp.androidDemo.evacuation1;
 
 import static org.foldr.fcpp.androidDemo.AdvertiserFragment.ARG_BROADCAST_ON_FIRST_BOOT;
 import static org.foldr.fcpp.androidDemo.Constants.LOG_TAG;
-import static org.foldr.fcpp.androidDemo.evacuation1.EvacuationFragment.ARG_PARAM_EVACUATION_TIME;
-import static org.foldr.fcpp.androidDemo.evacuation1.EvacuationFragment.ARG_PARAM_IS_GROUP_LEFT;
-import static org.foldr.fcpp.androidDemo.evacuation1.EvacuationFragment.ARG_PARAM_TRAITOR;
+import static org.foldr.fcpp.androidDemo.evacuation1.EvacuationFragment.*;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -56,10 +54,12 @@ import org.foldr.fcpp.androidDemo.MainActivity;
 import org.foldr.fcpp.androidDemo.R;
 import org.foldr.fcpp.androidDemo.ScannerFragment;
 
+import okhttp3.OkHttpClient;
+
 /**
  * Setup display fragments and ensure the device supports Bluetooth.
  */
-public class EvacuationActivity extends FragmentActivity {
+public class EvacuationActivity extends FragmentActivity implements AP.OkHttpWrapper.JSONFormatter {
 
     private BluetoothAdapter mBluetoothAdapter;
     private Toolbar mToolbar;
@@ -68,7 +68,6 @@ public class EvacuationActivity extends FragmentActivity {
     private boolean isTraitor;
     private EvacuationFragment frag;
     private int retain;
-    private int delay;
     private int diameter;
     private boolean is_group_left;
     private int evacuation_time;
@@ -77,18 +76,25 @@ public class EvacuationActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (getIntent().getExtras().size() != 6) {
+            throw new IllegalArgumentException("You didn't come through the parameter configuration screen!");
+        }
         this.isTraitor = getIntent().getBooleanExtra(ARG_PARAM_TRAITOR, false);
         this.is_group_left = getIntent().getBooleanExtra(ARG_PARAM_IS_GROUP_LEFT, false);
         this.evacuation_time = getIntent().getIntExtra(ARG_PARAM_EVACUATION_TIME, 180);
-        this.retain = getIntent().getIntExtra("retain", -1);
-        this.delay = getIntent().getIntExtra("delay", -1);
-        this.diameter = getIntent().getIntExtra("diameter", -1);
+        this.retain = getIntent().getIntExtra(ARG_PARAM_RETAIN, -1);
+        this.diameter = getIntent().getIntExtra(ARG_PARAM_DIAMETER, -1);
 
         // The options are for FCPP:
         frag = EvacuationFragment.newInstance(isTraitor, is_group_left, evacuation_time);
         application = (AP) getApplication();
         /* Note that FCPP is already running by the time we install the logger. */
-        application.jsonhttpFormatter = getJSONHTTPFormatter();
+        application.jsonhttpFormatter = this;
+        application.fcpp_start("traitor_detection");
+        AP.set_int(ARG_PARAM_DIAMETER, this.diameter);
+        AP.set_int(ARG_PARAM_RETAIN, this.retain);
+        AP.set_int(ARG_PARAM_ROUND_PERIOD, getIntent().getIntExtra(ARG_PARAM_ROUND_PERIOD,1));
+
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(@NonNull Location location) {
@@ -261,7 +267,7 @@ public class EvacuationActivity extends FragmentActivity {
         MainActivity.showErrorText(this, messageId);
     }
 
-    private static String getJSONHTTPFormatter() {
+    public String getJSONHTTPFormatter() {
         String json = String.format("{ \"uid\":%d, \"round_count\":%d,"
                         +"\"nbr_lags\":\"%s\",\"global_clock\":%f,"
                         +"\"evacuation_done\":%b"

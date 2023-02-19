@@ -48,7 +48,7 @@ import androidx.preference.PreferenceFragmentCompat;
 /**
  * Setup display fragments and ensure the device supports Bluetooth.
  */
-public class MainActivity extends FragmentActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
+public class MainActivity extends FragmentActivity implements ActivityCompat.OnRequestPermissionsResultCallback, AP.OkHttpWrapper.JSONFormatter {
 
     private BluetoothAdapter mBluetoothAdapter;
     private Toolbar mToolbar;
@@ -61,15 +61,18 @@ public class MainActivity extends FragmentActivity implements ActivityCompat.OnR
         super.onCreate(savedInstanceState);
         application = (AP) getApplication();
         /* Note that FCPP is already running by the time we install the logger. */
-        application.jsonhttpFormatter = getJSONHTTPFormatter();
-
+        application.jsonhttpFormatter = this;
+        application.fcpp_start("vulnerability_detection"); // untested after refactoring :-)
+        /* TODO:
+            init FCPP params here.
+         */
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(@NonNull Location location) {
                 // Call into FCPP:
                 AP.set_double("position_latitude", location.getLatitude());
                 AP.set_double("position_longitude", location.getLongitude());
-                AP.set_double("accuracy", location.getAccuracy());
+                AP.set_double("position_accuracy", location.getAccuracy());
             }
         };
 
@@ -323,7 +326,7 @@ public class MainActivity extends FragmentActivity implements ActivityCompat.OnR
     }
 
     @NonNull
-    private static String getJSONHTTPFormatter() {
+    public String getJSONHTTPFormatter() {
         String json = String.format("{ \"uid\":%d, \"degree\":%d, \"round_count\":%d,"
                         +"\"nbr_lags\":\"%s\",\"hop_dist\":%d,\"global_clock\":%f,"
                         +"\"im_weak\":%b,\"some_weak\":%b, \"min_uid\":%d"

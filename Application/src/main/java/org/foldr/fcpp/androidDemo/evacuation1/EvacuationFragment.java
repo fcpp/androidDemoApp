@@ -21,9 +21,12 @@ import org.foldr.fcpp.androidDemo.R;
  */
 public class EvacuationFragment extends Fragment {
 
-    static final String ARG_PARAM_TRAITOR = "traitor";
+    static final String ARG_PARAM_TRAITOR = "is_traitor";
     static final String ARG_PARAM_IS_GROUP_LEFT = "evacuation_group";
     static final String ARG_PARAM_EVACUATION_TIME = "evacuation_time";
+    static final String ARG_PARAM_ROUND_PERIOD = "round_period";
+    static final String ARG_PARAM_DIAMETER = "diameter";
+    static final String ARG_PARAM_RETAIN = "retain_time";
 
     private boolean isTraitor;
     private boolean is_group_left;
@@ -52,7 +55,7 @@ public class EvacuationFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() == null) {
-            throw new RuntimeException();
+            throw new IllegalArgumentException();
         }
         isTraitor = getArguments().getBoolean(ARG_PARAM_TRAITOR);
         is_group_left = getArguments().getBoolean(ARG_PARAM_IS_GROUP_LEFT);
@@ -104,7 +107,7 @@ public class EvacuationFragment extends Fragment {
         }, 5000);
 
         TextView traitorView = me.findViewById(R.id.text_traitor);
-        traitorView.setText(isTraitor ? "You're the traitor!" : "You behave normally.");
+        traitorView.setText(isTraitor ? "You're the traitor!" : "You're normal");
         traitorView.setBackgroundColor(isTraitor ? Color.RED : Color.GREEN);
 
         TextView group_rg = me.findViewById(R.id.text_group_lr);
