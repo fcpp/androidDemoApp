@@ -26,7 +26,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,7 +56,7 @@ public class AdvertiserFragment extends Fragment implements View.OnClickListener
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        firstBoot = getArguments().getBoolean(ARG_BROADCAST_ON_FIRST_BOOT, false);
+        firstBoot = getArguments() != null && getArguments().getBoolean(ARG_BROADCAST_ON_FIRST_BOOT, false);
 
         advertisingFailureReceiver = new BroadcastReceiver() {
 
