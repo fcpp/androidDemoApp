@@ -18,9 +18,9 @@ project(
 set(
     SOURCE_LIST
     ./lib/common/template_remover.cpp
+    ./lib/coordination/friend_finding.cpp
     ./lib/coordination/experiment_helper.cpp
     ./lib/coordination/main.cpp
-    ./lib/coordination/movement.cpp
     ./lib/coordination/past_ctl.cpp
     ./lib/coordination/slcs.cpp
     ./lib/coordination/tracker.cpp
