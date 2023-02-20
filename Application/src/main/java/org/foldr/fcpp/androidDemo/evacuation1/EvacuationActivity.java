@@ -193,6 +193,7 @@ public class EvacuationActivity extends FragmentActivity implements AP.OkHttpWra
         if (locationListener != null)
             application.locationManager.removeUpdates(locationListener);
         // Stop the advertiser. Note that there's also the AdvertiserService.running static flag.
+        AP.is_stopping = true;
         stopService(new Intent(this, AdvertiserService.class));
         AP.fcpp_stop();
         super.onDestroy();
@@ -270,12 +271,7 @@ public class EvacuationActivity extends FragmentActivity implements AP.OkHttpWra
     }
 
     public String getJSONHTTPFormatter() {
-        String json = String.format("{ \"uid\":%d, \"round_count\":%d,"
-                        +"\"nbr_lags\":\"%s\",\"global_clock\":%f,"
-                        +"\"evacuation_done\":%b"
-                        +"}"
-                ,AP.uid,AP.get_round_count(),AP.get_nbr_lags(),AP.get_global_clock()
-                , AP.get_bool("evacuation_done"));
+        String json = AP.get_storage(); // Nuclear option.
         return json;
     }
 }

@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -87,6 +88,7 @@ public class EvacuationFragment extends Fragment {
         state_rg.postDelayed(new Runnable() {
             @Override
             public void run() {
+                if (AP.is_stopping) return;
                 // TODO -- first approximation, should at least contain self.
                 // But VS thinks this is from the old example, so it might need changing.
                 if ("{*:inf}".equals(AP.get_nbr_lags())) {

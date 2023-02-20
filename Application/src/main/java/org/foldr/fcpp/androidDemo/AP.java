@@ -33,6 +33,13 @@ import okhttp3.Response;
 public class AP extends Application {
 
     public static int uid;
+
+    /* Anyone in the app may read this to check if we're winding down.
+        Mostly used by periodic updaters of the UI that shouldn't call
+        into FCPP any more. You should set this before calling `fcpp_stop()`,
+        maybe later we'll set this for you.
+     */
+    public static boolean is_stopping = false;
     public LocationManager locationManager;
 
     /* These native definitions are from ap-getters.cpp: */
@@ -206,6 +213,8 @@ public class AP extends Application {
         if (locationManager == null) {
             Log.e(LOG_TAG, "No location service :-(");
         }
+
+
     }
 
     public void fcpp_start(String experiment) {
