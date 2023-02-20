@@ -43,7 +43,7 @@ namespace tags {
 //! @brief Tracks the passage of time, maximum message size, message lags, and applies execution parameter changes.
 FUN void tracker(ARGS) { CODE
     using namespace tags;
-    node.next_time(node.current_time() + node.storage(round_period{}));
+    node.frequency(1.0/node.storage(round_period{}));
     node.message_threshold(node.storage(retain_time{}));
     node.storage(nbr_lags{}) = node.nbr_lag();
     node.storage(round_count{}) = counter(CALL, uint16_t{1});
