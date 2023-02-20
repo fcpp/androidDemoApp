@@ -1,10 +1,13 @@
 // Copyright © 2023 Giorgio Audrito and Volker Stolz. All Rights Reserved.
 
+/**
+ * @file main.cpp
+ * @brief Allows to run any experiment in deployment.
+ */
+
 #define FCPP_SYSTEM FCPP_SYSTEM_EMBEDDED
 #define FCPP_ENVIRONMENT FCPP_ENVIRONMENT_PHYSICAL
-#define FCPP_EXPORT_NUM 2
 #define FCPP_TRACE 32
-#define FCPP_WARNING_TRACE false
 
 #include <android/log.h>
 #include <cstring>

@@ -2,8 +2,12 @@
 
 /**
  * @file simulation.cpp
- * @brief Runs a single execution of the spreading collection case study with a graphical user interface.
+ * @brief Runs every experiment with a graphical user interface.
  */
+
+#define FCPP_SYSTEM FCPP_SYSTEM_EMBEDDED
+#define FCPP_EXPORT_NUM 2
+#define FCPP_TRACE 32
 
 #include <fstream>
 
