@@ -1,10 +1,10 @@
-name: CI
+name: CI-Android
 
 on:
   push:
-    branches: [ master, dev ]
+    branches: [ master, vs-github-action ]
   pull_request:
-    branches: [ master, dev ]
+    branches: [ master, vs-github-action ]
   workflow_dispatch:
 
 jobs:
