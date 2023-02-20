@@ -269,10 +269,7 @@ public class EvacuationActivity extends FragmentActivity
     }
 
     public String getJSONHTTPFormatter() {
-        String json = String.format("{ \"uid\":%d, \"entry\":\"%s\""
-                        +"}"
-                ,AP.uid, AP.get_storage());
-        return json;
+        return AP.get_storage();
     }
 
     @Override
