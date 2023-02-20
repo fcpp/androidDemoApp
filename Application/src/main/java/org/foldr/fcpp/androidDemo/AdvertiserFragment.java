@@ -50,13 +50,16 @@ public class AdvertiserFragment extends Fragment implements View.OnClickListener
     private BroadcastReceiver advertisingFailureReceiver;
 
     public static final String ARG_BROADCAST_ON_FIRST_BOOT = "broadcast_on_first_boot";
+    public static final String ARG_DISABLE_BROADCAST_SWITCH = "disable_broadcast_switch";
     private boolean firstBoot;
+    private boolean isDisable;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         firstBoot = getArguments() != null && getArguments().getBoolean(ARG_BROADCAST_ON_FIRST_BOOT, false);
+        isDisable = getArguments() != null && getArguments().getBoolean(ARG_DISABLE_BROADCAST_SWITCH, false);
 
         advertisingFailureReceiver = new BroadcastReceiver() {
 
@@ -70,7 +73,7 @@ public class AdvertiserFragment extends Fragment implements View.OnClickListener
                 /* TODO: Should probably subclass... */
                 if (AdvertiserService.ADVERTISING_FAILED.equals(intent.getAction())) {
                     int errorCode = intent.getIntExtra(AdvertiserService.ADVERTISING_FAILED_EXTRA_CODE, -1);
-
+                    String errorMsg = intent.getStringExtra(AdvertiserService.ADVERTISING_FAILED_EXTRA_MSG);
                     mSwitch.setChecked(false);
 
                     String errorMessage = getString(R.string.start_error_prefix);
@@ -95,6 +98,9 @@ public class AdvertiserFragment extends Fragment implements View.OnClickListener
                             break;
                         default:
                             errorMessage += " " + getString(R.string.start_error_unknown);
+                        if (errorMsg != null) {
+                            errorMessage += "; " + errorMsg;
+                        }
                     }
 
                     Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_LONG).show();
@@ -116,7 +122,11 @@ public class AdvertiserFragment extends Fragment implements View.OnClickListener
         View view = inflater.inflate(R.layout.fragment_advertiser, container, false);
 
         mSwitch = view.findViewById(R.id.advertise_switch);
-        mSwitch.setOnClickListener(this);
+        if (isDisable) {
+            mSwitch.setEnabled(false);
+        } else {
+            mSwitch.setOnClickListener(this);
+        }
 
         View mQuit = view.findViewById(R.id.button_quit);
         mQuit.setOnClickListener(new View.OnClickListener() {

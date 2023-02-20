@@ -55,6 +55,7 @@ public class AdvertiserService extends Service {
         "org.foldr.fcpp.androidDemo.advertising_failed";
 
     public static final String ADVERTISING_FAILED_EXTRA_CODE = "failureCode";
+    public static final String ADVERTISING_FAILED_EXTRA_MSG = "failureMsg";
 
     public static final String ADVERTISING_STORAGE =
             "org.foldr.fcpp.androidDemo.advertising_storage";
@@ -223,7 +224,7 @@ public class AdvertiserService extends Service {
                 .setInterval(AdvertisingSetParameters.INTERVAL_HIGH)
                 .setTxPowerLevel(AdvertisingSetParameters.TX_POWER_MEDIUM)
                 .setPrimaryPhy(BluetoothDevice.PHY_LE_1M)
-                .setSecondaryPhy(BluetoothDevice.PHY_LE_2M)
+                //.setSecondaryPhy(BluetoothDevice.PHY_LE_2M)
                 .build();
         return parameters;
     }
@@ -306,10 +307,16 @@ public class AdvertiserService extends Service {
      * Builds and sends a broadcast intent indicating Advertising has failed. Includes the error
      * code as an extra. This is intended to be picked up by the {@code AdvertiserFragment}.
      */
-    private void sendFailureIntent(int errorCode){
+    private void sendFailureIntent(int errorCode) {
+        sendFailureIntentMsg(errorCode, null);
+    }
+    private void sendFailureIntentMsg(int errorCode, String msg){
         Intent failureIntent = new Intent();
         failureIntent.setAction(ADVERTISING_FAILED);
         failureIntent.putExtra(ADVERTISING_FAILED_EXTRA_CODE, errorCode);
+        if (msg != null) {
+            failureIntent.putExtra(ADVERTISING_FAILED_EXTRA_MSG, msg);
+        }
         sendBroadcast(failureIntent);
     }
 

@@ -17,6 +17,7 @@
 package org.foldr.fcpp.androidDemo.evacuation1;
 
 import static org.foldr.fcpp.androidDemo.AdvertiserFragment.ARG_BROADCAST_ON_FIRST_BOOT;
+import static org.foldr.fcpp.androidDemo.AdvertiserFragment.ARG_DISABLE_BROADCAST_SWITCH;
 import static org.foldr.fcpp.androidDemo.Constants.LOG_TAG;
 import static org.foldr.fcpp.androidDemo.evacuation1.EvacuationFragment.*;
 
@@ -255,6 +256,7 @@ public class EvacuationActivity extends FragmentActivity implements AP.OkHttpWra
         AdvertiserFragment advertiserFragment = new AdvertiserFragment();
         Bundle args = new Bundle();
         args.putBoolean(ARG_BROADCAST_ON_FIRST_BOOT, true);
+        args.putBoolean(ARG_DISABLE_BROADCAST_SWITCH, true);
         advertiserFragment.setArguments(args);
         transaction.replace(R.id.advertiser_fragment_container, advertiserFragment);
         
