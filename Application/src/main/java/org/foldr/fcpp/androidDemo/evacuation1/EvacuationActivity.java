@@ -16,8 +16,7 @@
 
 package org.foldr.fcpp.androidDemo.evacuation1;
 
-import static org.foldr.fcpp.androidDemo.AdvertiserFragment.ARG_BROADCAST_ON_FIRST_BOOT;
-import static org.foldr.fcpp.androidDemo.AdvertiserFragment.ARG_DISABLE_BROADCAST_SWITCH;
+import static org.foldr.fcpp.androidDemo.AdvertiserFragment.*;
 import static org.foldr.fcpp.androidDemo.Constants.LOG_TAG;
 import static org.foldr.fcpp.androidDemo.evacuation1.EvacuationFragment.*;
 
@@ -55,12 +54,11 @@ import org.foldr.fcpp.androidDemo.MainActivity;
 import org.foldr.fcpp.androidDemo.R;
 import org.foldr.fcpp.androidDemo.ScannerFragment;
 
-import okhttp3.OkHttpClient;
-
 /**
  * Setup display fragments and ensure the device supports Bluetooth.
  */
-public class EvacuationActivity extends FragmentActivity implements AP.OkHttpWrapper.JSONFormatter {
+public class EvacuationActivity extends FragmentActivity
+        implements AP.OkHttpWrapper.JSONFormatter {
 
     private BluetoothAdapter mBluetoothAdapter;
     private Toolbar mToolbar;
@@ -271,7 +269,14 @@ public class EvacuationActivity extends FragmentActivity implements AP.OkHttpWra
     }
 
     public String getJSONHTTPFormatter() {
-        String json = AP.get_storage(); // Nuclear option.
+        String json = String.format("{ \"uid\":%d, \"entry\":\"%s\""
+                        +"}"
+                ,AP.uid, AP.get_storage());
         return json;
+    }
+
+    @Override
+    public String getHTTPUrl() {
+        return "https://www.foldr.org/fcpp/evacuation";
     }
 }

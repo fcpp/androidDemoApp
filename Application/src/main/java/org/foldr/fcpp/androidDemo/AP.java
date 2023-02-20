@@ -90,11 +90,10 @@ public class AP extends Application {
     public static class OkHttpWrapper {
         public interface JSONFormatter {
             String getJSONHTTPFormatter();
+            String getHTTPUrl();
         }
 
         static OkHttpClient okHttpClient = new OkHttpClient();
-        // TODO: configurable
-        static String url = "https://www.foldr.org/fcpp/entry";
         static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
 
         static int failCounter = 0;
@@ -107,7 +106,7 @@ public class AP extends Application {
             String jsonLogMsg = jsonhttpFormatter.getJSONHTTPFormatter();
             RequestBody body = RequestBody.create(jsonLogMsg, JSON);
             Request request = new Request.Builder()
-                    .url(url)
+                    .url(jsonhttpFormatter.getHTTPUrl())
                     .post(body)
                     .build();
             try {
@@ -153,6 +152,7 @@ public class AP extends Application {
         haveNewData.signalAll();
         outgoing.unlock();
         // Good time to log our state this round:
+        // TODO: needs probably a bit more sync'ed async!
         AP.OkHttpWrapper.httpLog();
     }
 

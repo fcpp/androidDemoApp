@@ -48,7 +48,9 @@ import androidx.preference.PreferenceFragmentCompat;
 /**
  * Setup display fragments and ensure the device supports Bluetooth.
  */
-public class MainActivity extends FragmentActivity implements ActivityCompat.OnRequestPermissionsResultCallback, AP.OkHttpWrapper.JSONFormatter {
+public class MainActivity extends FragmentActivity
+        implements ActivityCompat.OnRequestPermissionsResultCallback,
+        AP.OkHttpWrapper.JSONFormatter {
 
     private BluetoothAdapter mBluetoothAdapter;
     private Toolbar mToolbar;
@@ -334,5 +336,10 @@ public class MainActivity extends FragmentActivity implements ActivityCompat.OnR
                 ,AP.uid,AP.get_degree(),AP.get_round_count(),AP.get_nbr_lags(),AP.get_hop_dist(),AP.get_global_clock()
                 ,AP.get_im_weak(), AP.get_some_weak(), AP.get_min_uid());
         return json;
+    }
+
+    @Override
+    public String getHTTPUrl() {
+        return "https://www.foldr.org/fcpp/entry";
     }
 }
