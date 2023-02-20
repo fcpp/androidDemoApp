@@ -24,6 +24,48 @@ namespace fcpp {
  */
 namespace common {
 
+//! @brief Escapes a value for JSON printing (bool overload).
+template <typename T>
+std::enable_if_t<std::is_same<T,bool>::value, std::string> json_escape(T x) {
+    return x ? "true" : "false";
+}
+
+//! @brief Escapes a value for JSON printing (numeric overload).
+template <typename T>
+std::enable_if_t<std::is_arithmetic<T>::value and not std::is_same<T,bool>::value, std::string> json_escape(T x) {
+    using std::to_string;
+    return to_string(x);
+}
+
+//! @brief Escapes a value for JSON printing (non-numeric overload).
+template <typename T>
+std::enable_if_t<not std::is_arithmetic<T>::value, std::string> json_escape(T x) {
+    return "\"" + to_string(x) + "\"";
+}
+
+
+//! @brief Converts a tagged tuple to valid JSON (empty overload).
+template <typename T>
+inline std::string to_json(T const& t, type_sequence<>) {
+    return "";
+}
+
+//! @brief Converts a tagged tuple to valid JSON (recursive overload).
+template <typename T, typename S, typename... Ss>
+inline std::string to_json(T const& t, type_sequence<S, Ss...>) {
+    return "\"" + details::strip_namespaces(type_name<S>()) + "\": " + json_escape(get<S>(t)) + ", " + to_json(t, type_sequence<Ss...>{});
+}
+
+//! @brief Converts a tagged tuple to valid JSON (base form).
+template <typename T>
+std::string to_json(T const& t) {
+    std::string s = "{" + to_json(t, typename T::tags{});
+    s.pop_back();
+    s.back() = '}';
+    return s;
+}
+
+
 //! @brief Type predicate that is always true.
 template <typename T>
 using any_type = std::true_type;

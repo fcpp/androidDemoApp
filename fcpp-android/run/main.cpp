@@ -107,7 +107,7 @@ inline void storage_setter(std::string const& name, R&& val) {
 //! @brief Gets the whole storage as a string.
 char* get_storage() {
     std::string s = common::applier(running_experiment, network, [](auto* n){
-        return to_string(n->node_at(os::uid()).storage_tuple());
+        return common::to_json(n->node_at(os::uid()).storage_tuple());
     });
     char* c = new char[s.size()+1];
     strcpy(c, s.c_str());
