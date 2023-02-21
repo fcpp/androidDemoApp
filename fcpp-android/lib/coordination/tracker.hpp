@@ -64,10 +64,11 @@ FUN void tracker(ARGS) { CODE
     node.message_threshold(node.storage(retain_time{}));
     parameter_type pt = node.storage_tuple();
     parameter_tuple p = details::tuple_promote(pt);
+    size_t neigh_num = count_hood(CALL);
     field<bool> same_params = nbr(CALL,p) == p;
-    node.storage(not_alone{})  = logic::P(CALL, node.size() > 1);
+    node.storage(not_alone{})  = logic::P(CALL, neigh_num > 1);
     node.storage(not_alone{}) += logic::P(CALL, not all_hood(CALL, same_params));
-    node.storage(not_alone{}) += logic::P(CALL, 2*sum_hood(CALL, same_params, 1) < count_hood(CALL));
+    node.storage(not_alone{}) += logic::P(CALL, 2*sum_hood(CALL, same_params, 1) < neigh_num);
     node.storage(nbr_lags{}) = node.nbr_lag();
     node.storage(round_count{}) = counter(CALL, uint16_t{1});
     node.storage(global_clock{}) = shared_clock(CALL);
