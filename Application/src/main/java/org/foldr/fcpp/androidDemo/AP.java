@@ -16,9 +16,12 @@ import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
-import java.util.Deque;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -79,13 +82,21 @@ public class AP extends Application {
     // TO HERE
 
     /* Deque for received transmissions. Read from first, append to end. */
-    static Deque<ScanResult> pending = new ConcurrentLinkedDeque<>();
+    static final BlockingDeque<ScanResult> pending = new LinkedBlockingDeque<>();
     /* Support for BT to advertise most recent data */
     static Lock outgoing = new ReentrantLock();
     static Condition haveNewData = outgoing.newCondition();
     private static byte[] newData = null;
 
     public static OkHttpWrapper.JSONFormatter jsonhttpFormatter = null;
+    private static ThreadPoolExecutor httpLogger; // Sequential executor for http-requests
+
+    public static void pending_add(ScanResult result) {
+        synchronized (pending) {
+            pending.add(result);
+            pending.notify();
+        }
+    }
 
     public static class OkHttpWrapper {
         public interface JSONFormatter {
@@ -128,8 +139,13 @@ public class AP extends Application {
 
     /* Call-back for C++ */
     public static byte[] getNextMsg() {
-        /* Maybe we need to lock this method, not the structure?*/
-        ScanResult scanResult = pending.pollFirst();
+        ScanResult scanResult;
+        try {
+            // TODO: Make timeout configurable/share with driver?
+            scanResult = pending.pollFirst(250, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            scanResult = pending.pollFirst();
+        }
         if (scanResult == null) {
             return null;
         } else {
@@ -153,7 +169,7 @@ public class AP extends Application {
         outgoing.unlock();
         // Good time to log our state this round:
         // TODO: needs probably a bit more sync'ed async!
-        AP.OkHttpWrapper.httpLog();
+        httpLogger.execute(OkHttpWrapper::httpLog);
     }
 
     /* For advertising: */
@@ -214,12 +230,12 @@ public class AP extends Application {
             Log.e(LOG_TAG, "No location service :-(");
         }
 
-
+        httpLogger = new ThreadPoolExecutor(1, 1, 1, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
     }
 
     public void fcpp_start(String experiment) {
         int uid = setUID();
-        Log.i(LOG_TAG, "fcpp_start: " + uid);
+        Log.i(LOG_TAG, "fcpp_start: " + uid + " : "+experiment);
         fcpp_start(uid, experiment);
 
         // TODO: proper initial values for fcpp?

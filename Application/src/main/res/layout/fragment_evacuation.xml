@@ -34,6 +34,15 @@
                 android:paddingRight="20dp"
                 android:textColor="@color/textColorBlack"
                 android:textSize="48sp" />
+
+            <TextView
+                android:id="@+id/text_version"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:textColor="@color/textColorPrimary"
+                android:textSize="48sp" />
         </LinearLayout>
 
         <LinearLayout
