@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".evacuation1.EvacuationFragment">
+    tools:context=".friendfinding1.FriendFindingFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -51,64 +51,38 @@
             android:orientation="horizontal"
             android:paddingTop="20dp">
 
-            <GridLayout
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:columnCount="3"
-                android:rowCount="2">
-
-                <TextView
-                    android:id="@+id/result_1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="20dp"
-                    android:paddingRight="20dp"
-                    android:text="ED"
-                    android:textSize="48sp" />
-
-                <TextView
-                    android:id="@+id/result_2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="20dp"
-                    android:paddingRight="20dp"
-                    android:text="HG"
-                    android:textSize="48sp" />
-
-                <TextView
-                    android:id="@+id/text_traitor"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/textColorBlack"
-                    android:paddingLeft="20dp"
-                    android:paddingRight="20dp"
-                    android:textSize="24sp" />
-
-                <TextView
-                    android:id="@+id/result_3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="20dp"
-                    android:paddingRight="20dp"
-                    android:text="TF"
-                    android:textSize="48sp" />
-
-                <TextView
-                    android:id="@+id/result_4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="20dp"
-                    android:paddingRight="20dp"
-                    android:text="OK"
-                    android:textSize="48sp" />
-                <TextView
-                    android:id="@+id/text_group_lr"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="20dp"
-                    android:paddingRight="20dp"
-                    android:textSize="24sp" />
-            </GridLayout>
+                android:paddingRight="10dp"
+                android:textSize="@dimen/margin_large"
+                android:text="Friend:"/>
+            <EditText
+                android:layout_weight="1"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/friend_id"
+                android:inputType="number"
+                android:textSize="@dimen/margin_large"
+                android:text=""
+                android:hint="ID"/>
+            <Button
+                android:id="@+id/search"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="20dp"
+                android:textSize="@dimen/margin_large"
+                android:enabled="false"
+                android:text="Search!"/>
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/dist_score"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#F00"
+            android:gravity="center"
+            android:text="0,00"
+            android:textSize="120sp" />
     </LinearLayout>
 </FrameLayout>

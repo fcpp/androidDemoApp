@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -48,20 +50,11 @@ public class FriendFindingFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         FrameLayout me = (FrameLayout) inflater.inflate(R.layout.fragment_friendfinding, container, false);
-        TextView b1 = me.findViewById(R.id.result_1);
-        TextView b2 = me.findViewById(R.id.result_2);
-        TextView b3 = me.findViewById(R.id.result_3);
-        TextView b4 = me.findViewById(R.id.result_4);
-        b1.setBackgroundColor(Color.GRAY);
-        b2.setBackgroundColor(Color.GRAY);
-        b3.setBackgroundColor(Color.GRAY);
-        b4.setBackgroundColor(Color.GRAY);
 
         TextView uid = me.findViewById(R.id.text_uid);
         uid.setText(Integer.toString(AP.uid));
@@ -69,6 +62,28 @@ public class FriendFindingFragment extends Fragment {
         TextView version = me.findViewById(R.id.text_version);
         // TODO: should probably come from FCPP-code! (#16)
         version.setText("v1.0");
+
+        Button searchButton = me.findViewById(R.id.search);
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Code here executes on main thread after user presses search button
+                Button searchButton = me.findViewById(R.id.search);
+                EditText friendID = me.findViewById(R.id.friend_id);
+                int fid = AP.get_int("friend_requested");
+                if (fid > 0) { // reporting to have found the friend
+                    AP.set_int("friend_requested", 0);
+                    friendID.setText("");
+                    searchButton.setText("Search!");
+                    searchButton.setEnabled(false);
+                } else { // starting to search for a friend
+                    friendID.setEnabled(false);
+                    int ID = 0;
+                    if (friendID.getText().length() > 0) ID = Integer.valueOf(friendID.getText().toString());
+                    AP.set_int("friend_requested", ID);
+                    searchButton.setText("Found!");
+                }
+            }
+        });
 
         TextView state_rg = me.findViewById(R.id.text_state_rg);
         state_rg.setText(STATE_TEXTS[0]); // The XML was allergic to `?`.
@@ -82,6 +97,15 @@ public class FriendFindingFragment extends Fragment {
                 state_rg.setText(STATE_TEXTS[AP.get_int("not_alone")]);
                 // Log.d(LOG_TAG, AP.get_nbr_lags());
                 state_rg.postDelayed(this, 250); // while(true)...
+                TextView distanceView = me.findViewById(R.id.dist_score);
+                double dist = AP.get_double("distance_score");
+                distanceView.setText(String.format("%.2f", dist));
+                float k = (float)(dist / AP.get_int("diameter"));
+                distanceView.setBackgroundColor(Color.argb(1.0f, 1-k, 0.0f, k));
+                EditText friendID = me.findViewById(R.id.friend_id);
+                int ID = 0;
+                if (friendID.getText().length() > 0) ID = Integer.valueOf(friendID.getText().toString());
+                searchButton.setEnabled(ID > 0);
             }
         }, 1000);
 
