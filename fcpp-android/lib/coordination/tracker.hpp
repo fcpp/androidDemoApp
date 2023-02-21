@@ -13,6 +13,7 @@
 #include "lib/common/plot.hpp"
 #include "lib/option/aggregator.hpp"
 #include "lib/coordination/past_ctl.hpp"
+#include "lib/common/ostream.hpp"
 
 
 /**
@@ -25,6 +26,7 @@ namespace coordination {
 
 //! @brief Tags used in the node storage.
 namespace tags {
+    struct custom_log {};
     //! @brief Upper bound to the node diameter.
     struct diameter;
     //! @brief The expected time of an evacuation.
@@ -66,6 +68,7 @@ FUN void tracker(ARGS) { CODE
     parameter_tuple p = details::tuple_promote(pt);
     size_t neigh_num = count_hood(CALL);
     field<bool> same_params = nbr(CALL,p) == p;
+    node.storage(custom_log{}) = to_string(make_tuple(nbr(CALL,p), p));
     node.storage(not_alone{})  = logic::P(CALL, neigh_num > 1);
     node.storage(not_alone{}) += logic::P(CALL, not all_hood(CALL, same_params));
     node.storage(not_alone{}) += logic::P(CALL, 2*sum_hood(CALL, same_params, 1) < neigh_num);
@@ -82,6 +85,7 @@ FUN_EXPORT tracker_t = export_list<
 >;
 //! @brief Storage list for tracker.
 FUN_EXPORT tracker_s = storage_list<
+    tags::custom_log,       std::string,
     tags::not_alone,        uint8_t,
     tags::round_period,     times_t,
     tags::retain_time,      times_t,
