@@ -26,9 +26,27 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:id="@+id/param_delay"
-            android:inputType="number"
-            android:text="1"
+            android:inputType="numberDecimal"
+            android:text="1.0"
             android:hint="delay"/>
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingRight="20dp"
+            android:text="Retain time (int):"/>
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/param_retain"
+            android:inputType="numberDecimal"
+            android:paddingRight="20dp"
+            android:text="5.0"
+            android:hint="retain"/>
     </LinearLayout>
     <LinearLayout
         android:orientation="horizontal"
@@ -46,24 +64,6 @@
             android:inputType="number"
             android:text="180"
             android:hint="evacuation time"/>
-    </LinearLayout>
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:paddingRight="20dp"
-            android:text="Retain time (int):"/>
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:id="@+id/param_retain"
-            android:inputType="number"
-            android:paddingRight="20dp"
-            android:text="5"
-            android:hint="retain"/>
     </LinearLayout>
     <LinearLayout
         android:orientation="horizontal"

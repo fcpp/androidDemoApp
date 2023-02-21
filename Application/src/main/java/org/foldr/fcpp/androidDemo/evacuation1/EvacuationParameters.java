@@ -1,12 +1,7 @@
 package org.foldr.fcpp.androidDemo.evacuation1;
 
 import static org.foldr.fcpp.androidDemo.Constants.LOG_TAG;
-import static org.foldr.fcpp.androidDemo.evacuation1.EvacuationFragment.ARG_PARAM_DIAMETER;
-import static org.foldr.fcpp.androidDemo.evacuation1.EvacuationFragment.ARG_PARAM_EVACUATION_TIME;
-import static org.foldr.fcpp.androidDemo.evacuation1.EvacuationFragment.ARG_PARAM_IS_GROUP_LEFT;
-import static org.foldr.fcpp.androidDemo.evacuation1.EvacuationFragment.ARG_PARAM_RETAIN;
-import static org.foldr.fcpp.androidDemo.evacuation1.EvacuationFragment.ARG_PARAM_ROUND_PERIOD;
-import static org.foldr.fcpp.androidDemo.evacuation1.EvacuationFragment.ARG_PARAM_TRAITOR;
+import static org.foldr.fcpp.androidDemo.evacuation1.EvacuationFragment.*;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
@@ -16,8 +11,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import org.foldr.fcpp.androidDemo.AP;
 import org.foldr.fcpp.androidDemo.R;
 
 import java.util.Random;
@@ -45,13 +40,19 @@ public class EvacuationParameters extends AppCompatActivity implements View.OnCl
         Intent i = new Intent(this, EvacuationActivity.class);
         // We fail hard on conversion errors below.
         // We directly pass set most important values on to FCPP who's already running.
-        i.putExtra(ARG_PARAM_DIAMETER, Integer.valueOf(diameter));
-        i.putExtra(ARG_PARAM_RETAIN, Integer.valueOf(retain));
-        i.putExtra(ARG_PARAM_ROUND_PERIOD, Integer.valueOf(delay));
-        i.putExtra(ARG_PARAM_IS_GROUP_LEFT, group_left);
-        i.putExtra(ARG_PARAM_TRAITOR, traitor);
-        i.putExtra(ARG_PARAM_EVACUATION_TIME, Integer.valueOf(evacuation_time));
-        startActivity(i);
-        finish(); // terminate prefs dialog.
+        try {
+            i.putExtra(ARG_PARAM_DIAMETER, Integer.valueOf(diameter));
+            i.putExtra(ARG_PARAM_RETAIN, Float.valueOf(retain));
+            i.putExtra(ARG_PARAM_ROUND_PERIOD, Float.valueOf(delay));
+            i.putExtra(ARG_PARAM_IS_GROUP_LEFT, group_left);
+            i.putExtra(ARG_PARAM_TRAITOR, traitor);
+            i.putExtra(ARG_PARAM_EVACUATION_TIME, Integer.valueOf(evacuation_time));
+            startActivity(i);
+            finish(); // terminate prefs dialog and continue.
+        }  catch (NumberFormatException e) {
+            // Shouldn't really happen since the UI has validation already.
+            // TODO: could use setErrorText() on UI elements.
+            Toast.makeText(this, "There's a problem with the parameters: "+e.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 }

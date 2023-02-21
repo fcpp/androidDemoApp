@@ -66,7 +66,7 @@ public class EvacuationActivity extends FragmentActivity
     private LocationListener locationListener;
     private boolean isTraitor;
     private EvacuationFragment frag;
-    private int retain;
+    private float retain;
     private int diameter;
     private boolean is_group_left;
     private int evacuation_time;
@@ -81,7 +81,7 @@ public class EvacuationActivity extends FragmentActivity
         this.isTraitor = getIntent().getBooleanExtra(ARG_PARAM_TRAITOR, false);
         this.is_group_left = getIntent().getBooleanExtra(ARG_PARAM_IS_GROUP_LEFT, false);
         this.evacuation_time = getIntent().getIntExtra(ARG_PARAM_EVACUATION_TIME, 180);
-        this.retain = getIntent().getIntExtra(ARG_PARAM_RETAIN, -1);
+        this.retain = getIntent().getFloatExtra(ARG_PARAM_RETAIN, -1);
         this.diameter = getIntent().getIntExtra(ARG_PARAM_DIAMETER, -1);
 
         // The options are for FCPP:
@@ -91,8 +91,8 @@ public class EvacuationActivity extends FragmentActivity
         application.jsonhttpFormatter = this;
         application.fcpp_start("traitor_detection");
         AP.set_int(ARG_PARAM_DIAMETER, this.diameter);
-        AP.set_int(ARG_PARAM_RETAIN, this.retain);
-        AP.set_int(ARG_PARAM_ROUND_PERIOD, getIntent().getIntExtra(ARG_PARAM_ROUND_PERIOD,1));
+        AP.set_double(ARG_PARAM_RETAIN, this.retain);
+        AP.set_double(ARG_PARAM_ROUND_PERIOD, getIntent().getFloatExtra(ARG_PARAM_ROUND_PERIOD,1));
 
         locationListener = new LocationListener() {
             @Override
