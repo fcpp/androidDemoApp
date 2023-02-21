@@ -24,7 +24,7 @@
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp"
                 android:text="(uid)"
-                android:textSize="48sp" />
+                android:textSize="@dimen/fontsize_status" />
 
             <TextView
                 android:id="@+id/text_state_rg"
@@ -33,7 +33,7 @@
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp"
                 android:textColor="@color/textColorBlack"
-                android:textSize="48sp" />
+                android:textSize="@dimen/fontsize_status" />
 
             <TextView
                 android:id="@+id/text_version"
@@ -42,7 +42,7 @@
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp"
                 android:textColor="@color/textColorPrimary"
-                android:textSize="48sp" />
+                android:textSize="@dimen/fontsize_status" />
         </LinearLayout>
 
         <LinearLayout
