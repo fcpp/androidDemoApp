@@ -19,6 +19,9 @@ import java.io.IOException;
 import java.util.Deque;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -86,6 +89,7 @@ public class AP extends Application {
     private static byte[] newData = null;
 
     public static OkHttpWrapper.JSONFormatter jsonhttpFormatter = null;
+    private static ThreadPoolExecutor httpLogger; // Sequential executor for http-requests
 
     public static class OkHttpWrapper {
         public interface JSONFormatter {
@@ -153,7 +157,12 @@ public class AP extends Application {
         outgoing.unlock();
         // Good time to log our state this round:
         // TODO: needs probably a bit more sync'ed async!
-        AP.OkHttpWrapper.httpLog();
+        httpLogger.execute(new Runnable() {
+            @Override
+            public void run() {
+                AP.OkHttpWrapper.httpLog();
+            }
+        });
     }
 
     /* For advertising: */
@@ -214,12 +223,12 @@ public class AP extends Application {
             Log.e(LOG_TAG, "No location service :-(");
         }
 
-
+        httpLogger = new ThreadPoolExecutor(1, 1, 1, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
     }
 
     public void fcpp_start(String experiment) {
         int uid = setUID();
-        Log.i(LOG_TAG, "fcpp_start: " + uid);
+        Log.i(LOG_TAG, "fcpp_start: " + uid + " : "+experiment);
         fcpp_start(uid, experiment);
 
         // TODO: proper initial values for fcpp?
