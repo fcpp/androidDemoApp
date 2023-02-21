@@ -43,6 +43,7 @@ public class AP extends Application {
         maybe later we'll set this for you.
      */
     public static boolean is_stopping = false;
+    private static long timeout_ms = 250;
     public LocationManager locationManager;
 
     /* These native definitions are from ap-getters.cpp: */
@@ -134,8 +135,7 @@ public class AP extends Application {
     public static byte[] getNextMsg() {
         ScanResult scanResult;
         try {
-            // TODO: Make timeout configurable/share with driver?
-            scanResult = pending.pollFirst(250, TimeUnit.MILLISECONDS);
+            scanResult = pending.pollFirst(timeout_ms, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             scanResult = pending.pollFirst();
         }
@@ -160,8 +160,13 @@ public class AP extends Application {
         newData = data;
         haveNewData.signalAll();
         outgoing.unlock();
+        // Good time to update the frequency:
+        long new_timeout_ms = Math.round((AP.get_double("round_period") * 1000) / 5);
+        if (new_timeout_ms != timeout_ms) {
+            timeout_ms = new_timeout_ms;
+            Log.d(LOG_BT_TAG, "Changing BLE polling timeout to "+Long.toString(timeout_ms));
+        }
         // Good time to log our state this round:
-        // TODO: needs probably a bit more sync'ed async!
         httpLogger.execute(OkHttpWrapper::httpLog);
     }
 
