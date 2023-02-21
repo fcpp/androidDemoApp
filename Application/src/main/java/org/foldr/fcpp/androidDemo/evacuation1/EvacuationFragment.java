@@ -25,9 +25,9 @@ public class EvacuationFragment extends Fragment {
     static final String ARG_PARAM_TRAITOR = "is_traitor";
     static final String ARG_PARAM_IS_GROUP_LEFT = "evacuation_group";
     static final String ARG_PARAM_EVACUATION_TIME = "evacuation_time";
-    static final String ARG_PARAM_ROUND_PERIOD = "round_period";
-    static final String ARG_PARAM_DIAMETER = "diameter";
-    static final String ARG_PARAM_RETAIN = "retain_time";
+    public static final String ARG_PARAM_ROUND_PERIOD = "round_period";
+    public static final String ARG_PARAM_DIAMETER = "diameter";
+    public static final String ARG_PARAM_RETAIN = "retain_time";
     static final int[] STATE_COLORS = {Color.GRAY, Color.GREEN, Color.YELLOW, Color.RED};
     static final String[] STATE_TEXTS = {"?", "✓", "x", "X"};
 
