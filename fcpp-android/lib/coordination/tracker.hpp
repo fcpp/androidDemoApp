@@ -25,6 +25,10 @@ namespace coordination {
 
 //! @brief Tags used in the node storage.
 namespace tags {
+    //! @brief Upper bound to the node diameter.
+    struct diameter;
+    //! @brief The expected time of an evacuation.
+    struct evacuation_time;
     //! @brief Whether I have ever seen somebody else.
     struct not_alone {};
     //! @brief Time in seconds between transmission rounds.
@@ -43,12 +47,27 @@ namespace tags {
     struct cur_msg {};
 }
 
+//! @brief The tagged tuple of every possible experiment parameter.
+using parameter_type = common::tagged_tuple_t<
+    tags::round_period,     times_t,
+    tags::retain_time,      times_t,
+    tags::diameter,         hops_t,
+    tags::evacuation_time,  short
+>;
+//! @brief The fcpp tuple of every possible experiment parameter.
+using parameter_tuple = tuple<times_t, times_t, hops_t, short>;
+
 //! @brief Tracks the passage of time, maximum message size, message lags, and applies execution parameter changes.
 FUN void tracker(ARGS) { CODE
     using namespace tags;
     node.frequency(1.0/node.storage(round_period{}));
     node.message_threshold(node.storage(retain_time{}));
-    node.storage(not_alone{}) = logic::P(CALL, node.size() > 1);
+    parameter_type pt = node.storage_tuple();
+    parameter_tuple p = details::tuple_promote(pt);
+    field<bool> same_params = nbr(CALL,p) == p;
+    node.storage(not_alone{})  = logic::P(CALL, node.size() > 1);
+    node.storage(not_alone{}) += logic::P(CALL, not all_hood(CALL, same_params));
+    node.storage(not_alone{}) += logic::P(CALL, 2*sum_hood(CALL, same_params, 1) < count_hood(CALL));
     node.storage(nbr_lags{}) = node.nbr_lag();
     node.storage(round_count{}) = counter(CALL, uint16_t{1});
     node.storage(global_clock{}) = shared_clock(CALL);
@@ -57,12 +76,12 @@ FUN void tracker(ARGS) { CODE
 }
 //! @brief Export list for tracker.
 FUN_EXPORT tracker_t = export_list<
-    past_ctl_t,
+    past_ctl_t, parameter_tuple,
     counter_t<uint16_t>, shared_clock_t, gossip_max_t<uint16_t>
 >;
 //! @brief Storage list for tracker.
 FUN_EXPORT tracker_s = storage_list<
-    tags::not_alone,        bool,
+    tags::not_alone,        uint8_t,
     tags::round_period,     times_t,
     tags::retain_time,      times_t,
     tags::nbr_lags,         field<times_t>,
