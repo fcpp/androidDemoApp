@@ -132,7 +132,10 @@ public class AdvertiserFragment extends Fragment implements View.OnClickListener
         mQuit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                getActivity().stopService(new Intent(getActivity(), AdvertiserService.class));
                 AdvertiserFragment.this.getActivity().finish();
+                AP.fcpp_stop();
+                System.exit(0);
             }
         });
         return view;
