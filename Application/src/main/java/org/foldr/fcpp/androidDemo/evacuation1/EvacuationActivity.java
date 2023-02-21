@@ -147,10 +147,10 @@ public class EvacuationActivity extends FragmentActivity
                     // Are Bluetooth Advertisements supported on this device?
                     if (mBluetoothAdapter.isMultipleAdvertisementSupported()) {
 
-                        if (!mBluetoothAdapter.isLe2MPhySupported()) {
-                            showErrorText(R.string.ble_2mphy_failed);
-                            return;
-                        }
+//  #18                      if (!mBluetoothAdapter.isLe2MPhySupported()) {
+//                            showErrorText(R.string.ble_2mphy_failed);
+//                            return;
+//                        }
                         if (!mBluetoothAdapter.isLeExtendedAdvertisingSupported()) {
                             showErrorText(R.string.ble_extended_failed);
                             return;
