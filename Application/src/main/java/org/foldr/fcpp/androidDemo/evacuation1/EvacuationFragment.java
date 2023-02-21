@@ -28,6 +28,8 @@ public class EvacuationFragment extends Fragment {
     static final String ARG_PARAM_ROUND_PERIOD = "round_period";
     static final String ARG_PARAM_DIAMETER = "diameter";
     static final String ARG_PARAM_RETAIN = "retain_time";
+    static final int[] STATE_COLORS = {Color.GRAY, Color.GREEN, Color.YELLOW, Color.RED};
+    static final String[] STATE_TEXTS = {"?", "✓", "x", "X"};
 
     private boolean isTraitor;
     private boolean is_group_left;
@@ -86,23 +88,15 @@ public class EvacuationFragment extends Fragment {
         version.setText("v1.0");
 
         TextView state_rg = me.findViewById(R.id.text_state_rg);
-        state_rg.setText("?"); // The XML was allergic to `?`.
-        state_rg.setBackgroundColor(Color.GRAY);
+        state_rg.setText(STATE_TEXTS[0]); // The XML was allergic to `?`.
+        state_rg.setBackgroundColor(STATE_COLORS[0]);
         // Set up refresh every 5 secs.
         state_rg.postDelayed(new Runnable() {
             @Override
             public void run() {
                 if (AP.is_stopping) return;
-                // TODO -- first approximation, should at least contain self.
-                // But VS thinks this is from the old example, so it might need changing.
-                if ("{*:inf}".equals(AP.get_nbr_lags())) {
-                    // Review condition.
-                    state_rg.setBackgroundColor(Color.RED);
-                    state_rg.setText("x");
-                } else {
-                    state_rg.setBackgroundColor(Color.GREEN);
-                    state_rg.setText("✓");
-                }
+                state_rg.setBackgroundColor(STATE_COLORS[AP.get_int("not_alone")]);
+                state_rg.setText(STATE_TEXTS[AP.get_int("not_alone")]);
                 // Log.d(LOG_TAG, AP.get_nbr_lags());
                 state_rg.postDelayed(this, 250); // while(true)...
                 b1.setBackgroundColor(AP.get_bool("evacuation_done") ? Color.GREEN : Color.RED);
@@ -110,7 +104,7 @@ public class EvacuationFragment extends Fragment {
                 b3.setBackgroundColor(AP.get_bool("traitor_free") ? Color.GREEN : Color.RED);
                 b4.setBackgroundColor(AP.get_bool(ARG_PARAM_IS_GROUP_LEFT) == is_group_left? Color.GREEN : Color.RED);
             }
-        }, 5000);
+        }, 1000);
 
         TextView traitorView = me.findViewById(R.id.text_traitor);
         traitorView.setText(isTraitor ? "You're the traitor!" : "You're normal");
