@@ -81,6 +81,10 @@ public class EvacuationFragment extends Fragment {
         TextView uid = me.findViewById(R.id.text_uid);
         uid.setText(Integer.toString(AP.uid));
 
+        TextView version = me.findViewById(R.id.text_version);
+        // TODO: should probably come from FCPP-code! (#16)
+        version.setText("v1.0");
+
         TextView state_rg = me.findViewById(R.id.text_state_rg);
         state_rg.setText("?"); // The XML was allergic to `?`.
         state_rg.setBackgroundColor(Color.GRAY);
