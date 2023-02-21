@@ -13,7 +13,6 @@
 #include "lib/common/plot.hpp"
 #include "lib/option/aggregator.hpp"
 #include "lib/coordination/past_ctl.hpp"
-#include "lib/common/ostream.hpp"
 
 
 /**
@@ -26,7 +25,6 @@ namespace coordination {
 
 //! @brief Tags used in the node storage.
 namespace tags {
-    struct custom_log {};
     //! @brief Upper bound to the node diameter.
     struct diameter;
     //! @brief The expected time of an evacuation.
@@ -70,15 +68,8 @@ FUN void tracker(ARGS) { CODE
         size_t neigh_num = count_hood(CALL);
         field<bool> same_params = nbr(CALL,p) == p;
         node.storage(not_alone{}) = logic::P(CALL, neigh_num > 1);
-        bool b0 = all_hood(CALL, same_params);
-        bool b1 = logic::P(CALL, not b0);
-        //node.storage(not_alone{}) += b1;
-        int b2 = sum_hood(CALL, same_params, 1);
-        bool b3 = 2 * b2 < neigh_num;
-        bool b4 = logic::P(CALL, b3);
-        node.storage(custom_log{}) = to_string(
-                make_tuple(same_params, neigh_num, b0, b1, b2, b3, b4));
-        //node.storage(not_alone{}) += b4;
+        node.storage(not_alone{}) += logic::P(CALL, not all_hood(CALL, same_params));
+        node.storage(not_alone{}) += logic::P(CALL, 2 * sum_hood(CALL, same_params, 1) < neigh_num);
     }
     node.storage(nbr_lags{}) = node.nbr_lag();
     node.storage(round_count{}) = counter(CALL, uint16_t{1});
@@ -93,7 +84,6 @@ FUN_EXPORT tracker_t = export_list<
 >;
 //! @brief Storage list for tracker.
 FUN_EXPORT tracker_s = storage_list<
-    tags::custom_log,       std::string,
     tags::not_alone,        uint8_t,
     tags::round_period,     times_t,
     tags::retain_time,      times_t,
