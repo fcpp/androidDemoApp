@@ -91,13 +91,6 @@ public class AP extends Application {
     public static OkHttpWrapper.JSONFormatter jsonhttpFormatter = null;
     private static ThreadPoolExecutor httpLogger; // Sequential executor for http-requests
 
-    public static void pending_add(ScanResult result) {
-        synchronized (pending) {
-            pending.add(result);
-            pending.notify();
-        }
-    }
-
     public static class OkHttpWrapper {
         public interface JSONFormatter {
             String getJSONHTTPFormatter();
