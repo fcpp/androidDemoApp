@@ -44,23 +44,7 @@ public class FriendFindingParameters extends AppCompatActivity implements View.O
             i.putExtra(ARG_PARAM_DIAMETER, Integer.valueOf(diameter));
             i.putExtra(ARG_PARAM_RETAIN, Float.valueOf(retain));
             i.putExtra(ARG_PARAM_ROUND_PERIOD, Float.valueOf(delay));
-            int the_power = AdvertisingSetParameters.TX_POWER_MEDIUM;
-            switch (Math.round(power)) {
-                case 0:
-                    the_power = AdvertisingSetParameters.TX_POWER_ULTRA_LOW;
-                    break;
-                case 1:
-                    the_power = AdvertisingSetParameters.TX_POWER_LOW;
-                    break;
-                case 2:
-                    the_power = AdvertisingSetParameters.TX_POWER_MEDIUM;
-                    break;
-                case 3:
-                    the_power = AdvertisingSetParameters.TX_POWER_HIGH;
-                    break;
-            }
-            i.putExtra(ARG_PARAM_BLE_POWER_LEVEL, the_power);
-            Log.d(LOG_BT_TAG, "power: "+the_power);
+            setExtraBLEPowerLevel(i, power);
             startActivity(i);
             finish(); // terminate prefs dialog and continue.
         }  catch (NumberFormatException e) {
@@ -68,5 +52,25 @@ public class FriendFindingParameters extends AppCompatActivity implements View.O
             // TODO: could use setErrorText() on UI elements.
             Toast.makeText(this, "There's a problem with the parameters: "+e.getMessage(), Toast.LENGTH_LONG).show();
         }
+    }
+
+    public static void setExtraBLEPowerLevel(Intent i, float power) {
+        int the_power = AdvertisingSetParameters.TX_POWER_MEDIUM;
+        switch (Math.round(power)) {
+            case 0:
+                the_power = AdvertisingSetParameters.TX_POWER_ULTRA_LOW;
+                break;
+            case 1:
+                the_power = AdvertisingSetParameters.TX_POWER_LOW;
+                break;
+            case 2:
+                the_power = AdvertisingSetParameters.TX_POWER_MEDIUM;
+                break;
+            case 3:
+                the_power = AdvertisingSetParameters.TX_POWER_HIGH;
+                break;
+        }
+        i.putExtra(ARG_PARAM_BLE_POWER_LEVEL, the_power);
+        Log.d(LOG_BT_TAG, "power: "+the_power);
     }
 }

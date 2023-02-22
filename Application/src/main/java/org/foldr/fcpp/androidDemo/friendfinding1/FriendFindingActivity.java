@@ -16,12 +16,9 @@
 
 package org.foldr.fcpp.androidDemo.friendfinding1;
 
-import static org.foldr.fcpp.androidDemo.AdvertiserFragment.ARG_BROADCAST_ON_FIRST_BOOT;
-import static org.foldr.fcpp.androidDemo.AdvertiserFragment.ARG_DISABLE_BROADCAST_SWITCH;
+import static org.foldr.fcpp.androidDemo.AdvertiserFragment.*;
 import static org.foldr.fcpp.androidDemo.Constants.LOG_TAG;
-import static org.foldr.fcpp.androidDemo.evacuation1.EvacuationFragment.ARG_PARAM_DIAMETER;
-import static org.foldr.fcpp.androidDemo.evacuation1.EvacuationFragment.ARG_PARAM_RETAIN;
-import static org.foldr.fcpp.androidDemo.evacuation1.EvacuationFragment.ARG_PARAM_ROUND_PERIOD;
+import static org.foldr.fcpp.androidDemo.evacuation1.EvacuationFragment.*;
 import static org.foldr.fcpp.androidDemo.friendfinding1.FriendFindingParameters.ARG_PARAM_BLE_POWER_LEVEL;
 
 import android.annotation.SuppressLint;
