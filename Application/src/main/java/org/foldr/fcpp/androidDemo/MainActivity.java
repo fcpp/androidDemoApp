@@ -254,7 +254,7 @@ public class MainActivity extends FragmentActivity
                     public boolean onPreferenceChange(@NonNull Preference preference, Object newValue) {
                         // TODO: error handling
                         int v = Integer.valueOf((String)newValue);
-                        AP.set_diameter(v);
+                        AP.set_int("diameter", v);
                         return true;
                     }
                 });
@@ -264,7 +264,7 @@ public class MainActivity extends FragmentActivity
                     public boolean onPreferenceChange(@NonNull Preference preference, Object newValue) {
                         // TODO: error handling
                         float v = Float.parseFloat(((String)newValue));
-                        AP.set_round_period(v);
+                        AP.set_double("round_period", v);
                         return true;
                     }
                 });
@@ -274,7 +274,7 @@ public class MainActivity extends FragmentActivity
                     public boolean onPreferenceChange(@NonNull Preference preference, Object newValue) {
                         // TODO: error handling
                         float v = Float.parseFloat(((String)newValue));
-                        AP.set_retain_time(v);
+                        AP.set_double("retain_time", v);
                         return true;
                     }
                 });
@@ -329,13 +329,7 @@ public class MainActivity extends FragmentActivity
 
     @NonNull
     public String getJSONHTTPFormatter() {
-        String json = String.format("{ \"uid\":%d, \"degree\":%d, \"round_count\":%d,"
-                        +"\"nbr_lags\":\"%s\",\"hop_dist\":%d,\"global_clock\":%f,"
-                        +"\"im_weak\":%b,\"some_weak\":%b, \"min_uid\":%d"
-                        +"}"
-                ,AP.uid,AP.get_degree(),AP.get_round_count(),AP.get_nbr_lags(),AP.get_hop_dist(),AP.get_global_clock()
-                ,AP.get_im_weak(), AP.get_some_weak(), AP.get_min_uid());
-        return json;
+        return AP.get_storage();
     }
 
     @Override

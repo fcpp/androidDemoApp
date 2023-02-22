@@ -61,27 +61,6 @@ public class AP extends Application {
 
     public static native String get_storage();
 
-    // DEPRECATED FROM HERE
-
-    public static native String get_nbr_lags();
-    public static native long get_round_count();
-    public static native long get_max_msg_size();
-    public static native boolean get_im_weak();
-    public static native boolean get_some_weak();
-    public static native int get_min_uid();
-    public static native int get_degree();
-    public static native float get_global_clock();
-    public static native int get_hop_dist();
-
-    public static native int get_diameter();
-    public static native void set_diameter(int diam);
-    public static native float get_retain_time();
-    public static native void set_retain_time(float time);
-    public static native float get_round_period();
-    public static native void set_round_period(float time);
-
-    // TO HERE
-
     /* Deque for received transmissions. Read from first, append to end. */
     static final BlockingDeque<ScanResult> pending = new LinkedBlockingDeque<>();
     /* Support for BT to advertise most recent data */
@@ -164,7 +143,7 @@ public class AP extends Application {
         long new_timeout_ms = Math.round((AP.get_double("round_period") * 1000) / 5);
         if (new_timeout_ms != timeout_ms) {
             timeout_ms = new_timeout_ms;
-            Log.d(LOG_BT_TAG, "Changing BLE polling timeout to "+Long.toString(timeout_ms));
+            Log.d(LOG_BT_TAG, "Changing BLE polling timeout to "+timeout_ms);
         }
         // Good time to log our state this round:
         httpLogger.execute(OkHttpWrapper::httpLog);
@@ -264,9 +243,9 @@ public class AP extends Application {
         }
         Log.i(LOG_TAG, "FCPP params (orig): "+prefs_diameter + "," + prefs_period+","+ prefs_retain);
         Log.i(LOG_TAG, "FCPP params (derived): "+the_diameter + "," + the_period+","+ the_retain);
-        set_diameter(the_diameter);
-        set_round_period(the_period);
-        set_retain_time(the_retain);
+        AP.set_int("diameter", the_diameter);
+        AP.set_double("round_period", the_period);
+        AP.set_double("retain_time", the_retain);
     }
 
     static {
