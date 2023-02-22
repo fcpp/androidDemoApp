@@ -1,5 +1,6 @@
 CREATE TABLE log.friendfinding (
 id serial primary key,
+use_lags bool,
 degree int,
 friend_requested int,
 distance_score float(24),

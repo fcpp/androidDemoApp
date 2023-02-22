@@ -50,7 +50,7 @@ DECLARE_OPTIONS(main,
 using connector_t = connect::radial<10,connect::fixed<15>>;
 
 //! @brief The sequence of spawn events (100 devices in interval from 0 to 1s)
-using spawn_s = sequence::multiple<distribution::constant_n<size_t, 100>, distribution::interval_n<times_t, 0, 1>>;
+using spawn_s = sequence::multiple<distribution::constant_n<size_t, 100>, distribution::interval_n<times_t, 0, 1>, false>;
 
 //! @brief The distribution of initial node positions (random in a 120x80 rectangle).
 using rectangle_d = distribution::rect_n<1, 0, 0, hi_x, hi_y>;

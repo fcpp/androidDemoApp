@@ -11,6 +11,7 @@
 #include "lib/common/option.hpp"
 #include "lib/component/calculus.hpp"
 #include "lib/coordination/experiment_helper.hpp"
+#include "lib/coordination/time.hpp"
 #include "lib/coordination/tracker.hpp"
 #include "lib/coordination/slcs.hpp"
 #include "lib/coordination/vulnerability_detection.hpp"
@@ -80,6 +81,8 @@ namespace coordination {
 
 //! @brief Tags used in the node storage.
 namespace tags {
+    //! @brief Whether to use lags to better estimate distances.
+    struct use_lags {};
     //! @brief Which friend has been requested (zero for no request).
     struct friend_requested {};
     //! @brief A score approximating the distance to the searched friend (if any, zero otherwise).
@@ -94,6 +97,7 @@ namespace tags {
 //! @brief Simulation logic of the friend finding experiment.
 FUN void experiment_simulation(ARGS, friend_finding, common::bool_pack<true>) { CODE
     using namespace tags;
+    node.storage(use_lags{}) = true;
     vec<2> low = {0, 0};
     vec<2> hi = {hi_x, hi_y};
     if (counter(CALL) == 1)
@@ -144,8 +148,22 @@ GEN(S) void experiment(ARGS, friend_finding, S) { CODE
     auto res = spawn(CALL, [&](request r){
         bool source = node.uid == r.source;
         bool destination = node.uid == r.destination;
-        hops_t h = abf_hops(CALL, destination);
-        field<real_t> w = node.storage(retain_time{}) - node.nbr_lag();
+        real_t h = 0;
+        times_t ret = node.storage(retain_time{});
+        field<real_t> w = 1;
+        if (node.storage(use_lags{})) {
+            field<times_t> lags = node.nbr_lag();
+            lags = mux(lags < ret, lags, ret);
+            lags = exponential_filter(CALL, ret, lags, 0.4);
+            field<times_t> dists = lags * (2/ret) + 1;
+            h = abf_distance(CALL, destination, [&](){
+                return dists;
+            });
+            h = min(real_t(std::numeric_limits<hops_t>::max()), h);
+        } else {
+            h = abf_hops(CALL, destination);
+            w = ret - node.nbr_lag();
+        }
         real_t d = sum_hood(CALL, nbr(CALL, h) * w) / sum_hood(CALL, w);
         node.storage(hop_distance{}) = h;
         node.storage(distance_score{}) = d;
@@ -163,16 +181,18 @@ GEN(S) void experiment(ARGS, friend_finding, S) { CODE
 template <bool simulation>
 struct experiment_t<friend_finding, simulation> : export_list<
     experiment_simulation_t<friend_finding, simulation>,
-    spawn_t<request, status>, abf_hops_t, nbr_t<real_t>
+    exponential_filter_t<field<times_t>>, abf_distance_t, abf_hops_t,
+    spawn_t<request, status>, nbr_t<real_t>
 > {};
 //! @brief Storage list for the friend finding experiment.
 template <bool simulation>
 struct experiment_s<friend_finding, simulation> : storage_list<
     experiment_simulation_s<friend_finding, simulation>,
+    tags::use_lags,         bool,
     tags::degree,           hops_t,
     tags::friend_requested, device_t,
     tags::distance_score,   real_t,
-    tags::hop_distance,     hops_t,
+    tags::hop_distance,     real_t,
     tags::diameter,         hops_t
 > {};
 //! @brief Aggregator list for the friend finding experiment.
