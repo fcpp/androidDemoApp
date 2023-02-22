@@ -22,10 +22,12 @@ import static org.foldr.fcpp.androidDemo.Constants.LOG_TAG;
 import static org.foldr.fcpp.androidDemo.evacuation1.EvacuationFragment.ARG_PARAM_DIAMETER;
 import static org.foldr.fcpp.androidDemo.evacuation1.EvacuationFragment.ARG_PARAM_RETAIN;
 import static org.foldr.fcpp.androidDemo.evacuation1.EvacuationFragment.ARG_PARAM_ROUND_PERIOD;
+import static org.foldr.fcpp.androidDemo.friendfinding1.FriendFindingParameters.ARG_PARAM_BLE_POWER_LEVEL;
 
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
+import android.bluetooth.le.AdvertisingSetParameters;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
@@ -60,16 +62,18 @@ public class FriendFindingActivity extends FragmentActivity
     AP application;
     private LocationListener locationListener;
     private FriendFindingFragment frag;
+    private int ble_power_level;
 
     @SuppressLint("MissingPermission")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getIntent().getExtras().size() != 3) {
+        if (getIntent().getExtras().size() != 4) {
             throw new IllegalArgumentException("You didn't come through the parameter configuration screen!");
         }
         float retain = getIntent().getFloatExtra(ARG_PARAM_RETAIN, -1);
         int diameter = getIntent().getIntExtra(ARG_PARAM_DIAMETER, -1);
+        ble_power_level = getIntent().getIntExtra(ARG_PARAM_BLE_POWER_LEVEL, AdvertisingSetParameters.TX_POWER_MEDIUM);
 
         // The options are for FCPP:
         frag = FriendFindingFragment.newInstance();
@@ -243,9 +247,9 @@ public class FriendFindingActivity extends FragmentActivity
         Bundle args = new Bundle();
         args.putBoolean(ARG_BROADCAST_ON_FIRST_BOOT, true);
         args.putBoolean(ARG_DISABLE_BROADCAST_SWITCH, true);
+        args.putInt(ARG_PARAM_BLE_POWER_LEVEL, ble_power_level);
         advertiserFragment.setArguments(args);
         transaction.replace(R.id.advertiser_fragment_container, advertiserFragment);
-        
         transaction.replace(R.id.preferences_fragment_container, frag);
 
         transaction.commit();

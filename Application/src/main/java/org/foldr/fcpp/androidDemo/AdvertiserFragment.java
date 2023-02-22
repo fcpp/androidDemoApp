@@ -16,7 +16,10 @@
 
 package org.foldr.fcpp.androidDemo;
 
+import static org.foldr.fcpp.androidDemo.friendfinding1.FriendFindingParameters.ARG_PARAM_BLE_POWER_LEVEL;
+
 import android.bluetooth.le.AdvertiseCallback;
+import android.bluetooth.le.AdvertisingSetParameters;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -53,6 +56,7 @@ public class AdvertiserFragment extends Fragment implements View.OnClickListener
     public static final String ARG_DISABLE_BROADCAST_SWITCH = "disable_broadcast_switch";
     private boolean firstBoot;
     private boolean isDisable;
+    private int ble_power_level = AdvertisingSetParameters.TX_POWER_MEDIUM;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -60,6 +64,9 @@ public class AdvertiserFragment extends Fragment implements View.OnClickListener
 
         firstBoot = getArguments() != null && getArguments().getBoolean(ARG_BROADCAST_ON_FIRST_BOOT, false);
         isDisable = getArguments() != null && getArguments().getBoolean(ARG_DISABLE_BROADCAST_SWITCH, false);
+        if (getArguments() != null) {
+            ble_power_level = getArguments().getInt(ARG_PARAM_BLE_POWER_LEVEL, AdvertisingSetParameters.TX_POWER_MEDIUM);
+        }
 
         advertisingFailureReceiver = new BroadcastReceiver() {
 
@@ -181,8 +188,10 @@ public class AdvertiserFragment extends Fragment implements View.OnClickListener
     /**
      * Returns Intent addressed to the {@code AdvertiserService} class.
      */
-    private static Intent getServiceIntent(Context c) {
-        return new Intent(c, AdvertiserService.class);
+    private Intent getServiceIntent(Context c) {
+        Intent i = new Intent(c, AdvertiserService.class);
+        i.putExtra(ARG_PARAM_BLE_POWER_LEVEL, ble_power_level);
+        return i;
     }
 
     /**

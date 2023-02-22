@@ -1,6 +1,8 @@
 package org.foldr.fcpp.androidDemo;
 
+import static org.foldr.fcpp.androidDemo.Constants.LOG_BT_TAG;
 import static org.foldr.fcpp.androidDemo.Constants.LOG_TAG;
+import static org.foldr.fcpp.androidDemo.friendfinding1.FriendFindingParameters.ARG_PARAM_BLE_POWER_LEVEL;
 
 import android.annotation.SuppressLint;
 import android.app.Notification;
@@ -79,7 +81,14 @@ public class AdvertiserService extends Service {
     private AP mAp;
     private AdvertisingSetParameters parameters;
     private boolean ble_toast_only_once = true;
+    private int power_level = AdvertisingSetParameters.TX_POWER_MEDIUM;
 
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        power_level = intent.getIntExtra(ARG_PARAM_BLE_POWER_LEVEL, AdvertisingSetParameters.TX_POWER_MEDIUM);
+        Log.d(LOG_BT_TAG, "BLE power level: "+power_level);
+        return START_STICKY;
+    }
     @Override
     public void onCreate() {
         Log.d(TAG, "Service: Starting Advertising Service");
@@ -222,7 +231,7 @@ public class AdvertiserService extends Service {
                 .setConnectable(false)
                 // TODO: Tunables here. Note that we're currently only calling this once on startup.
                 .setInterval(AdvertisingSetParameters.INTERVAL_HIGH)
-                .setTxPowerLevel(AdvertisingSetParameters.TX_POWER_MEDIUM)
+                .setTxPowerLevel(power_level)
                 .setPrimaryPhy(BluetoothDevice.PHY_LE_1M)
                 // XXX #18 .setSecondaryPhy(BluetoothDevice.PHY_LE_2M)
                 .build();
