@@ -20,6 +20,7 @@ import static org.foldr.fcpp.androidDemo.AdvertiserFragment.*;
 import static org.foldr.fcpp.androidDemo.Constants.LOG_TAG;
 import static org.foldr.fcpp.androidDemo.evacuation1.EvacuationFragment.*;
 import static org.foldr.fcpp.androidDemo.friendfinding1.FriendFindingParameters.ARG_PARAM_BLE_POWER_LEVEL;
+import static org.foldr.fcpp.androidDemo.friendfinding1.FriendFindingParameters.ARG_PARAM_USE_LAGS;
 
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
@@ -65,15 +66,16 @@ public class FriendFindingActivity extends FragmentActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getIntent().getExtras().size() != 4) {
+        if (getIntent().getExtras().size() != 5) {
             throw new IllegalArgumentException("You didn't come through the parameter configuration screen!");
         }
         float retain = getIntent().getFloatExtra(ARG_PARAM_RETAIN, -1);
         int diameter = getIntent().getIntExtra(ARG_PARAM_DIAMETER, -1);
         ble_power_level = getIntent().getIntExtra(ARG_PARAM_BLE_POWER_LEVEL, AdvertisingSetParameters.TX_POWER_MEDIUM);
+        boolean use_lags = getIntent().getBooleanExtra(ARG_PARAM_USE_LAGS, true);
 
         // The options are for FCPP:
-        frag = FriendFindingFragment.newInstance();
+        frag = FriendFindingFragment.newInstance(use_lags);
         application = (AP) getApplication();
         /* Note that FCPP is already running by the time we install the logger. */
         application.jsonhttpFormatter = this;

@@ -1,5 +1,7 @@
 package org.foldr.fcpp.androidDemo.friendfinding1;
 
+import static org.foldr.fcpp.androidDemo.friendfinding1.FriendFindingParameters.ARG_PARAM_USE_LAGS;
+
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -28,9 +30,6 @@ public class FriendFindingFragment extends Fragment {
     static final int[] STATE_COLORS = {Color.GRAY, Color.GREEN, Color.YELLOW, Color.RED};
     static final String[] STATE_TEXTS = {"?", "✓", "x", "X"};
 
-    private boolean isTraitor;
-    private boolean is_group_left;
-
     public FriendFindingFragment() {
         // Required empty public constructor
     }
@@ -41,14 +40,19 @@ public class FriendFindingFragment extends Fragment {
      *
      * @return A new instance of fragment EvacuationFragment.
      */
-    public static FriendFindingFragment newInstance() {
+    public static FriendFindingFragment newInstance(boolean use_lags) {
         FriendFindingFragment fragment = new FriendFindingFragment();
+        Bundle args = new Bundle();
+        args.putBoolean(ARG_PARAM_USE_LAGS, use_lags);
+        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        boolean useLags = getArguments().getBoolean(ARG_PARAM_USE_LAGS);
+        AP.set_bool("use_lags", useLags);
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

@@ -15,14 +15,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 
 import com.google.android.material.slider.Slider;
 
+import org.foldr.fcpp.androidDemo.AP;
 import org.foldr.fcpp.androidDemo.R;
 
 public class FriendFindingParameters extends AppCompatActivity implements View.OnClickListener {
 
     public static final String ARG_PARAM_BLE_POWER_LEVEL = "BLE_POWER_LEVEL";
+    public static final String ARG_PARAM_USE_LAGS = "USE_LAGS_FOR_DIST";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +40,10 @@ public class FriendFindingParameters extends AppCompatActivity implements View.O
         String retain = ((TextView) findViewById(R.id.param_retain)).getText().toString();
         String delay = ((TextView) findViewById(R.id.param_delay)).getText().toString();
         float power = ((Slider) findViewById(R.id.param_power)).getValue();
+        SwitchCompat lagSwitch = findViewById(R.id.param_lags);
+        boolean useLags = lagSwitch.isChecked();
         Intent i = new Intent(this, FriendFindingActivity.class);
+        i.putExtra(ARG_PARAM_USE_LAGS, useLags);
         // We fail hard on conversion errors below.
         // We directly pass set most important values on to FCPP who's already running.
         try {
