@@ -77,6 +77,7 @@ public class FriendFindingFragment extends Fragment {
                 if (fid > 0) { // reporting to have found the friend
                     AP.set_int("friend_requested", 0);
                     friendID.setText("");
+                    friendID.setEnabled(true);
                     searchButton.setText("Search!");
                     searchButton.setEnabled(false);
                 } else { // starting to search for a friend
