@@ -1,24 +1,16 @@
 
-Android BluetoothAdvertisements Sample
+Android FCPP Sample Application
 ===================================
 
-Sample demonstrating how to advertise small amounts of data using the Bluetooth
-Low Energy API. Also demonstrates how to scan for those Advertisements. (requires
-2 devices to see full operation)
+Sample demonstrating of how to implement FCPP applications that exchange data using the Bluetooth
+Low Energy API (requires 2 devices to see full operation).
 
 Introduction
 ------------
 
-This sample demonstrates use of the Bluetooth Low Energy (BLE) [Advertisement][1] and [Scanning][2] APIs.
-The functionality is split into two fragments - one for Advertising, one for Scanning.
-
-ScannerFragment activates BLE Scanning for 5 seconds and displays a list of found devices which are advertising
-using this sample. It shows the device type, Bluetooth address, and when it was last seen. User can
-refresh to scan again and update the list.
-
-AdvertiserFragment allows the user to toggle BLE Advertising of that device. It broadcasts basic
-information about the device along with a UUID specific to this app so the ScannerFragment on other
-devices can filter by it.
+This project uses the Bluetooth Low Energy (BLE) [Advertisement][1] and [Scanning][2] APIs.
+The functionality is split into several fragments - one for Advertising, one for Scanning, and then
+an additional one with the user interface for each particular application/experiment.
 
 Note: A device cannot detect its own BLE advertisements. You will need two devices to see this
 sample in action.
@@ -26,17 +18,8 @@ sample in action.
 [1]:https://developer.android.com/reference/android/bluetooth/le/BluetoothLeAdvertiser.html
 [2]:https://developer.android.com/reference/android/bluetooth/le/BluetoothLeScanner.html
 
-Pre-requisites
---------------
-
-- Android SDK 28
-- Android Build Tools v28.0.3
-- Android Support Repository
-- CMake 3.22.1 (via Android)
-
 Getting Started
 ---------------
 
-First, use the terminal to go into `fcpp-android` and invoke `make`, then use the
-"gradlew build" command or use "Import Project" in Android Studio.
-
+This project requires the `fcpp/fcpp` submodule. Either do a `git submodule update` and use the
+`./gradlew build` command, or simply use "Import Project" in Android Studio which should take care of all the steps.
