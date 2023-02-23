@@ -23,3 +23,5 @@ Getting Started
 
 This project requires the `fcpp/fcpp` submodule. Either do a `git submodule update` and use the
 `./gradlew build` command, or simply use "Import Project" in Android Studio which should take care of all the steps.
+
+You can run the corresponding simulations in the [`fcpp-android`](fcpp-android)-folder through `./make.sh gui run -O simulation`.
