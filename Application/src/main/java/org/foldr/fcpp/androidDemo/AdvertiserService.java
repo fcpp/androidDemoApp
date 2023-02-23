@@ -105,7 +105,7 @@ public class AdvertiserService extends Service {
                      * OTOH, it should be running continuously anyways. */
                     sendStorageIntent();
                     try {
-                        Thread.sleep(1000);
+                        Thread.sleep(250);
                     } catch (InterruptedException e) {
                         // NOP
                     }
