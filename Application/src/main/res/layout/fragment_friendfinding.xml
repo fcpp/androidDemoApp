@@ -55,6 +55,39 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingRight="10dp"
+                android:text="Conn. quality:"/>
+
+            <TextView
+                android:id="@+id/conn_quality"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="10dp"
+                android:text="0%"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="10dp"
+                android:text="Diameter estimate:"/>
+
+            <TextView
+                android:id="@+id/diam_estimate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="10dp"
+                android:text="0"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="10dp"
                 android:textSize="@dimen/margin_large"
                 android:text="Friend:"/>
             <EditText
@@ -80,9 +113,9 @@
             android:id="@+id/dist_score"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#F00"
+            android:background="#000"
             android:gravity="center"
-            android:text="0,00"
+            android:text="-"
             android:textSize="120sp" />
     </LinearLayout>
 </FrameLayout>

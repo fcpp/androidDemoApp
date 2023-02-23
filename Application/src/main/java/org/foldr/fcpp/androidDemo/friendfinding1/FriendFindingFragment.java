@@ -103,14 +103,23 @@ public class FriendFindingFragment extends Fragment {
                 // Log.d(LOG_TAG, AP.get_nbr_lags());
                 state_rg.postDelayed(this, 250); // while(true)...
                 TextView distanceView = me.findViewById(R.id.dist_score);
-                double dist = AP.get_double("distance_score");
-                distanceView.setText(String.format("%.2f", dist));
-                float k = (float)(dist / AP.get_int("diameter"));
-                distanceView.setBackgroundColor(Color.argb(1.0f, 1-k, 0.0f, k));
+                float dist = (float)AP.get_double("distance_score");
+                if (dist >= 0) {
+                    distanceView.setText(String.format("%.2f", dist));
+                    distanceView.setBackgroundColor(Color.argb(1.0f, 1 - dist, 0.0f, dist));
+                } else {
+                    distanceView.setText("-");
+                    distanceView.setBackgroundColor(Color.BLACK);
+                }
                 EditText friendID = me.findViewById(R.id.friend_id);
                 int ID = 0;
                 if (friendID.getText().length() > 0) ID = Integer.valueOf(friendID.getText().toString());
                 searchButton.setEnabled(ID > 0);
+                TextView connQuality = me.findViewById(R.id.conn_quality);
+                long cq = Math.round(100 - 100*AP.get_double("flakiness"));
+                connQuality.setText(Long.toString(cq) + "%");
+                TextView diamEstimate = me.findViewById(R.id.diam_estimate);
+                diamEstimate.setText(Integer.toString(AP.get_int("estimated_diam")));
             }
         }, 1000);
 

@@ -38,7 +38,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_centerInParent="true"
-        android:paddingTop="100dp"
+        android:paddingTop="130dp"
         android:paddingBottom="20dp" >
 
         <TextView
