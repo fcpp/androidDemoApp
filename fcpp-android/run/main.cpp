@@ -63,15 +63,20 @@ std::thread t;
 
 //! @cond INTERNAL
 namespace details {
-    //! @brief Converts since the target is a string.
-    template <typename T>
-    inline std::string maybe_convert(T&& x, common::type_sequence<std::string>) {
-        return to_string(std::forward<T>(x));
+    //! @brief Does not convert since the target is the same as the type.
+    template <typename R>
+    inline R const& maybe_convert(R const& x, common::type_sequence<R>) {
+        return x;
     }
-    //! @brief Does not convert since the target is not a string.
-    template <typename T, typename R, typename = std::enable_if_t<not std::is_same<R, std::string>::value>>
-    inline T&& maybe_convert(T&& x, common::type_sequence<R>) {
-        return std::forward<T>(x);
+    //! @brief Converts since the target is a string.
+    template <typename T, typename = std::enable_if_t<not std::is_same<T, std::string>::value>>
+    inline std::string maybe_convert(T const& x, common::type_sequence<std::string>) {
+        return to_string(x);
+    }
+    //! @brief Convert since the target is not the same as the type.
+    template <typename T, typename R, typename = std::enable_if_t<not std::is_same<R, std::string>::value and not std::is_same<R, T>::value>>
+    inline R maybe_convert(T const& x, common::type_sequence<R>) {
+        return x;
     }
 
     //! @brief Type predicates checking whether the type is convertible to R or R is string.
