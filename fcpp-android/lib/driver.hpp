@@ -107,7 +107,7 @@ struct transceiver {
         // combine data into a packet
         unsigned int size = panHeaderSize + m.size() + sizeof(device_t);
         if (size > maxPacketSize) {
-            LOGI("Send failed: message overflow (%d/125 bytes)\n", (int)m.size());
+            LOGI("Send failed: message overflow (%d/%d bytes)\n", (int)m.size(), (int)maxPacketSize);
             return true;
         }
         // try to send it
@@ -196,9 +196,9 @@ struct transceiver {
     //! @brief A random engine.
     mutable std::default_random_engine m_rng;
     //! @brief The maximum packet size.
-    static const unsigned int maxPacketSize = 125;
+    static constexpr unsigned int maxPacketSize = 192;
     //! @brief The size of the message header.
-    static const unsigned int panHeaderSize = 7;
+    static constexpr unsigned int panHeaderSize = 7;
     //! @brief The message header.
     static const char panHeader[panHeaderSize];
 };
