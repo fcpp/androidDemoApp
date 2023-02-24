@@ -175,8 +175,9 @@ GEN(S) void experiment(ARGS, friend_finding, S) { CODE
         h = min(real_t(node.storage(diameter{})), h);
         constexpr size_t cnt = __COUNTER__;
         real_t d = sum_hood(node, cnt, nbr(CALL, h) * w) / sum_hood(node, cnt, w) / node.storage(diameter{});
+        d = h == 0 ? 0 : exponential_filter(CALL, 1, d, 0.05);
         node.storage(hop_distance{}) = h;
-        node.storage(distance_score{}) = h == 0 ? 0 : d;
+        node.storage(distance_score{}) = d;
         status s = abf_hops(CALL, source) < node.storage(diameter{}) ? status::internal : status::external;
         if (source) s = requesting ? status::output : status::terminated;
         return make_tuple(d, s);
@@ -202,8 +203,8 @@ GEN(S) void experiment(ARGS, friend_finding, S) { CODE
 template <bool simulation>
 struct experiment_t<friend_finding, simulation> : export_list<
     experiment_simulation_t<friend_finding, simulation>,
-    exponential_filter_t<field<times_t>>, spawn_t<request, status>,
-    abf_distance_t, abf_hops_t, nbr_t<real_t>,
+    exponential_filter_t<field<times_t>>, exponential_filter_t<real_t>,
+    spawn_t<request, status>, abf_distance_t, abf_hops_t, nbr_t<real_t>,
     gossip_min_t<device_t>, mp_collection_t<hops_t, hops_t>
 > {};
 //! @brief Storage list for the friend finding experiment.
