@@ -29,8 +29,9 @@ constexpr bool enable_debugging = true;
 
 #define LOGI(...) \
   ((void)__android_log_print(ANDROID_LOG_INFO, "fcpp", __VA_ARGS__))
-#define LOGD(...) \
+# define LOGD(...) \
   ((void)__android_log_print(ANDROID_LOG_DEBUG, "fcpp", __VA_ARGS__))
+#define LOGD(...)
 
 
 std::vector<char> pollData() {
@@ -106,37 +107,31 @@ struct transceiver {
     bool send(device_t id, const std::vector<char>& m, int attempt) const {
         // combine data into a packet
         unsigned int size = panHeaderSize + m.size() + sizeof(device_t);
-        if (size > maxPacketSize) {
-            LOGI("Send failed: message overflow (%d/%d bytes)\n", (int)m.size(), (int)maxPacketSize);
-            return true;
-        }
         // try to send it
         try {
-            if (true) { // TODO: actually try to send the packet
-                LOGD("Sending...");
-                JNIEnv *env;
-                int attachResult = jvm->AttachCurrentThread(&env, NULL);
-                assert (attachResult == JNI_OK);
-                jbyteArray retArray = env->NewByteArray(size);
-                void *temp = env->GetPrimitiveArrayCritical((jarray)retArray, 0);
-                char *ptr = (char *)temp;
-                memcpy(ptr, panHeader, panHeaderSize);
-                ptr += panHeaderSize;
-                memcpy(ptr, m.data(), m.size());
-                ptr += m.size();
-                memcpy(ptr, &id, sizeof(device_t));                
-                env->ReleasePrimitiveArrayCritical(retArray, temp, 0);
-                env->CallStaticVoidMethod(clazz, postMsg, retArray, size);
-                if (enable_debugging) {
-                    char strbuf[2*size+1];
-                    btox(strbuf, (char *)temp, 2*size);
-                    LOGD("Sent %d byte packet: %s\n", (int)size, strbuf);
-                } else {
-                    LOGD("Sent %d byte packet\n", (int)size);
-                }
-                // Let's hope the Java side deallocates the string eventually.
-                return true;
-            } else return attempt == data.send_attempts;
+            LOGD("Sending...");
+            JNIEnv *env;
+            int attachResult = jvm->AttachCurrentThread(&env, NULL);
+            assert (attachResult == JNI_OK);
+            jbyteArray retArray = env->NewByteArray(size);
+            void *temp = env->GetPrimitiveArrayCritical((jarray) retArray, 0);
+            char *ptr = (char *) temp;
+            memcpy(ptr, panHeader, panHeaderSize);
+            ptr += panHeaderSize;
+            memcpy(ptr, m.data(), m.size());
+            ptr += m.size();
+            memcpy(ptr, &id, sizeof(device_t));
+            env->ReleasePrimitiveArrayCritical(retArray, temp, 0);
+            env->CallStaticVoidMethod(clazz, postMsg, retArray, size);
+            if (enable_debugging) {
+                char strbuf[2 * size + 1];
+                btox(strbuf, (char *) temp, 2 * size);
+                LOGD("Sent %d byte packet: %s\n", (int) size, strbuf);
+            } else {
+                LOGD("Sent %d byte packet\n", (int) size);
+            }
+            // Let's hope the Java side deallocates the string eventually.
+            return true;
         } catch (std::exception& e) {
             LOGI("Send failed: %s\n", e.what());
             return attempt == data.send_attempts;
@@ -158,14 +153,14 @@ struct transceiver {
         }
         message_type m;
         try {
-            char packet[maxPacketSize];
-            // TODO: actually try to receive the packet
+
             std::vector<char> vs_packet = pollData();
             if (vs_packet.size() == 0) {
                 return m;
             }
-            memcpy(packet, vs_packet.data(),std::min((size_t)maxPacketSize,vs_packet.size()));
             size_t size = vs_packet.size();
+            char packet[size];
+            memcpy(packet, vs_packet.data(),size);
             if (size >= static_cast<int>(panHeaderSize + sizeof(device_t)) and memcmp(packet, panHeader, panHeaderSize) == 0) {
                 m.time = m_fcpp_timer.real_time();
                 m.device = *reinterpret_cast<device_t*>(packet + size - sizeof(device_t));
@@ -195,16 +190,14 @@ struct transceiver {
     component::combine<>::component<>::net m_fcpp_timer;
     //! @brief A random engine.
     mutable std::default_random_engine m_rng;
-    //! @brief The maximum packet size.
-    static constexpr unsigned int maxPacketSize = 192;
     //! @brief The size of the message header.
-    static constexpr unsigned int panHeaderSize = 7;
+    static constexpr unsigned int panHeaderSize = 0; // TODO: Remove completely
     //! @brief The message header.
     static const char panHeader[panHeaderSize];
 };
 
 //! @brief The message header content.
-const char transceiver::panHeader[panHeaderSize] = {0, 1, 2, 3, 4, 5, 6};
+const char transceiver::panHeader[panHeaderSize] = {};
 
 
 }
