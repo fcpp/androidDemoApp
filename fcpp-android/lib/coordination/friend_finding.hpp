@@ -175,7 +175,7 @@ GEN(S) void experiment(ARGS, friend_finding, S) { CODE
         h = min(real_t(node.storage(diameter{})), h);
         constexpr size_t cnt = __COUNTER__;
         real_t d = sum_hood(node, cnt, nbr(CALL, h) * w) / sum_hood(node, cnt, w) / node.storage(diameter{});
-        d = h == 0 ? 0 : exponential_filter(CALL, 1, d, 0.05);
+        d = h == 0 ? 0 : exponential_filter(CALL, d, d, 0.05);
         node.storage(hop_distance{}) = h;
         node.storage(distance_score{}) = d;
         status s = abf_hops(CALL, source) < node.storage(diameter{}) ? status::internal : status::external;
