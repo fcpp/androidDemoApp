@@ -176,7 +176,7 @@ GEN(S) void experiment(ARGS, friend_finding, S) { CODE
         constexpr size_t cnt = __COUNTER__;
         real_t d = sum_hood(node, cnt, nbr(CALL, h) * w) / sum_hood(node, cnt, w) / node.storage(diameter{});
         node.storage(hop_distance{}) = h;
-        node.storage(distance_score{}) = d;
+        node.storage(distance_score{}) = h == 0 ? 0 : d;
         status s = abf_hops(CALL, source) < node.storage(diameter{}) ? status::internal : status::external;
         if (source) s = requesting ? status::output : status::terminated;
         return make_tuple(d, s);
