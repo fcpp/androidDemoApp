@@ -47,7 +47,8 @@ namespace tags {
 //! @brief Simulation logic of the traitor detection experiment.
 FUN void experiment_simulation(ARGS, traitor_detection, common::bool_pack<true>) { CODE
     using namespace tags;
-    node.storage(evacuation_time{}) = 70;
+    node.storage(diameter{}) = 5;
+    node.storage(evacuation_time{}) = 60;
     bool& it = node.storage(is_traitor{}) = node.uid == 0;
     bool& eg = node.storage(evacuation_group{}) = constant(CALL, node.next_int(1));
     bool& hg = node.storage(homogeneous_group{});

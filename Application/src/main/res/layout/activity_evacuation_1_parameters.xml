@@ -27,7 +27,7 @@
             android:layout_height="match_parent"
             android:id="@+id/param_delay"
             android:inputType="numberDecimal"
-            android:text="1.0"
+            android:text="0.5"
             android:hint="delay"/>
     </LinearLayout>
     <LinearLayout
@@ -62,7 +62,7 @@
             android:layout_height="match_parent"
             android:id="@+id/param_evacuation_time"
             android:inputType="number"
-            android:text="180"
+            android:text="90"
             android:hint="evacuation time"/>
     </LinearLayout>
     <LinearLayout
@@ -79,7 +79,7 @@
             android:layout_height="match_parent"
             android:id="@+id/param_diameter"
             android:inputType="number"
-            android:text="10"
+            android:text="5"
             android:hint="diameter"/>
     </LinearLayout>
     <LinearLayout

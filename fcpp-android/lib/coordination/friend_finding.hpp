@@ -106,6 +106,8 @@ namespace tags {
 //! @brief Simulation logic of the friend finding experiment.
 FUN void experiment_simulation(ARGS, friend_finding, common::bool_pack<true>) { CODE
     using namespace tags;
+    node.storage(round_period{}) = 0.2;
+    node.storage(retain_time{}) = 2;
     node.storage(use_lags{}) = true;
     vec<2> low = {0, 0};
     vec<2> hi = {hi_x, hi_y};

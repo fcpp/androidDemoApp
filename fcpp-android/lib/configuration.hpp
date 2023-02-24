@@ -84,8 +84,7 @@ DECLARE_OPTIONS(simulation,
 //! @brief The list of supported experiments.
 using experiments = common::type_sequence<
     traitor_detection,
-    friend_finding,
-    vulnerability_detection
+    friend_finding
 >;
 
 } // namespace fcpp

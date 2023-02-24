@@ -27,8 +27,8 @@
             android:layout_height="match_parent"
             android:id="@+id/param_delay"
             android:inputType="numberDecimal"
-            android:text="1.0"
-            android:hint="delay"/>
+            android:text="0.2"
+            android:hint="period"/>
     </LinearLayout>
     <LinearLayout
         android:orientation="horizontal"
@@ -45,7 +45,7 @@
             android:id="@+id/param_retain"
             android:inputType="numberDecimal"
             android:paddingRight="20dp"
-            android:text="5.0"
+            android:text="2.0"
             android:hint="retain"/>
     </LinearLayout>
     <LinearLayout
