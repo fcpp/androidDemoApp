@@ -13,7 +13,7 @@
 //! @brief initial retain time
 #define RETAIN_TIME  5
 //! @brief initial round period
-#define ROUND_PERIOD 1
+#define ROUND_PERIOD 0.5
 
 #include "lib/component.hpp"
 #include "lib/deployment.hpp"

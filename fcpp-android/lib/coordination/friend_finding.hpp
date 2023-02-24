@@ -110,7 +110,7 @@ FUN void experiment_simulation(ARGS, friend_finding, common::bool_pack<true>) { 
     vec<2> low = {0, 0};
     vec<2> hi = {hi_x, hi_y};
     if (counter(CALL) == 1)
-        node.position() = node.uid == 0 ? 0.2*hi : node.uid == 1 ? 0.8*hi : random_rectangle_target(CALL, 0.2*hi, 0.8*hi);
+        node.position() = node.uid == 0 ? 0.3*hi : node.uid == 1 ? 0.7*hi : random_rectangle_target(CALL, 0.2*hi, 0.8*hi);
     rectangle_walk(CALL, 0.2*hi, 0.8*hi, 0.2, node.storage(round_period{}));
     constexpr times_t request_time = 30;
     field<bool> is_my_friend = false;
