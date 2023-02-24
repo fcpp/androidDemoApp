@@ -85,7 +85,7 @@ public class EvacuationFragment extends Fragment {
 
         TextView version = me.findViewById(R.id.text_version);
         // TODO: should probably come from FCPP-code! (#16)
-        version.setText("v1.0");
+        version.setText("v1.1");
 
         TextView state_rg = me.findViewById(R.id.text_state_rg);
         state_rg.setText(STATE_TEXTS[0]); // The XML was allergic to `?`.

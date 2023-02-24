@@ -65,7 +65,7 @@ public class FriendFindingFragment extends Fragment {
 
         TextView version = me.findViewById(R.id.text_version);
         // TODO: should probably come from FCPP-code! (#16)
-        version.setText("v1.0");
+        version.setText("v1.1");
 
         Button searchButton = me.findViewById(R.id.search);
         searchButton.setOnClickListener(new View.OnClickListener() {
