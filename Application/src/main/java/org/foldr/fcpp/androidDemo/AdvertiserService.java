@@ -100,15 +100,10 @@ public class AdvertiserService extends Service {
             @Override
             public void run() {
                 while (running) {
-                    startAdvertising();
-                    /* TODO: stupid here since only running when advertising.
-                     * OTOH, it should be running continuously anyways. */
-                    sendStorageIntent();
-                    try {
-                        Thread.sleep(250);
-                    } catch (InterruptedException e) {
-                        // NOP
-                    }
+                  startAdvertising(); // blocking
+                  /* TODO: stupid here since only running when advertising.
+                  * OTOH, it should be running continuously anyways. */
+                  sendStorageIntent();
                 }
             }
         }).start();
@@ -181,7 +176,7 @@ public class AdvertiserService extends Service {
     private void startAdvertising() {
         // goForeground();
 
-        AdvertiseData data = buildAdvertiseData();
+        AdvertiseData data = buildAdvertiseData(); // blocking!
         if (mAdvertiseCallback != null) {
             // TODO: There's some way to update the data we're advertising.
             stopAdvertising();
