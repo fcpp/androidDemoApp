@@ -19,7 +19,7 @@ package org.foldr.fcpp.androidDemo.evacuation1;
 import static org.foldr.fcpp.androidDemo.AdvertiserFragment.*;
 import static org.foldr.fcpp.androidDemo.Constants.LOG_TAG;
 import static org.foldr.fcpp.androidDemo.evacuation1.EvacuationFragment.*;
-import static org.foldr.fcpp.androidDemo.friendfinding1.FriendFindingParameters.ARG_PARAM_BLE_POWER_LEVEL;
+import static org.foldr.fcpp.androidDemo.BLEParameterFragment.ARG_PARAM_BLE_POWER_LEVEL;
 
 import android.Manifest;
 import android.annotation.SuppressLint;

@@ -15,8 +15,8 @@ import android.widget.Toast;
 
 import com.google.android.material.slider.Slider;
 
+import org.foldr.fcpp.androidDemo.BLEParameterFragment;
 import org.foldr.fcpp.androidDemo.R;
-import org.foldr.fcpp.androidDemo.friendfinding1.FriendFindingParameters;
 
 import java.util.Random;
 
@@ -51,7 +51,7 @@ public class EvacuationParameters extends AppCompatActivity implements View.OnCl
             i.putExtra(ARG_PARAM_TRAITOR, traitor);
             i.putExtra(ARG_PARAM_EVACUATION_TIME, Integer.valueOf(evacuation_time));
             float power = ((Slider) findViewById(R.id.param_power)).getValue();
-            FriendFindingParameters.setExtraBLEPowerLevel(i, power);
+            BLEParameterFragment.setExtraBLEPowerLevel(i, power);
             startActivity(i);
             finish(); // terminate prefs dialog and continue.
         }  catch (NumberFormatException e) {
