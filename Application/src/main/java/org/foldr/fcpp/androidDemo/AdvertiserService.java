@@ -228,7 +228,7 @@ public class AdvertiserService extends Service {
                 .setInterval(AdvertisingSetParameters.INTERVAL_HIGH)
                 .setTxPowerLevel(power_level)
                 .setPrimaryPhy(BluetoothDevice.PHY_LE_1M)
-                // XXX #18 .setSecondaryPhy(BluetoothDevice.PHY_LE_2M)
+                .setSecondaryPhy(BluetoothDevice.PHY_LE_2M) // XXX #18
                 .build();
         return parameters;
     }

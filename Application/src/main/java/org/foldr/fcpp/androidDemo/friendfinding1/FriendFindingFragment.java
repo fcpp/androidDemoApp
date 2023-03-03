@@ -42,6 +42,9 @@ public class FriendFindingFragment extends Fragment {
      */
     public static FriendFindingFragment newInstance(boolean use_lags) {
         FriendFindingFragment fragment = new FriendFindingFragment();
+        /* TODO: Review if this should be in FriendFindingActivity with all the other
+            settings instead of here, especially if there's no runtime-switch.
+         */
         Bundle args = new Bundle();
         args.putBoolean(ARG_PARAM_USE_LAGS, use_lags);
         fragment.setArguments(args);
@@ -68,11 +71,10 @@ public class FriendFindingFragment extends Fragment {
         version.setText("v1.1");
 
         Button searchButton = me.findViewById(R.id.search);
+        EditText friendID = me.findViewById(R.id.friend_id);
         searchButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Code here executes on main thread after user presses search button
-                Button searchButton = me.findViewById(R.id.search);
-                EditText friendID = me.findViewById(R.id.friend_id);
                 int fid = AP.get_int("friend_requested");
                 if (fid > 0) { // reporting to have found the friend
                     AP.set_int("friend_requested", 0);
@@ -93,6 +95,11 @@ public class FriendFindingFragment extends Fragment {
         TextView state_rg = me.findViewById(R.id.text_state_rg);
         state_rg.setText(STATE_TEXTS[0]); // The XML was allergic to `?`.
         state_rg.setBackgroundColor(STATE_COLORS[0]);
+
+        TextView distanceView = me.findViewById(R.id.dist_score);
+        TextView connQuality = me.findViewById(R.id.conn_quality);
+        TextView diamEstimate = me.findViewById(R.id.diam_estimate);
+
         // Set up refresh every 5 secs.
         state_rg.postDelayed(new Runnable() {
             @Override
@@ -102,7 +109,6 @@ public class FriendFindingFragment extends Fragment {
                 state_rg.setText(STATE_TEXTS[AP.get_int("not_alone")]);
                 // Log.d(LOG_TAG, AP.get_nbr_lags());
                 state_rg.postDelayed(this, 250); // while(true)...
-                TextView distanceView = me.findViewById(R.id.dist_score);
                 float dist = (float)AP.get_double("distance_score");
                 if (dist >= 0) {
                     distanceView.setText(String.format("%.2f", dist));
@@ -111,14 +117,11 @@ public class FriendFindingFragment extends Fragment {
                     distanceView.setText("-");
                     distanceView.setBackgroundColor(Color.BLACK);
                 }
-                EditText friendID = me.findViewById(R.id.friend_id);
                 int ID = 0;
                 if (friendID.getText().length() > 0) ID = Integer.valueOf(friendID.getText().toString());
                 searchButton.setEnabled(ID > 0);
-                TextView connQuality = me.findViewById(R.id.conn_quality);
                 long cq = Math.round(100 - 100*AP.get_double("flakiness"));
                 connQuality.setText(Long.toString(cq) + "%");
-                TextView diamEstimate = me.findViewById(R.id.diam_estimate);
                 diamEstimate.setText(Integer.toString(AP.get_int("estimated_diam")));
             }
         }, 1000);
