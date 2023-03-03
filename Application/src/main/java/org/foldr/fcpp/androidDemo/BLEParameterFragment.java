@@ -2,6 +2,7 @@ package org.foldr.fcpp.androidDemo;
 
 import static org.foldr.fcpp.androidDemo.Constants.LOG_BT_TAG;
 
+import android.app.Activity;
 import android.bluetooth.le.AdvertisingSetParameters;
 import android.content.Intent;
 import android.os.Bundle;
@@ -24,7 +25,8 @@ public class BLEParameterFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static void setExtraBLEPowerLevel(Intent i, float power) {
+    public static void setExtraBLEPowerLevel(Activity me, Intent i) {
+        float power = ((Slider) me.findViewById(R.id.param_power)).getValue();
         int the_power = AdvertisingSetParameters.TX_POWER_MEDIUM;
         switch (Math.round(power)) {
             case 0:

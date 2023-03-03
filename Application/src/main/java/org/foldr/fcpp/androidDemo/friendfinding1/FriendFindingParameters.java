@@ -46,8 +46,7 @@ public class FriendFindingParameters extends AppCompatActivity implements View.O
             i.putExtra(ARG_PARAM_DIAMETER, Integer.valueOf(diameter));
             i.putExtra(ARG_PARAM_RETAIN, Float.valueOf(retain));
             i.putExtra(ARG_PARAM_ROUND_PERIOD, Float.valueOf(delay));
-            float power = ((Slider) findViewById(R.id.param_power)).getValue();
-            BLEParameterFragment.setExtraBLEPowerLevel(i, power);
+            BLEParameterFragment.setExtraBLEPowerLevel(this, i);
             startActivity(i);
             finish(); // terminate prefs dialog and continue.
         }  catch (NumberFormatException e) {

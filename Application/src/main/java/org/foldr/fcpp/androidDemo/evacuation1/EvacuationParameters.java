@@ -50,8 +50,7 @@ public class EvacuationParameters extends AppCompatActivity implements View.OnCl
             i.putExtra(ARG_PARAM_IS_GROUP_LEFT, group_left);
             i.putExtra(ARG_PARAM_TRAITOR, traitor);
             i.putExtra(ARG_PARAM_EVACUATION_TIME, Integer.valueOf(evacuation_time));
-            float power = ((Slider) findViewById(R.id.param_power)).getValue();
-            BLEParameterFragment.setExtraBLEPowerLevel(i, power);
+            BLEParameterFragment.setExtraBLEPowerLevel(this, i);
             startActivity(i);
             finish(); // terminate prefs dialog and continue.
         }  catch (NumberFormatException e) {
