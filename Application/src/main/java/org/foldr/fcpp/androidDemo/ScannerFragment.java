@@ -181,7 +181,7 @@ public class ScannerFragment extends ListFragment {
      */
     private ScanSettings buildScanSettings() {
         ScanSettings.Builder builder = new ScanSettings.Builder();
-        builder.setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY);
+        builder.setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY); // #20
         boolean isLegacy = PreferenceManager.getDefaultSharedPreferences(requireContext())
                 .getBoolean(getString(R.string.prefs_legacy), false);
         builder.setLegacy(isLegacy);

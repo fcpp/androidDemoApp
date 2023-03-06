@@ -24,9 +24,6 @@ import org.foldr.fcpp.androidDemo.R;
  */
 public class FriendFindingFragment extends Fragment {
 
-    static final String ARG_PARAM_ROUND_PERIOD = "round_period";
-    static final String ARG_PARAM_DIAMETER = "diameter";
-    static final String ARG_PARAM_RETAIN = "retain_time";
     static final int[] STATE_COLORS = {Color.GRAY, Color.GREEN, Color.YELLOW, Color.RED};
     static final String[] STATE_TEXTS = {"?", "✓", "x", "X"};
 
@@ -72,23 +69,21 @@ public class FriendFindingFragment extends Fragment {
 
         Button searchButton = me.findViewById(R.id.search);
         EditText friendID = me.findViewById(R.id.friend_id);
-        searchButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                // Code here executes on main thread after user presses search button
-                int fid = AP.get_int("friend_requested");
-                if (fid > 0) { // reporting to have found the friend
-                    AP.set_int("friend_requested", 0);
-                    friendID.setText("");
-                    friendID.setEnabled(true);
-                    searchButton.setText("Search!");
-                    searchButton.setEnabled(false);
-                } else { // starting to search for a friend
-                    friendID.setEnabled(false);
-                    int ID = 0;
-                    if (friendID.getText().length() > 0) ID = Integer.valueOf(friendID.getText().toString());
-                    AP.set_int("friend_requested", ID);
-                    searchButton.setText("Found!");
-                }
+        searchButton.setOnClickListener(v -> {
+            // Code here executes on main thread after user presses search button
+            int fid = AP.get_int("friend_requested");
+            if (fid > 0) { // reporting to have found the friend
+                AP.set_int("friend_requested", 0);
+                friendID.setText("");
+                friendID.setEnabled(true);
+                searchButton.setText("Search!");
+                searchButton.setEnabled(false);
+            } else { // starting to search for a friend
+                friendID.setEnabled(false);
+                int ID = 0;
+                if (friendID.getText().length() > 0) ID = Integer.valueOf(friendID.getText().toString());
+                AP.set_int("friend_requested", ID);
+                searchButton.setText("Found!");
             }
         });
 

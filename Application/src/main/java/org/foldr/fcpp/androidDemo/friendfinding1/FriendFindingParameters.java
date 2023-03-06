@@ -15,8 +15,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 
-import com.google.android.material.slider.Slider;
-
 import org.foldr.fcpp.androidDemo.BLEParameterFragment;
 import org.foldr.fcpp.androidDemo.R;
 
