@@ -1,5 +1,6 @@
 package org.foldr.fcpp.androidDemo;
 
+import static org.foldr.fcpp.androidDemo.BLEParameterFragment.ARG_PARAM_BLE_SCAN_MODE;
 import static org.foldr.fcpp.androidDemo.Constants.LOG_BT_TAG;
 import static org.foldr.fcpp.androidDemo.Constants.LOG_TAG;
 import static org.foldr.fcpp.androidDemo.BLEParameterFragment.ARG_PARAM_BLE_POWER_LEVEL;
@@ -19,6 +20,7 @@ import android.bluetooth.le.AdvertisingSet;
 import android.bluetooth.le.AdvertisingSetCallback;
 import android.bluetooth.le.AdvertisingSetParameters;
 import android.bluetooth.le.BluetoothLeAdvertiser;
+import android.bluetooth.le.ScanSettings;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -82,11 +84,13 @@ public class AdvertiserService extends Service {
     private AdvertisingSetParameters parameters;
     private boolean ble_toast_only_once = true;
     private int power_level = AdvertisingSetParameters.TX_POWER_MEDIUM;
+    private int scan_mode;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         power_level = intent.getIntExtra(ARG_PARAM_BLE_POWER_LEVEL, AdvertisingSetParameters.TX_POWER_MEDIUM);
         Log.d(LOG_BT_TAG, "BLE power level: "+power_level);
+        scan_mode = intent.getIntExtra(ARG_PARAM_BLE_SCAN_MODE, ScanSettings.SCAN_MODE_LOW_LATENCY);
         return START_STICKY;
     }
     @Override

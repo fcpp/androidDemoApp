@@ -1,0 +1,8 @@
+<resources>
+    <string-array name="scan_mode">
+        <!-- https://developer.android.com/reference/android/bluetooth/le/ScanSettings -->
+        <item>balanced</item>
+        <item>low latency</item>
+        <item>low power</item>
+    </string-array>
+</resources>

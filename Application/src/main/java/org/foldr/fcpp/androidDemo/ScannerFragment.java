@@ -16,6 +16,8 @@
 
 package org.foldr.fcpp.androidDemo;
 
+import static org.foldr.fcpp.androidDemo.BLEParameterFragment.ARG_PARAM_BLE_SCAN_MODE;
+
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.le.BluetoothLeScanner;
@@ -24,7 +26,6 @@ import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -63,6 +64,7 @@ public class ScannerFragment extends ListFragment {
     private ScanResultAdapter mAdapter;
 
     private Toolbar mToolbar;
+    private int scan_mode;
 
     /**
      * Must be called after object creation by MainActivity.
@@ -87,6 +89,10 @@ public class ScannerFragment extends ListFragment {
         // default theme, so generate it from getActivity() and pass it in separately.
         mAdapter = new ScanResultAdapter(getActivity().getApplicationContext(),
                 LayoutInflater.from(getActivity()));
+
+        if (getArguments() != null) {
+            scan_mode = getArguments().getInt(ARG_PARAM_BLE_SCAN_MODE, ScanSettings.SCAN_MODE_LOW_LATENCY);
+        }
     }
 
     @Override
@@ -181,7 +187,7 @@ public class ScannerFragment extends ListFragment {
      */
     private ScanSettings buildScanSettings() {
         ScanSettings.Builder builder = new ScanSettings.Builder();
-        builder.setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY); // #20
+        builder.setScanMode(scan_mode); // #20
         boolean isLegacy = PreferenceManager.getDefaultSharedPreferences(requireContext())
                 .getBoolean(getString(R.string.prefs_legacy), false);
         builder.setLegacy(isLegacy);

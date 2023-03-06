@@ -17,6 +17,7 @@
 package org.foldr.fcpp.androidDemo;
 
 import static org.foldr.fcpp.androidDemo.BLEParameterFragment.ARG_PARAM_BLE_POWER_LEVEL;
+import static org.foldr.fcpp.androidDemo.BLEParameterFragment.ARG_PARAM_BLE_SCAN_MODE;
 
 import android.bluetooth.le.AdvertiseCallback;
 import android.bluetooth.le.AdvertisingSetParameters;

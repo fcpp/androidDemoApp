@@ -17,16 +17,17 @@
 package org.foldr.fcpp.androidDemo.evacuation1;
 
 import static org.foldr.fcpp.androidDemo.AdvertiserFragment.*;
+import static org.foldr.fcpp.androidDemo.BLEParameterFragment.ARG_PARAM_BLE_SCAN_MODE;
 import static org.foldr.fcpp.androidDemo.Constants.LOG_TAG;
 import static org.foldr.fcpp.androidDemo.evacuation1.EvacuationFragment.*;
 import static org.foldr.fcpp.androidDemo.BLEParameterFragment.ARG_PARAM_BLE_POWER_LEVEL;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.AdvertisingSetParameters;
+import android.bluetooth.le.ScanSettings;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -37,7 +38,6 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Toolbar;
 
@@ -71,20 +71,19 @@ public class EvacuationActivity extends FragmentActivity
     private boolean is_group_left;
     private int evacuation_time;
     private int ble_power_level = AdvertisingSetParameters.TX_POWER_MEDIUM;
+    private int ble_scan_mode;
 
     @SuppressLint("MissingPermission")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getIntent().getExtras().size() != 7) {
-            throw new IllegalArgumentException("You didn't come through the parameter configuration screen!");
-        }
         this.isTraitor = getIntent().getBooleanExtra(ARG_PARAM_TRAITOR, false);
         this.is_group_left = getIntent().getBooleanExtra(ARG_PARAM_IS_GROUP_LEFT, false);
         this.evacuation_time = getIntent().getIntExtra(ARG_PARAM_EVACUATION_TIME, 180);
         this.retain = getIntent().getFloatExtra(ARG_PARAM_RETAIN, -1);
         this.diameter = getIntent().getIntExtra(ARG_PARAM_DIAMETER, -1);
         ble_power_level = getIntent().getIntExtra(ARG_PARAM_BLE_POWER_LEVEL, AdvertisingSetParameters.TX_POWER_MEDIUM);
+        ble_scan_mode = getIntent().getIntExtra(ARG_PARAM_BLE_SCAN_MODE, ScanSettings.SCAN_MODE_LOW_LATENCY);
 
         // The options are for FCPP:
         frag = EvacuationFragment.newInstance(isTraitor, is_group_left, evacuation_time);
@@ -246,6 +245,12 @@ public class EvacuationActivity extends FragmentActivity
      * has to enable BT through the permissions dialog.
      */
     private void setupFragments() {
+        Bundle args = new Bundle();
+        args.putBoolean(ARG_BROADCAST_ON_FIRST_BOOT, true);
+        args.putBoolean(ARG_DISABLE_BROADCAST_SWITCH, true);
+        args.putInt(ARG_PARAM_BLE_POWER_LEVEL, ble_power_level);
+        args.putInt(ARG_PARAM_BLE_POWER_LEVEL, ble_power_level);
+        args.putInt(ARG_PARAM_BLE_SCAN_MODE, ble_scan_mode);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
@@ -253,12 +258,9 @@ public class EvacuationActivity extends FragmentActivity
         // Fragments can't access system services directly, so pass it the BluetoothAdapter
         scannerFragment.setBluetoothAdapter(mBluetoothAdapter);
         transaction.replace(R.id.scanner_fragment_container, scannerFragment);
+        scannerFragment.setArguments(args);
 
         AdvertiserFragment advertiserFragment = new AdvertiserFragment();
-        Bundle args = new Bundle();
-        args.putBoolean(ARG_BROADCAST_ON_FIRST_BOOT, true);
-        args.putBoolean(ARG_DISABLE_BROADCAST_SWITCH, true);
-        args.putInt(ARG_PARAM_BLE_POWER_LEVEL, ble_power_level);
         advertiserFragment.setArguments(args);
         transaction.replace(R.id.advertiser_fragment_container, advertiserFragment);
         
