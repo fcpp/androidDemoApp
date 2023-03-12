@@ -1,9 +1,9 @@
 package org.foldr.fcpp.androidDemo;
 
-import static org.foldr.fcpp.androidDemo.BLEParameterFragment.ARG_PARAM_BLE_SCAN_MODE;
+import static org.foldr.fcpp.androidDemo.BLEParameterFragment.ARG_PARAM_BLE_INTERVAL;
+import static org.foldr.fcpp.androidDemo.BLEParameterFragment.ARG_PARAM_BLE_POWER_LEVEL;
 import static org.foldr.fcpp.androidDemo.Constants.LOG_BT_TAG;
 import static org.foldr.fcpp.androidDemo.Constants.LOG_TAG;
-import static org.foldr.fcpp.androidDemo.BLEParameterFragment.ARG_PARAM_BLE_POWER_LEVEL;
 
 import android.annotation.SuppressLint;
 import android.app.Notification;
@@ -20,7 +20,6 @@ import android.bluetooth.le.AdvertisingSet;
 import android.bluetooth.le.AdvertisingSetCallback;
 import android.bluetooth.le.AdvertisingSetParameters;
 import android.bluetooth.le.BluetoothLeAdvertiser;
-import android.bluetooth.le.ScanSettings;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -82,15 +81,17 @@ public class AdvertiserService extends Service {
 
     private AP mAp;
     private AdvertisingSetParameters parameters;
+    private AdvertisingSet currentSet;
     private boolean ble_toast_only_once = true;
     private int power_level = AdvertisingSetParameters.TX_POWER_MEDIUM;
-    private int scan_mode;
+    private int ble_interval = AdvertisingSetParameters.INTERVAL_LOW;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         power_level = intent.getIntExtra(ARG_PARAM_BLE_POWER_LEVEL, AdvertisingSetParameters.TX_POWER_MEDIUM);
-        Log.d(LOG_BT_TAG, "BLE power level: "+power_level);
-        scan_mode = intent.getIntExtra(ARG_PARAM_BLE_SCAN_MODE, ScanSettings.SCAN_MODE_LOW_LATENCY);
+        Log.d(LOG_BT_TAG, "BLE power level (effective): "+power_level);
+        ble_interval = intent.getIntExtra(ARG_PARAM_BLE_INTERVAL, AdvertisingSetParameters.INTERVAL_LOW);
+        Log.d(LOG_BT_TAG, "BLE interval (effective): "+ble_interval);
         return START_STICKY;
     }
     @Override
@@ -99,18 +100,7 @@ public class AdvertiserService extends Service {
         running = true;
         mAp = (AP) getApplication();
         initialize();
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (running) {
-                  startAdvertising(); // blocking
-                  /* TODO: stupid here since only running when advertising.
-                  * OTOH, it should be running continuously anyways. */
-                  sendStorageIntent();
-                }
-            }
-        }).start();
+        startAdvertising();
         // no timeout for now.
         // setTimeout();
         super.onCreate();
@@ -179,15 +169,9 @@ public class AdvertiserService extends Service {
     @SuppressLint("MissingPermission")
     private void startAdvertising() {
         // goForeground();
-
-        AdvertiseData data = buildAdvertiseData(); // blocking!
-        if (mAdvertiseCallback != null) {
-            // TODO: There's some way to update the data we're advertising.
-            stopAdvertising();
-        }
+        byte[] nada = {}; // Cheat in first round. We only need to spin up the thread a bit below.
+        AdvertiseData data = buildAdvertiseData(nada);
         if (mAdvertiseCallback == null) {
-                // Double-check that we get the same data as set in AP. Uncomment for safety-belt.
-                // assert PreferenceManager.getDefaultSharedPreferences(this).contains(getString(R.string.prefs_legacy));
 
                 mAdvertiseCallback = new AdvertisingSetCallback() {
                     @Override
@@ -196,12 +180,29 @@ public class AdvertiserService extends Service {
                             Log.e(LOG_TAG, "onAdvertisingSetStarted(): txPower:" + txPower + " , status: "
                                     + status);
                             sendFailureIntent(status);
+                        } else {
+                            assert currentSet == null;
+                            currentSet = advertisingSet;
+                            /* After advertising has started, this thread will wait for FCPP updates
+                                and update the advertisement.
+                             */
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    while (running) {
+                                        // Blocking:
+                                        byte[] data = mAp.getMsg(); /* Blocking! */
+                                        currentSet.setAdvertisingData(buildAdvertiseData(data));
+                                        sendStorageIntent();
+                                    }
+                                }
+                            }).start();
                         }
                     }
 
                     @Override
                     public void onAdvertisingSetStopped(AdvertisingSet advertisingSet) {
-//                        Log.i(LOG_TAG, "onAdvertisingSetStopped():");
+                        Log.i(LOG_TAG, "onAdvertisingSetStopped():");
                     }
                 };
                 if (mBluetoothLeAdvertiser != null) {
@@ -229,7 +230,7 @@ public class AdvertiserService extends Service {
                         .getBoolean(getString(R.string.prefs_legacy), false))
                 .setConnectable(false)
                 // TODO: Tunables here. Note that we're currently only calling this once on startup.
-                .setInterval(AdvertisingSetParameters.INTERVAL_HIGH)
+                .setInterval(ble_interval)
                 .setTxPowerLevel(power_level)
                 .setPrimaryPhy(BluetoothDevice.PHY_LE_1M)
                 .setSecondaryPhy(BluetoothDevice.PHY_LE_2M) // XXX #18
@@ -286,24 +287,11 @@ public class AdvertiserService extends Service {
         }
     }
 
-    /**
-     * Returns an AdvertiseData object which includes the Service UUID and Device Name.
-     */
-    private AdvertiseData buildAdvertiseData() {
-
-        /**
-         * Note: There is a strict limit of 31 Bytes on packets sent over BLE Advertisements.
-         *  This includes everything put into AdvertiseData including UUIDs, device info, &
-         *  arbitrary service or manufacturer data.
-         *  Attempting to send packets over this limit will result in a failure with error code
-         *  AdvertiseCallback.ADVERTISE_FAILED_DATA_TOO_LARGE. Catch this error in the
-         *  onStartFailure() method of an AdvertiseCallback implementation.
-         */
+    private AdvertiseData buildAdvertiseData(byte[] data) {
 
         AdvertiseData.Builder dataBuilder = new AdvertiseData.Builder();
         dataBuilder.addServiceUuid(Constants.Service_UUID);
-        dataBuilder.setIncludeDeviceName(true);
-        byte[] data = mAp.getMsg(); /* Blocking! */
+        dataBuilder.setIncludeDeviceName(false);
         // Log.d(LOG_TAG, BaseEncoding.base16().lowerCase().encode(data));
         assert data != null;
         dataBuilder.addServiceData(Constants.Service_UUID, data);

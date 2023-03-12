@@ -16,8 +16,8 @@
 
 package org.foldr.fcpp.androidDemo;
 
+import static org.foldr.fcpp.androidDemo.BLEParameterFragment.ARG_PARAM_BLE_INTERVAL;
 import static org.foldr.fcpp.androidDemo.BLEParameterFragment.ARG_PARAM_BLE_POWER_LEVEL;
-import static org.foldr.fcpp.androidDemo.BLEParameterFragment.ARG_PARAM_BLE_SCAN_MODE;
 
 import android.bluetooth.le.AdvertiseCallback;
 import android.bluetooth.le.AdvertisingSetParameters;
@@ -58,15 +58,18 @@ public class AdvertiserFragment extends Fragment implements View.OnClickListener
     private boolean firstBoot;
     private boolean isDisable;
     private int ble_power_level = AdvertisingSetParameters.TX_POWER_MEDIUM;
+    private int ble_interval;
+    private TextView tv;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        firstBoot = getArguments() != null && getArguments().getBoolean(ARG_BROADCAST_ON_FIRST_BOOT, false);
-        isDisable = getArguments() != null && getArguments().getBoolean(ARG_DISABLE_BROADCAST_SWITCH, false);
         if (getArguments() != null) {
+            firstBoot = getArguments().getBoolean(ARG_BROADCAST_ON_FIRST_BOOT, false);
+            isDisable = getArguments().getBoolean(ARG_DISABLE_BROADCAST_SWITCH, false);
             ble_power_level = getArguments().getInt(ARG_PARAM_BLE_POWER_LEVEL, AdvertisingSetParameters.TX_POWER_MEDIUM);
+            ble_interval = getArguments().getInt(ARG_PARAM_BLE_INTERVAL, AdvertisingSetParameters.INTERVAL_HIGH);
         }
 
         advertisingFailureReceiver = new BroadcastReceiver() {
@@ -114,8 +117,7 @@ public class AdvertiserFragment extends Fragment implements View.OnClickListener
                     Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_LONG).show();
                 } else if (AdvertiserService.ADVERTISING_STORAGE.equals(intent.getAction())) {
                     String storage_text = intent.getStringExtra(AdvertiserService.ADVERTISING_STORAGE_EXTRA_CODE);
-                    TextView v = getActivity().findViewById(R.id.storage_view);
-                    v.setText(storage_text);
+                    tv.setText(storage_text);
                 } else {
                     Log.d("vs", intent.getAction());
                 }
@@ -128,6 +130,8 @@ public class AdvertiserFragment extends Fragment implements View.OnClickListener
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_advertiser, container, false);
+        tv = view.findViewById(R.id.storage_view);
+        assert tv != null;
 
         mSwitch = view.findViewById(R.id.advertise_switch);
         if (isDisable) {
@@ -169,7 +173,6 @@ public class AdvertiserFragment extends Fragment implements View.OnClickListener
             mSwitch.setChecked(AdvertiserService.running);
         }
 
-
         IntentFilter failureFilter = new IntentFilter(AdvertiserService.ADVERTISING_FAILED);
         getActivity().registerReceiver(advertisingFailureReceiver, failureFilter);
         IntentFilter storageFilter = new IntentFilter(AdvertiserService.ADVERTISING_STORAGE);
@@ -192,6 +195,7 @@ public class AdvertiserFragment extends Fragment implements View.OnClickListener
     private Intent getServiceIntent(Context c) {
         Intent i = new Intent(c, AdvertiserService.class);
         i.putExtra(ARG_PARAM_BLE_POWER_LEVEL, ble_power_level);
+        i.putExtra(ARG_PARAM_BLE_INTERVAL, ble_interval);
         return i;
     }
 

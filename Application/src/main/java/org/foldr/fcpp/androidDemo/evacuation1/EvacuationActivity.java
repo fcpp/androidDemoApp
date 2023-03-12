@@ -17,6 +17,7 @@
 package org.foldr.fcpp.androidDemo.evacuation1;
 
 import static org.foldr.fcpp.androidDemo.AdvertiserFragment.*;
+import static org.foldr.fcpp.androidDemo.BLEParameterFragment.ARG_PARAM_BLE_INTERVAL;
 import static org.foldr.fcpp.androidDemo.BLEParameterFragment.ARG_PARAM_BLE_SCAN_MODE;
 import static org.foldr.fcpp.androidDemo.Constants.LOG_TAG;
 import static org.foldr.fcpp.androidDemo.evacuation1.EvacuationFragment.*;
@@ -72,6 +73,7 @@ public class EvacuationActivity extends FragmentActivity
     private int evacuation_time;
     private int ble_power_level = AdvertisingSetParameters.TX_POWER_MEDIUM;
     private int ble_scan_mode;
+    private int ble_interval;
 
     @SuppressLint("MissingPermission")
     @Override
@@ -83,6 +85,7 @@ public class EvacuationActivity extends FragmentActivity
         this.retain = getIntent().getFloatExtra(ARG_PARAM_RETAIN, -1);
         this.diameter = getIntent().getIntExtra(ARG_PARAM_DIAMETER, -1);
         ble_power_level = getIntent().getIntExtra(ARG_PARAM_BLE_POWER_LEVEL, AdvertisingSetParameters.TX_POWER_MEDIUM);
+        ble_interval = getIntent().getIntExtra(ARG_PARAM_BLE_INTERVAL, AdvertisingSetParameters.INTERVAL_HIGH);
         ble_scan_mode = getIntent().getIntExtra(ARG_PARAM_BLE_SCAN_MODE, ScanSettings.SCAN_MODE_LOW_LATENCY);
 
         // The options are for FCPP:
@@ -249,7 +252,7 @@ public class EvacuationActivity extends FragmentActivity
         args.putBoolean(ARG_BROADCAST_ON_FIRST_BOOT, true);
         args.putBoolean(ARG_DISABLE_BROADCAST_SWITCH, true);
         args.putInt(ARG_PARAM_BLE_POWER_LEVEL, ble_power_level);
-        args.putInt(ARG_PARAM_BLE_POWER_LEVEL, ble_power_level);
+        args.putInt(ARG_PARAM_BLE_INTERVAL, ble_interval);
         args.putInt(ARG_PARAM_BLE_SCAN_MODE, ble_scan_mode);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();

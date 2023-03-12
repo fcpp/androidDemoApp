@@ -64,6 +64,7 @@ public class FriendFindingActivity extends FragmentActivity
     private FriendFindingFragment frag;
     private int ble_power_level;
     private int ble_scan_mode;
+    private int ble_interval;
 
     @SuppressLint("MissingPermission")
     @Override
@@ -73,6 +74,7 @@ public class FriendFindingActivity extends FragmentActivity
         int diameter = getIntent().getIntExtra(ARG_PARAM_DIAMETER, -1);
         ble_power_level = getIntent().getIntExtra(ARG_PARAM_BLE_POWER_LEVEL, AdvertisingSetParameters.TX_POWER_MEDIUM);
         ble_scan_mode = getIntent().getIntExtra(ARG_PARAM_BLE_SCAN_MODE, ScanSettings.SCAN_MODE_LOW_LATENCY);
+        ble_interval = getIntent().getIntExtra(ARG_PARAM_BLE_INTERVAL, AdvertisingSetParameters.INTERVAL_HIGH);
         boolean use_lags = getIntent().getBooleanExtra(ARG_PARAM_USE_LAGS, true);
 
         // The options are for FCPP:
@@ -248,6 +250,7 @@ public class FriendFindingActivity extends FragmentActivity
         args.putBoolean(ARG_BROADCAST_ON_FIRST_BOOT, true);
         args.putBoolean(ARG_DISABLE_BROADCAST_SWITCH, true);
         args.putInt(ARG_PARAM_BLE_POWER_LEVEL, ble_power_level);
+        args.putInt(ARG_PARAM_BLE_INTERVAL, ble_interval);
         args.putInt(ARG_PARAM_BLE_SCAN_MODE, ble_scan_mode);
         advertiserFragment.setArguments(args);
         transaction.replace(R.id.advertiser_fragment_container, advertiserFragment);

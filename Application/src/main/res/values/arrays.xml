@@ -5,4 +5,12 @@
         <item>low latency</item>
         <item>low power</item>
     </string-array>
+    <string-array name="interval">
+        <!-- https://developer.android.com/reference/android/bluetooth/le/AdvertisingSetParameters -->
+        <item>max</item>
+        <item>high</item>
+        <item>medium</item>
+        <item>low</item>
+        <item>min</item>
+    </string-array>
 </resources>
