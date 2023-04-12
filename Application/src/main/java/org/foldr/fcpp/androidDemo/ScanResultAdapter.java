@@ -20,6 +20,7 @@ import android.annotation.SuppressLint;
 import android.bluetooth.le.ScanResult;
 import android.content.Context;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -89,6 +90,10 @@ public class ScanResultAdapter extends BaseAdapter {
 
     private int getSenderUid(ScanResult scanResult) {
         byte[] serviceData = scanResult.getScanRecord().getServiceData(Constants.Service_UUID);
+        if (serviceData.length < 2) {
+            Log.d(Constants.LOG_BT_TAG, "Ignoring small packet.");
+            return -1;
+        }
         // Rotating hw-id useless here, we extract the contained UID:
         byte uid_lo = serviceData[serviceData.length-2];
         byte uid_hi = serviceData[serviceData.length-1];

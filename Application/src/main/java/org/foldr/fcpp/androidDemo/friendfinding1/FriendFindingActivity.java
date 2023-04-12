@@ -17,15 +17,16 @@
 package org.foldr.fcpp.androidDemo.friendfinding1;
 
 import static org.foldr.fcpp.androidDemo.AdvertiserFragment.*;
+import static org.foldr.fcpp.androidDemo.BLEParameterFragment.*;
 import static org.foldr.fcpp.androidDemo.Constants.LOG_TAG;
 import static org.foldr.fcpp.androidDemo.evacuation1.EvacuationFragment.*;
-import static org.foldr.fcpp.androidDemo.friendfinding1.FriendFindingParameters.ARG_PARAM_BLE_POWER_LEVEL;
 import static org.foldr.fcpp.androidDemo.friendfinding1.FriendFindingParameters.ARG_PARAM_USE_LAGS;
 
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.AdvertisingSetParameters;
+import android.bluetooth.le.ScanSettings;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
@@ -38,6 +39,7 @@ import android.widget.Toast;
 import android.widget.Toolbar;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -61,17 +63,18 @@ public class FriendFindingActivity extends FragmentActivity
     private LocationListener locationListener;
     private FriendFindingFragment frag;
     private int ble_power_level;
+    private int ble_scan_mode;
+    private int ble_interval;
 
     @SuppressLint("MissingPermission")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getIntent().getExtras().size() != 5) {
-            throw new IllegalArgumentException("You didn't come through the parameter configuration screen!");
-        }
         float retain = getIntent().getFloatExtra(ARG_PARAM_RETAIN, -1);
         int diameter = getIntent().getIntExtra(ARG_PARAM_DIAMETER, -1);
         ble_power_level = getIntent().getIntExtra(ARG_PARAM_BLE_POWER_LEVEL, AdvertisingSetParameters.TX_POWER_MEDIUM);
+        ble_scan_mode = getIntent().getIntExtra(ARG_PARAM_BLE_SCAN_MODE, ScanSettings.SCAN_MODE_LOW_LATENCY);
+        ble_interval = getIntent().getIntExtra(ARG_PARAM_BLE_INTERVAL, AdvertisingSetParameters.INTERVAL_HIGH);
         boolean use_lags = getIntent().getBooleanExtra(ARG_PARAM_USE_LAGS, true);
 
         // The options are for FCPP:
@@ -247,11 +250,17 @@ public class FriendFindingActivity extends FragmentActivity
         args.putBoolean(ARG_BROADCAST_ON_FIRST_BOOT, true);
         args.putBoolean(ARG_DISABLE_BROADCAST_SWITCH, true);
         args.putInt(ARG_PARAM_BLE_POWER_LEVEL, ble_power_level);
+        args.putInt(ARG_PARAM_BLE_INTERVAL, ble_interval);
+        args.putInt(ARG_PARAM_BLE_SCAN_MODE, ble_scan_mode);
         advertiserFragment.setArguments(args);
         transaction.replace(R.id.advertiser_fragment_container, advertiserFragment);
-        transaction.replace(R.id.preferences_fragment_container, frag);
+        transaction.replace(R.id.preferences_fragment_container, getFCPPScenarioFragmet());
 
         transaction.commit();
+    }
+
+    private Fragment getFCPPScenarioFragmet() {
+        return frag;
     }
 
     private void showErrorText(int messageId) {
