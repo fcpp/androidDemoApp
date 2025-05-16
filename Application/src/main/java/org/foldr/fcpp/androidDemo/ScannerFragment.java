@@ -139,6 +139,7 @@ public class ScannerFragment extends ListFragment {
     /**
      * Start scanning for BLE Advertisements (& set it up to stop after a set period of time).
      */
+    @SuppressLint("MissingPermission")
     public void startScanning() {
         if (mScanCallback == null) {
             Log.d(TAG, "Starting Scanning");
